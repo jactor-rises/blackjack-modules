@@ -33,13 +33,4 @@ internal class BlackjackServiceTest {
             { assertThat(gameOfBlackjack.nick).`as`("nick").isEqualTo("jactor") }
         )
     }
-
-    @Test
-    fun `should prevent a new game for player with a nick who is already playing`() {
-        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(aFullDeckOfCards())
-        blackjackService.createNewGame("jalla")
-
-        assertThatIllegalArgumentException().isThrownBy { blackjackService.createNewGame("jalla") }
-            .withMessage("Spill for spiller med navn 'jalla' er allerede startet!")
-    }
 }
