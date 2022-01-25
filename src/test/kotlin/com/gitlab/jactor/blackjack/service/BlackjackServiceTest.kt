@@ -2,10 +2,10 @@ package com.gitlab.jactor.blackjack.service
 
 import com.gitlab.jactor.blackjack.consumer.DeckOfCardsConsumer
 import com.gitlab.jactor.blackjack.model.DeckOfCards
-import com.gitlab.jactor.blackjack.model.GameOfBlackjack
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -22,10 +22,16 @@ internal class BlackjackServiceTest {
     private lateinit var blackjackService: BlackjackService
 
     @Test
-    fun `should fetch deck of cards for a new game of blackjack`() {
+    fun `should start GameOfBlackjack`() {
         val deckOfCards = DeckOfCards()
         whenever(deckOfCardsConsumerMock.fetchCardsForGame()).thenReturn(deckOfCards)
 
-        assertThat(blackjackService.createNewGame("Tor Egil")).`as`("New game is created").isEqualTo(GameOfBlackjack(deckOfCards = deckOfCards))
+        blackjackService.createNewGame("Tor Egil")
+        val gameOfBlackjack = blackjackService.gameOfBlackjack
+
+        assertAll(
+            { assertThat(gameOfBlackjack.deckOfCards).`as`("deckOfCards").isEqualTo(deckOfCards) },
+            { assertThat(gameOfBlackjack.playerName).`as`("playerName").isEqualTo("Tor Egil") }
+        )
     }
 }

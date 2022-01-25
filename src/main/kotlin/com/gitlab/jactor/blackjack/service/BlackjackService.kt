@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class BlackjackService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
-    fun createNewGame(playerName: String): GameOfBlackjack {
-        return GameOfBlackjack(deckOfCards = deckOfCardsConsumer.fetchCardsForGame())
+    internal lateinit var gameOfBlackjack: GameOfBlackjack
+
+    fun createNewGame(playerName: String) {
+        gameOfBlackjack = GameOfBlackjack(deckOfCards = deckOfCardsConsumer.fetchCardsForGame(), playerName = playerName)
     }
 }
