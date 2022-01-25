@@ -1,7 +1,10 @@
 package com.gitlab.jactor.blackjack.service
 
 import com.gitlab.jactor.blackjack.consumer.DeckOfCardsConsumer
+import com.gitlab.jactor.blackjack.model.Card
 import com.gitlab.jactor.blackjack.model.DeckOfCards
+import com.gitlab.jactor.blackjack.model.Face
+import com.gitlab.jactor.blackjack.model.Suit
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -23,7 +26,7 @@ internal class BlackjackServiceTest {
 
     @Test
     fun `should start GameOfBlackjack`() {
-        val deckOfCards = DeckOfCards()
+        val deckOfCards = DeckOfCards(listOf(Card(face = Face.KING, suit = Suit.DIAMONDS)))
         whenever(deckOfCardsConsumerMock.fetchCardsForGame()).thenReturn(deckOfCards)
 
         blackjackService.createNewGame("Tor Egil")
