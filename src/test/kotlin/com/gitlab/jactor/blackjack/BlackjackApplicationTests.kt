@@ -1,4 +1,4 @@
-package com.github.jactor.blackjack.blackjack
+package com.gitlab.jactor.blackjack
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest
 class BlackjackApplicationTests {
 
 	@Test
-	fun contextLoads() {
+	fun `should load context`() {
 	}
-
 }

@@ -1,4 +1,4 @@
-package com.github.jactor.blackjack.blackjack
+package com.gitlab.jactor.blackjack
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

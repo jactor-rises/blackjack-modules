@@ -1,3 +1,3 @@
-package com.github.jactor.blackjack.blackjack.model
+package com.gitlab.jactor.blackjack.model
 
 data class GameOfBlackjack(internal val deckOfCards: DeckOfCards)

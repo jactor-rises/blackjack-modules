@@ -1,6 +1,6 @@
-package com.github.jactor.blackjack.blackjack.consumer
+package com.gitlab.jactor.blackjack.consumer
 
-import com.github.jactor.blackjack.blackjack.model.DeckOfCards
+import com.gitlab.jactor.blackjack.model.DeckOfCards
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 

@@ -1,8 +1,8 @@
-package com.github.jactor.blackjack.blackjack.service
+package com.gitlab.jactor.blackjack.service
 
-import com.github.jactor.blackjack.blackjack.consumer.DeckOfCardsConsumer
-import com.github.jactor.blackjack.blackjack.model.DeckOfCards
-import com.github.jactor.blackjack.blackjack.model.GameOfBlackjack
+import com.gitlab.jactor.blackjack.consumer.DeckOfCardsConsumer
+import com.gitlab.jactor.blackjack.model.DeckOfCards
+import com.gitlab.jactor.blackjack.model.GameOfBlackjack
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 
 @SpringBootTest
-@DisplayName("A com.github.jactor.blackjack.blackjack.service.BlackjackService")
+@DisplayName("A com.gitlab.jactor.blackjack.service.BlackjackService")
 internal class BlackjackServiceTest {
 
     @MockBean

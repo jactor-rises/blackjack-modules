@@ -1,7 +1,7 @@
-package com.github.jactor.blackjack.blackjack.service
+package com.gitlab.jactor.blackjack.service
 
-import com.github.jactor.blackjack.blackjack.consumer.DeckOfCardsConsumer
-import com.github.jactor.blackjack.blackjack.model.GameOfBlackjack
+import com.gitlab.jactor.blackjack.consumer.DeckOfCardsConsumer
+import com.gitlab.jactor.blackjack.model.GameOfBlackjack
 import org.springframework.stereotype.Service
 
 @Service
