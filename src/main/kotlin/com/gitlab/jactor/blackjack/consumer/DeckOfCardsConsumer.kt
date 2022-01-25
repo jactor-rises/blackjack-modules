@@ -6,7 +6,7 @@ import org.springframework.web.client.RestTemplate
 
 @Component
 class DeckOfCardsConsumer(private val restTemplate: RestTemplate) {
-    fun fetchCardsForGame(): DeckOfCards {
+    fun fetch(): DeckOfCards {
         TODO("Not yet implemented")
     }
 }

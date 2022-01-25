@@ -1,11 +1,8 @@
 package com.gitlab.jactor.blackjack.service
 
 import com.gitlab.jactor.blackjack.consumer.DeckOfCardsConsumer
-import com.gitlab.jactor.blackjack.model.Card
-import com.gitlab.jactor.blackjack.model.DeckOfCards
-import com.gitlab.jactor.blackjack.model.Face
-import com.gitlab.jactor.blackjack.model.Suit
-import org.assertj.core.api.Assertions.assertThat
+import com.gitlab.jactor.blackjack.model.TestUtil.aFullDeckOfCards
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
@@ -26,15 +23,23 @@ internal class BlackjackServiceTest {
 
     @Test
     fun `should start GameOfBlackjack`() {
-        val deckOfCards = DeckOfCards(listOf(Card(face = Face.KING, suit = Suit.DIAMONDS)))
-        whenever(deckOfCardsConsumerMock.fetchCardsForGame()).thenReturn(deckOfCards)
+        val deckOfCards = aFullDeckOfCards()
+        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(deckOfCards)
 
-        blackjackService.createNewGame("Tor Egil")
-        val gameOfBlackjack = blackjackService.gameOfBlackjack
+        val gameOfBlackjack = blackjackService.createNewGame("jactor")
 
         assertAll(
             { assertThat(gameOfBlackjack.deckOfCards).`as`("deckOfCards").isEqualTo(deckOfCards) },
-            { assertThat(gameOfBlackjack.playerName).`as`("playerName").isEqualTo("Tor Egil") }
+            { assertThat(gameOfBlackjack.nick).`as`("nick").isEqualTo("jactor") }
         )
+    }
+
+    @Test
+    fun `should prevent a new game for player with a nick who is already playing`() {
+        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(aFullDeckOfCards())
+        blackjackService.createNewGame("jalla")
+
+        assertThatIllegalArgumentException().isThrownBy { blackjackService.createNewGame("jalla") }
+            .withMessage("Spill for spiller med navn 'jalla' er allerede startet!")
     }
 }
