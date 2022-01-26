@@ -1,6 +1,6 @@
 package com.gitlab.jactor.blackjack.model
 
-enum class Suit(private val character: Char) {
+enum class Suit(internal val character: Char) {
     HEARTS('H'), DIAMONDS('D'), SPADES('S'), CLUBS('C');
 
     companion object {
