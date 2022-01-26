@@ -24,7 +24,6 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
         val winner = when(fetchResult(dealerScore, playerScore)) {
             Result.PLAYER -> nick
             Result.DEALER -> "Magnus"
-            Result.DRAW -> "Ingen klar vinner!"
         }
 
         return ResultDto(
@@ -45,12 +44,20 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
     }
 
     private fun fetchResult(dealerScore: Int, playerScore: Int): Result {
-        return Result.DRAW
+        if (playerScore == 21) {
+            return Result.PLAYER
+        }
+
+        if (dealerScore == 21) {
+            return Result.DEALER
+        }
+
+        return Result.PLAYER
     }
 
     companion object {
         private val VALUED_TEN = setOf(Face.JACK, Face.QUEEN, Face.KING)
     }
 
-    private enum class Result { PLAYER, DEALER, DRAW }
+    private enum class Result { PLAYER, DEALER }
 }

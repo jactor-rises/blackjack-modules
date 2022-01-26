@@ -35,15 +35,36 @@ internal class GameOfBlackjackTest {
 
     @ParameterizedTest
     @ValueSource(strings = ["HA,CK", "DA,SQ", "SJ,DA"]) // Hearts/Ace&Clubs/King, Diamonds/Ace&Spades/Queen, and Spades/Jack&Diamonds/Ace
-    fun `player should win when deck of cards start with cards valued at 21`(firstCardsInDeck: String) {
+    fun `player should win when dealt cards that ends with the score 21`(firstCardsInDeck: String) {
         val resultDto = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith(firstCardsInDeck.split(","))
         ).completeGame().toDto().resultat
 
         assertAll(
-            { assertThat(resultDto.playerScore).`as`("score from $firstCardsInDeck").isEqualTo(21) }
+            { assertThat(resultDto.playerScore).`as`("score from $firstCardsInDeck").isEqualTo(21) },
+            { assertThat(resultDto.winner).`as`("game winner").isEqualTo("Tor Egil") }
         )
+    }
 
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "DA,C7,HA,CK", // Player: Diamonds/Ace&Clubs/7 - Dealer: Hearts/Ace&Clubs/King
+            "H4,CK,DA,SQ", // Player: Hearts/4&Clubs/King  - Dealer: Diamonds/Ace&Spades/Queen
+            "HA,CA,SJ,DA"  // Player: Hearts/Ace&Clubs/Ace - Dealer: Spades/Jack&Diamonds/Ace
+        ]
+    )
+    fun `dealer should win when dealt cards that ends with 21 but the player does not`(firstCardsInDeck: String) {
+        val resultDto = GameOfBlackjack(
+            nick = "Tor Egil",
+            deckOfCards = aDeckOfCardsStartingWith(firstCardsInDeck.split(","))
+        ).completeGame().toDto().resultat
+
+        assertAll(
+            { assertThat(resultDto.dealerScore).`as`("dealer score from $firstCardsInDeck").isEqualTo(21) },
+            { assertThat(resultDto.playerScore).`as`("player score from $firstCardsInDeck").isNotEqualTo(21) },
+            { assertThat(resultDto.winner).`as`("game winner").isEqualTo("Magnus") }
+        )
     }
 }
