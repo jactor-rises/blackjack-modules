@@ -23,3 +23,9 @@ data class ResultDto(
     @Schema(description = "Delers (aka. Magnus') poengsum") var dealerScore: Int
 
 )
+
+@Schema(description = "Velkommen til spill melding")
+data class WelcomeDto(
+    @Schema(description = "Melding: Velkommen") var message: String,
+    @Schema(description = "Hvordan spille blackjack") var howTo: String
+)

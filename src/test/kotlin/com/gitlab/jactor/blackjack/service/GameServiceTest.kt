@@ -13,20 +13,20 @@ import org.springframework.boot.test.mock.mockito.MockBean
 
 @SpringBootTest
 @DisplayName("A com.gitlab.jactor.blackjack.service.BlackjackService")
-internal class BlackjackServiceTest {
+internal class GameServiceTest {
 
     @MockBean
     private lateinit var deckOfCardsConsumerMock: DeckOfCardsConsumer
 
     @Autowired
-    private lateinit var blackjackService: BlackjackService
+    private lateinit var gameService: GameService
 
     @Test
     fun `should start GameOfBlackjack`() {
         val deckOfCards = aFullDeckOfCards()
         whenever(deckOfCardsConsumerMock.fetch()).thenReturn(deckOfCards)
 
-        val gameOfBlackjack = blackjackService.createNewGame("jactor")
+        val gameOfBlackjack = gameService.createNewGame("jactor")
 
         assertAll(
             { assertThat(gameOfBlackjack.deckOfCards).`as`("deckOfCards").isEqualTo(deckOfCards) },

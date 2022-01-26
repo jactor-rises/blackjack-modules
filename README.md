@@ -39,6 +39,6 @@ java -jar build/lib/blackjack-<version>-SNAPSHOT.jar
 * Front-end er ikke implementert og et spill kjøres via swagger
     1) start applikasjonen (se avsnittet for starte applikasjonen)
     2) gå til swagger-grensesnitt:  [http://localhost:8080/blackjack/swagger-ui/index.html](http://localhost:8080/blackjack/swagger-ui/index.html)
-    3) Åpne endepunktet `/ny/{nick}` (`POST`) og trykk på knappen `Try It Out`
+    3) Åpne endepunktet `/play/{nick}` (`POST`) og trykk på knappen `Try It Out`
        * Fyll ut feltet `nick` som er kallenavnet til spilleren (kan ikke inneholde mellomrom)
        * Trykk på knappen `Execute`. Resultatet blir vist som json under `Server response`, samt at resultatet blir printet til konsoll

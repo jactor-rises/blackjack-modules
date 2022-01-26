@@ -5,6 +5,6 @@ import com.gitlab.jactor.blackjack.model.GameOfBlackjack
 import org.springframework.stereotype.Service
 
 @Service
-class BlackjackService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
+class GameService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
     fun createNewGame(nick: String) = GameOfBlackjack(deckOfCards = deckOfCardsConsumer.fetch(), nick = nick)
 }
