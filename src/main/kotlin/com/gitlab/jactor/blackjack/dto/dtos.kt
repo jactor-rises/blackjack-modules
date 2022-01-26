@@ -29,3 +29,8 @@ data class WelcomeDto(
     @Schema(description = "Melding: Velkommen") var message: String,
     @Schema(description = "Hvordan spille blackjack") var howTo: String
 )
+
+@Schema(description = "Verdien til en url")
+data class UrlDto(
+    @Schema(description = "Verdien til en url") var value: String = ""
+)

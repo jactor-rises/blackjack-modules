@@ -9,4 +9,4 @@ ${AnsiColor.YELLOW}
                                                      888
                                                  .o. 88P
                                                  `Y888P
-${AnsiColor.BRIGHT_WHITE}
+${AnsiColor.DEFAULT}
