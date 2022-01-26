@@ -1,10 +1,10 @@
 package com.gitlab.jactor.blackjack.model
 
-data class DeckOfCards(private val deck: List<Card>, private val mutableDeck: MutableList<Card> = ArrayList(deck)) {
+data class DeckOfCards(internal val deck: MutableList<Card>) {
     fun take(noOfCards: Int): MutableList<Card> {
-        val slice = mutableDeck.slice(0 until noOfCards)
-        mutableDeck.removeAll(slice)
+        val slice = deck.slice(0 until noOfCards)
+        deck.removeAll(slice)
 
-        return ArrayList(slice)
+        return slice as MutableList<Card>
     }
 }
