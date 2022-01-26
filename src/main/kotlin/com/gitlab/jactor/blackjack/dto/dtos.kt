@@ -34,3 +34,9 @@ data class WelcomeDto(
 data class UrlDto(
     @Schema(description = "Verdien til en url") var value: String = ""
 )
+
+@Schema(description = "Beskrivelse av en feil som oppstår")
+data class ErrorDto(
+    @Schema(description = "Feilmelding") var message: String = "",
+    @Schema(description = "Hva som rapporterer feilmeldingen") var provider: String = ""
+)
