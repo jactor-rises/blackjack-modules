@@ -89,7 +89,11 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
     }
 
     override fun toString(): String {
-        return "$nick: $playerScore/$playerHand vs dealer: $dealerScore/$dealerHand"
+        return "$nick: $playerScore/${
+            playerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
+        } vs dealer: $dealerScore/${
+            dealerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
+        }"
     }
 
     private enum class Result { PLAYER, DEALER }
