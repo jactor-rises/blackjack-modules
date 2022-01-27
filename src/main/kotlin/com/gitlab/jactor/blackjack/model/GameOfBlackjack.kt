@@ -6,8 +6,14 @@ import com.gitlab.jactor.blackjack.dto.ResultDto
 data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
     internal val playerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
     internal val dealerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
+
     private val dealerScore: Int get() = dealerHand.sumOf { fetchValue(it.face) }
     private val playerScore: Int get() = playerHand.sumOf { fetchValue(it.face) }
+    private val winner: String
+        get() = when (fetchResult()) {
+            Result.PLAYER -> nick
+            Result.DEALER -> "Magnus"
+        }
 
     fun completeGame(): GameOfBlackjack {
         if (dealerScore > 21) { // will happen if the dealer get 2 aces
@@ -18,9 +24,22 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
             playerHand.add(deckOfCards.takeCard())
         }
 
-        while (playerScore < 22 && playerScore >= dealerScore) {
+        while (playerScore < 21 && playerScore >= dealerScore) {
             dealerHand.add(deckOfCards.takeCard())
         }
+
+        return this
+    }
+
+    fun logResult(): GameOfBlackjack {
+        println(
+            """
+                Vinner: $nick
+                
+                Magnus | $dealerScore | ${dealerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")}
+                $nick | $playerScore | ${playerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")}
+            """.trimIndent()
+        )
 
         return this
     }
@@ -29,21 +48,12 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
         nickOfPlayer = nick,
         dealerHand = dealerHand.map { it.toDto() },
         playerHand = playerHand.map { it.toDto() },
-        resultat = initResultDto()
-    )
-
-    private fun initResultDto(): ResultDto {
-        val winner = when (fetchResult()) {
-            Result.PLAYER -> nick
-            Result.DEALER -> "Magnus"
-        }
-
-        return ResultDto(
+        resultat = ResultDto(
             winner = winner,
             dealerScore = dealerScore,
             playerScore = playerScore
         )
-    }
+    )
 
     private fun fetchValue(face: Face): Int {
         if (Face.ACE == face) {

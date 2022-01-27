@@ -118,7 +118,6 @@ internal class GameOfBlackjackTest {
         ]
     )
     fun `should take a card for the dealer as long as total score is less or equal to the players score`(firstCardsInDeck: String) {
-        // player cards: 9 + 3 + 2 + 3 + 2 is final score as 17
         val gameOfBlackjack = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith(firstCardsInDeck.split(","))
@@ -127,6 +126,21 @@ internal class GameOfBlackjackTest {
 
         assertAll(
             { assertThat(resultDto.playerScore).`as`("player score ($gameOfBlackjack)").isEqualTo(17) },
+            { assertThat(resultDto.winner).`as`("winner ($gameOfBlackjack)").isEqualTo("Magnus") }
+        )
+    }
+
+    @Test
+    fun `should have dealer (Magnus) as winner`() {
+        val gameOfBlackjack = GameOfBlackjack(
+            nick = "Tor Egil",
+            deckOfCards = aDeckOfCardsStartingWith("D5,DK,DA,D8,SA".split(","))
+        ).completeGame().logResult()
+        val resultDto = gameOfBlackjack.toDto().resultat
+
+        assertAll(
+            { assertThat(resultDto.dealerScore).`as`("dealer score ($gameOfBlackjack)").isEqualTo(19) },
+            { assertThat(resultDto.playerScore).`as`("player score ($gameOfBlackjack)").isEqualTo(26) },
             { assertThat(resultDto.winner).`as`("winner ($gameOfBlackjack)").isEqualTo("Magnus") }
         )
     }

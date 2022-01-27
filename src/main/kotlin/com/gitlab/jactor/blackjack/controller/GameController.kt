@@ -27,6 +27,6 @@ class GameController(private val gameService: GameService) {
     @Operation(description = "Utfører et spill av blackjack for et kallenavn")
     @PostMapping("/play/{nick}")
     fun play(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto> {
-        return ResponseEntity.ok(gameService.createNewGame(nick).completeGame().toDto())
+        return ResponseEntity.ok(gameService.createNewGame(nick).completeGame().logResult().toDto())
     }
 }
