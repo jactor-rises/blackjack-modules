@@ -40,7 +40,6 @@ java -jar build/lib/blackjack-<version>-SNAPSHOT.jar
 ```
 
 ### Hvordan & Forutsetninger
-* Hvis totalsummen til spiller og "Magnus" er like, så vinner spilleren
 * Front-end er ikke implementert og et spill kjøres via swagger
     1) start applikasjonen (se avsnittet for starte applikasjonen)
     2) gå til swagger-grensesnitt:  [http://localhost:8080/blackjack/swagger-ui/index.html](http://localhost:8080/blackjack/swagger-ui/index.html)
