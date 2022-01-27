@@ -55,9 +55,12 @@ Høyreklikk på prosjektet `blackjack` og velg `Run 'Tests in 'blackjack''`
 #### Bruk gradle
 Linux/Unix:
 ```
-./gradlew test --tests "*"
+./gradlew clean test --tests "*"
 ```
 Windows:
 ```
-gradlew test --tests "*"
+gradlew clean test --tests "*"
 ```
+
+**NB!**
+`clean`-task is necessary to ensure recompile and running of tests (gradle will cache and optimise to avoid repeating work).

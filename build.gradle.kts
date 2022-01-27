@@ -31,7 +31,7 @@ dependencies {
     // dependencies
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.4")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.5")
 
     // test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
