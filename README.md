@@ -32,9 +32,10 @@ Bruk gradle script direkte på rotkatalogen til prosjektet:
 ```
 ./gradlew bootRun
 ```
-Kommandoen skrevet er for Linux/Unix brukere, for Windows så brukes `gradlew.bat` altså `gradles bootRun`
+Kommandoen skrevet er for Linux/Unix brukere, for Windows så brukes `gradlew.bat` altså `gradlew bootRun`
 
-... eller gjør et gradle-bygg (`./gradlew build`), for deretter å kjøre jar-modulen
+... 
+eller gjør et gradle-bygg (`./gradlew build`), for deretter å kjøre jar-modulen
 ```
 java -jar build/lib/blackjack-<version>-SNAPSHOT.jar
 ```
