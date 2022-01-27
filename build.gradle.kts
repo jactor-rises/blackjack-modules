@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "2.6.3"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("com.github.ben-manes.versions") version "0.41.0"
 
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.spring") version "1.6.10"
@@ -60,39 +61,44 @@ tasks.test {
         info.exceptionFormat = lifecycle.exceptionFormat
     }
 
-    val failedTests = mutableListOf<TestDescriptor>()
-    val skippedTests = mutableListOf<TestDescriptor>()
-
     // Se https://github.com/gradle/kotlin-dsl/issues/836
-    addTestListener(object : TestListener {
-        override fun beforeSuite(suite: TestDescriptor) {}
-        override fun beforeTest(testDescriptor: TestDescriptor) {}
-        override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
-            when (result.resultType) {
-                TestResult.ResultType.FAILURE -> failedTests.add(testDescriptor)
-                TestResult.ResultType.SKIPPED -> skippedTests.add(testDescriptor)
-                else -> Unit
-            }
+    addTestListener(BlackjackTestListener())
+}
+
+class BlackjackTestListener : TestListener {
+    private val failedTests = mutableListOf<TestDescriptor>()
+    private val skippedTests = mutableListOf<TestDescriptor>()
+
+    override fun beforeSuite(suite: TestDescriptor) {}
+    override fun beforeTest(testDescriptor: TestDescriptor) {}
+    override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
+        when (result.resultType) {
+            TestResult.ResultType.FAILURE -> failedTests.add(testDescriptor)
+            TestResult.ResultType.SKIPPED -> skippedTests.add(testDescriptor)
+            else -> Unit
         }
+    }
 
-        override fun afterSuite(suite: TestDescriptor, result: TestResult) {
-            if (suite.parent == null) { // root suite
-                logger.lifecycle("----")
-                logger.lifecycle("Test result: ${result.resultType}")
-                logger.lifecycle(
-                    "Test summary: ${result.testCount} tests, ${result.successfulTestCount} succeeded, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped"
-                )
+    override fun afterSuite(suite: TestDescriptor, result: TestResult) {
+        if (suite.parent == null) { // root suite
+            logger.lifecycle("")
+            logger.lifecycle("/=======================================")
+            logger.lifecycle("| Test result: ${result.resultType}")
+            logger.lifecycle("|=======================================")
 
-                failedTests.takeIf { it.isNotEmpty() }?.prefixedSummary("\tFailed Tests")
-                skippedTests.takeIf { it.isNotEmpty() }?.prefixedSummary("\tSkipped Tests:")
-            }
+            logger.lifecycle(
+                "| Test summary: ${result.testCount} tests, ${result.successfulTestCount} succeeded, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped"
+            )
+
+            failedTests.takeIf { it.isNotEmpty() }?.prefixedSummary("\tFailed Tests")
+            skippedTests.takeIf { it.isNotEmpty() }?.prefixedSummary("\tSkipped Tests:")
         }
+    }
 
-        private infix fun List<TestDescriptor>.prefixedSummary(subject: String) {
-            logger.lifecycle(subject)
-            forEach { test -> logger.lifecycle("\t\t${test.displayName()}") }
-        }
+    private infix fun List<TestDescriptor>.prefixedSummary(subject: String) {
+        logger.lifecycle(subject)
+        forEach { test -> logger.lifecycle("\t\t${test.displayName()}") }
+    }
 
-        private fun TestDescriptor.displayName() = parent?.let { "${it.name} - $name" } ?: name
-    })
+    private fun TestDescriptor.displayName() = parent?.let { "${it.name} - $name" } ?: name
 }
