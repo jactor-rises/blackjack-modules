@@ -20,8 +20,7 @@ data class CardDto(
 data class ResultDto(
     @Schema(description = "Vinneren av spillet") var winner: String,
     @Schema(description = "Spillerens poengsum") var playerScore: Int,
-    @Schema(description = "Delers (aka. Magnus') poengsum") var dealerScore: Int
-
+    @Schema(description = "Dalerens (aka. Magnus') poengsum") var dealerScore: Int
 )
 
 @Schema(description = "Velkommen til spill melding")
