@@ -40,13 +40,13 @@ eller gjør et gradle-bygg (`./gradlew build`), for deretter å kjøre jar-modul
 java -jar build/lib/blackjack-<version>-SNAPSHOT.jar
 ```
 
-### Hvordan & Forutsetninger
-* Front-end er ikke implementert og et spill kjøres via swagger
-    1) start applikasjonen (se avsnittet for starte applikasjonen)
-    2) gå til swagger-grensesnitt:  [http://localhost:8080/blackjack/swagger-ui/index.html](http://localhost:8080/blackjack/swagger-ui/index.html)
-    3) Åpne endepunktet `/play/{nick}` (`POST`) og trykk på knappen `Try It Out`
-       * Fyll ut feltet `nick` som er kallenavnet til spilleren (kan ikke inneholde mellomrom)
-       * Trykk på knappen `Execute`. Resultatet blir vist som json under `Server response`, samt at resultatet blir printet til konsoll
+### Hvordan
+Front-end er ikke implementert og et spill kjøres via swagger
+1) start applikasjonen (se avsnittet for starte applikasjonen)
+2) gå til swagger-grensesnitt:  [http://localhost:8080/blackjack/swagger-ui/index.html](http://localhost:8080/blackjack/swagger-ui/index.html)
+3) Åpne endepunktet `/play/{nick}` (`POST`) og trykk på knappen `Try It Out`
+   * Fyll ut feltet `nick` som er kallenavnet til spilleren (kan ikke inneholde mellomrom)
+   * Trykk på knappen `Execute`. Resultatet blir vist som json under `Server response`, samt at resultatet blir printet til konsoll
 
 ### Kjøring av enhetstester
 
@@ -64,4 +64,4 @@ gradlew clean test --tests "*"
 ```
 
 **NB!**
-`clean`-task is necessary to ensure recompile and running of tests (gradle will cache and optimise to avoid repeating work).
+`clean`-task er nødvendig for å sørge for at rekompilering og kjøring av tester blir utført (som standard vil gradle cache og optimalisere).
