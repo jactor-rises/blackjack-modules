@@ -144,4 +144,19 @@ internal class GameOfBlackjackTest {
             { assertThat(resultDto.winner).`as`("winner ($gameOfBlackjack)").isEqualTo("Magnus") }
         )
     }
+
+    @Test
+    fun `should count aces as one when manual game and total value of cards are greater than 21`() {
+        // DA, SA CA og HA (ruter, spar, kløver og hjerter ess) skal ha sum 14
+        val gameOfBlackjack = GameOfBlackjack(
+            nick = "Tor Egil",
+            deckOfCards = aDeckOfCardsStartingWith("DA,SA,DJ,DK,CA,HA".split(",")),
+            isAutomaticGame = false
+        ).play(Action(isDrawNewCard = true)).play(Action(isDrawNewCard = true))
+        val resultDto = gameOfBlackjack.toDto().resultat
+
+        assertAll(
+            { assertThat(resultDto.playerScore).`as`("player score (${gameOfBlackjack.playerHand})").isEqualTo(14) },
+        )
+    }
 }
