@@ -1,6 +1,7 @@
 package com.gitlab.jactor.blackjack.service
 
 import com.gitlab.jactor.blackjack.consumer.DeckOfCardsConsumer
+import com.gitlab.jactor.blackjack.model.Action
 import com.gitlab.jactor.blackjack.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.model.StartedGameOfBlackjack
 import org.springframework.stereotype.Service
@@ -13,5 +14,10 @@ class GameService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
         val gameOfBlackjack = gameForNick.computeIfAbsent(nick) { GameOfBlackjack(deckOfCards = deckOfCardsConsumer.fetch(), nick) }
 
         return gameOfBlackjack.asStart()
+    }
+
+    fun running(nick: String, action: Action): GameOfBlackjack {
+        val gameOfBlackjack = gameForNick[nick]
+        return gameOfBlackjack?.play(action) ?: throw IllegalArgumentException("Ukjent spiller: $nick")
     }
 }

@@ -81,7 +81,7 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
             return Result.DEALER
         }
 
-        if (dealerFinalScore < 21 && dealerFinalScore > playerFinalScore) {
+        if (dealerFinalScore in (playerFinalScore + 1)..20) {
             return Result.DEALER
         }
 
@@ -97,6 +97,13 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
     }
 
     fun asStart() = StartedGameOfBlackjack(playerHand = playerHand)
+    fun play(action: Action): GameOfBlackjack {
+        if (action.isDrawNewCard) {
+            playerHand.add(deckOfCards.takeCard())
+        }
+
+        return this
+    }
 
     private enum class Result { PLAYER, DEALER }
 }
