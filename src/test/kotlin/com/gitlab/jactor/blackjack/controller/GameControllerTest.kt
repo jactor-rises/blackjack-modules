@@ -25,8 +25,16 @@ internal class GameControllerTest {
 
         assertAll(
             { assertThat(response.statusCode).`as`("status code").isEqualTo(HttpStatus.OK) },
-            { assertThat(response.body?.howTo).`as`("how to").isEqualTo("Gjør en post til endepunkt '/blackjack/play/{kallenavn}'") },
             { assertThat(response.body?.message).`as`("welcome message").isEqualTo("Velkommen til en runde med Blackjack") },
+            {
+                assertThat(response.body?.howTo).`as`("how to").isEqualTo(
+                    """
+                    * Gjør en post til endepunkt '/play/{kallenavn} for å utføre et helaoutmatisk spill (Ace = 11 poeng)
+                    * Gjør en post til endepunkt '/start/{kallenav} f0r å starte et spill (Ace er 11 eller 1 poeng)
+                      * Videre spill på samme kallenavn er post til endepunkt '/running/{kallenavn}
+                    """.trimIndent()
+                )
+            }
         )
     }
 

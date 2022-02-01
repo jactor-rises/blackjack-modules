@@ -39,3 +39,7 @@ data class ErrorDto(
     @Schema(description = "Feilmelding") var message: String = "",
     @Schema(description = "Hva som rapporterer feilmeldingen") var provider: String = ""
 )
+
+data class StartedGameOfBlackjackDto(
+    @Schema(description = "Spillerens kort") var playerHand: List<CardDto> = emptyList()
+)

@@ -1,6 +1,7 @@
 package com.gitlab.jactor.blackjack.controller
 
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
+import com.gitlab.jactor.blackjack.dto.StartedGameOfBlackjackDto
 import com.gitlab.jactor.blackjack.dto.WelcomeDto
 import com.gitlab.jactor.blackjack.service.GameService
 import io.swagger.v3.oas.annotations.Operation
@@ -19,7 +20,11 @@ class GameController(private val gameService: GameService) {
         return ResponseEntity.ok(
             WelcomeDto(
                 message = "Velkommen til en runde med Blackjack",
-                howTo = "Gjør en post til endepunkt '/blackjack/play/{kallenavn}'"
+                howTo = """
+                    * Gjør en post til endepunkt '/play/{kallenavn} for å utføre et helaoutmatisk spill (Ace = 11 poeng)
+                    * Gjør en post til endepunkt '/start/{kallenav} f0r å starte et spill (Ace er 11 eller 1 poeng)
+                      * Videre spill på samme kallenavn er post til endepunkt '/running/{kallenavn}
+                    """.trimIndent()
             )
         )
     }
@@ -28,5 +33,11 @@ class GameController(private val gameService: GameService) {
     @PostMapping("/play/{nick}")
     fun play(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto> {
         return ResponseEntity.ok(gameService.createNewGame(nick).completeGame().logResult().toDto())
+    }
+
+    @Operation(description = "Starter et spill av blackjack for et kallenavn")
+    @PostMapping("/start/{nick}")
+    fun start(@PathVariable nick: String): ResponseEntity<StartedGameOfBlackjackDto> {
+        return ResponseEntity.ok(gameService.startGame(nick).toDto())
     }
 }

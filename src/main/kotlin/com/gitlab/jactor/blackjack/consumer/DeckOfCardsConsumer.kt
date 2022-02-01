@@ -9,7 +9,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 
-
 @Component
 class DeckOfCardsConsumer(private val restTemplate: RestTemplate) {
     fun fetch(): DeckOfCards {
@@ -20,6 +19,6 @@ class DeckOfCardsConsumer(private val restTemplate: RestTemplate) {
     companion object {
         private fun typereferansenErListeMedKort(): ParameterizedTypeReference<List<CardDto>> {
             return object : ParameterizedTypeReference<List<CardDto>>() {}
-    }
+        }
     }
 }

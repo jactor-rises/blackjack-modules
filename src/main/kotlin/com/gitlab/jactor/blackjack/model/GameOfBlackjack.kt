@@ -24,7 +24,7 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
             playerHand.add(deckOfCards.takeCard())
         }
 
-        while (playerScore < 21 && playerScore >= dealerScore) {
+        while (playerScore in dealerScore..20) {
             dealerHand.add(deckOfCards.takeCard())
         }
 
@@ -58,7 +58,7 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
     private fun fetchValue(face: Face): Int {
         if (Face.ACE == face) {
             return 11
-        } else if (face.value.matches(Regex("\\d+"))) {
+        } else if (face.value.matches("\\d+".toRegex())) {
             return face.value.toInt()
         }
 
@@ -95,6 +95,8 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String) {
             dealerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
         }"
     }
+
+    fun asStart() = StartedGameOfBlackjack(playerHand = playerHand)
 
     private enum class Result { PLAYER, DEALER }
 }
