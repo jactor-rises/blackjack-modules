@@ -17,7 +17,7 @@ fun main() = application {
         Window(
             onCloseRequest = { exitApplication() },
             title = WHAT_NAME,
-            state = rememberWindowState(width = 600.dp, height = 300.dp)
+            state = rememberWindowState(width = 400.dp, height = 175.dp)
         ) {
             playerName = composePlayerNameWindow()
         }
