@@ -4,7 +4,6 @@ import com.gitlab.jactor.blackjack.consumer.DeckOfCardsConsumer
 import com.gitlab.jactor.blackjack.dto.ActionDto
 import com.gitlab.jactor.blackjack.dto.CardDto
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
-import com.gitlab.jactor.blackjack.dto.StartedGameOfBlackjackDto
 import com.gitlab.jactor.blackjack.model.TestUtil.aDeckOfCardsStartingWith
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -61,7 +60,7 @@ internal class GameControllerWithMockedConsumerTest {
         )
 
         val jactor = "jactor"
-        val startResponse = testRestTemplate.exchange("/start/$jactor", HttpMethod.POST, null, StartedGameOfBlackjackDto::class.java)
+        val startResponse = testRestTemplate.exchange("/start/$jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
         val startedGameOfBlackjackDto = startResponse.body
 
         val runResponse = testRestTemplate.exchange(
@@ -71,7 +70,7 @@ internal class GameControllerWithMockedConsumerTest {
             GameOfBlackjackDto::class.java
         )
 
-        val gameOfBlackjackDto = runResponse.body
+        val runningGameOfBlackjackDto = runResponse.body
 
         assertAll(
             { assertThat(startResponse.statusCode).`as`("start status code").isEqualTo(HttpStatus.OK) },
@@ -82,7 +81,7 @@ internal class GameControllerWithMockedConsumerTest {
             },
             { assertThat(runResponse.statusCode).`as`("running status code").isEqualTo(HttpStatus.OK) },
             {
-                assertThat(gameOfBlackjackDto?.playerHand).`as`("running player hand").isEqualTo(
+                assertThat(runningGameOfBlackjackDto?.playerHand).`as`("running player hand").isEqualTo(
                     listOf(CardDto(suit = "SPADES", value = "2"), CardDto(suit = "DIAMONDS", value = "3"), CardDto(suit = "SPADES", value = "A"))
                 )
             }

@@ -42,11 +42,6 @@ data class ErrorDto(
     @Schema(description = "Hva som rapporterer feilmeldingen") var provider: String = ""
 )
 
-@Schema(description = "Starten av et spill med blackjack")
-data class StartedGameOfBlackjackDto(
-    @Schema(description = "Spillerens kort") var playerHand: List<CardDto> = emptyList()
-)
-
 @Schema(description = "Handlingen til en spiller av blackjack")
 data class ActionDto(
     @Schema(description = "Skal trekke nytt kort eller ikke") var isDrawNewCard: Boolean = false

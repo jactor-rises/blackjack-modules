@@ -36,8 +36,8 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
             """
                 Vinner: $nick
                 
-                Magnus | $dealerScore | ${dealerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")}
-                $nick | $playerScore | ${playerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")}
+                Magnus | $dealerScore | ${dealerHandAsString()}
+                $nick | $playerScore | ${playerHandAsString()}
             """.trimIndent()
         )
 
@@ -125,12 +125,11 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
     }
 
     override fun toString(): String {
-        return "$nick: $playerScore/${
-            playerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
-        } vs dealer: $dealerScore/${
-            dealerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
-        }"
+        return "$nick: $playerScore/${playerHandAsString()} vs dealer: $dealerScore/${dealerHandAsString()}"
     }
+
+    private fun playerHandAsString() = playerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
+    private fun dealerHandAsString() = dealerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
 
     enum class State { PLAYER_WINS, DEALER_WINS, NOT_CONCLUDED }
 }
