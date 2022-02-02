@@ -17,7 +17,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.test.annotation.DirtiesContext
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("A com.gitlab.jactor.blackjack.controller.GameController")
@@ -30,7 +29,6 @@ internal class GameControllerWithMockedConsumerTest {
     private lateinit var testRestTemplate: TestRestTemplate
 
     @Test
-    @DirtiesContext
     fun `should start a game of blackjack for player`() {
         whenever(deckOfCardsConsumer.fetch()).thenReturn(
             aDeckOfCardsStartingWith("SA,DK".split(","))
@@ -50,7 +48,6 @@ internal class GameControllerWithMockedConsumerTest {
     }
 
     @Test
-    @DirtiesContext
     fun `should draw a card for a started game on a player`() {
         // Spiller trekker kortene spar to og ruter 3
         // "Magnus" får kortene spar 10 og ruter 4
@@ -86,5 +83,34 @@ internal class GameControllerWithMockedConsumerTest {
                 )
             }
         )
+    }
+
+    @Test
+    fun `should stop manual game`() {
+        whenever(deckOfCardsConsumer.fetch()).thenReturn(
+            aDeckOfCardsStartingWith("S2,D3,S10,D4,S2".split(","))
+        )
+
+        val jactor = "jactor"
+        val startResponse = testRestTemplate.exchange("/start/$jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+        val startedGameOfBlackjackDto = startResponse.body
+        val stopResponse = testRestTemplate.exchange("/stop/$jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+        val stoppedGameOfBlackjackDto = stopResponse.body
+
+        assertAll(
+            "startResponse",
+            { assertThat(startResponse.statusCode).`as`("start status code").isEqualTo(HttpStatus.OK) },
+            { assertThat(startedGameOfBlackjackDto?.status?.isGameCompleted).`as`("$startedGameOfBlackjackDto should not be completed").isFalse },
+        )
+
+        assertAll(
+            "stopResponse",
+            { assertThat(stopResponse.statusCode).`as`("stop status code").isEqualTo(HttpStatus.OK) },
+            { assertThat(stoppedGameOfBlackjackDto?.status?.isGameCompleted).`as`("$startedGameOfBlackjackDto should be completed").isTrue }
+        )
+
+        val stopAgainResponse = testRestTemplate.exchange("/stop/$jactor", HttpMethod.POST, null, Any::class.java)
+
+        assertThat(stopAgainResponse.statusCode).`as`("stopping already stopped game").isEqualTo(HttpStatus.BAD_REQUEST)
     }
 }

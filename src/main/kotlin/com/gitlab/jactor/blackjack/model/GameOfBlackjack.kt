@@ -16,8 +16,10 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
             return this
         }
 
-        while (playerScore < Value.PLAYER_MINIMUM_17) {
-            playerHand.add(deckOfCards.takeCard())
+        if (isAutomaticGame) {
+            while (playerScore < Value.PLAYER_MINIMUM_17) {
+                playerHand.add(deckOfCards.takeCard())
+            }
         }
 
         val playerFinalScore = playerScore

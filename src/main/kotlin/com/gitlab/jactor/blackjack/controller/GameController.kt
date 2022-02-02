@@ -6,6 +6,8 @@ import com.gitlab.jactor.blackjack.dto.WelcomeDto
 import com.gitlab.jactor.blackjack.model.Action
 import com.gitlab.jactor.blackjack.service.GameService
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,7 +27,8 @@ class GameController(private val gameService: GameService) {
                 howTo = """
                     * Gjør en post til endepunkt '/play/{kallenavn} for å utføre et helautmatisk spill (Ace = 11 poeng)
                     * Gjør en post til endepunkt '/start/{kallenavn} for å starte et spill (Ace er 11 eller 1 poeng)
-                      * Videre spill på samme kallenavn er post til endepunkt '/running/{kallenavn}'
+                      * Videre spill på samme kallenavn ved post til endepunkt '/running/{kallenavn}'
+                      * Avslutt et pågående spill for et kallenavn ved post til endepunkt '/stop/{kallenavn}'
                     """.trimIndent()
             )
         )
@@ -44,8 +47,16 @@ class GameController(private val gameService: GameService) {
     }
 
     @Operation(description = "Fortsetter et spill av blackjack for et kallenavn")
+    @ApiResponses(ApiResponse(responseCode = "400", description = "Det finnes ikke et spill for oppgitt spiller"))
     @PostMapping("/running/{nick}")
     fun running(@PathVariable nick: String, @RequestBody action: ActionDto): ResponseEntity<GameOfBlackjackDto?> {
         return ResponseEntity.ok(gameService.running(nick, Action(action)).toDto())
+    }
+
+    @Operation(description = "Avslutter et spill av blackjack for et kallenavn")
+    @ApiResponses(ApiResponse(responseCode = "400", description = "Det finnes ikke et spill for oppgitt spiller"))
+    @PostMapping("/stop/{nick}")
+    fun stop(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto?> {
+        return ResponseEntity.ok(gameService.stop(nick).toDto())
     }
 }

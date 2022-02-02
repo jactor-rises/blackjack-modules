@@ -30,4 +30,10 @@ class GameService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
 
         return gameOfBlackjack
     }
+
+    fun stop(nick: String): GameOfBlackjack {
+        val gameOfBlackjack = gameForNick[nick] ?: throw UnknownPlayerException(nick)
+        gameForNick.remove(nick)
+        return gameOfBlackjack.completeGame()
+    }
 }
