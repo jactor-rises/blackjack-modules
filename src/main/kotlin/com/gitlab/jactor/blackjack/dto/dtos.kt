@@ -20,7 +20,8 @@ data class CardDto(
 data class StatusDto(
     @Schema(description = "Status på spillet") var status: GameStatus,
     @Schema(description = "Spillerens poengsum") var playerScore: Int,
-    @Schema(description = "Dalerens (aka. Magnus') poengsum") var dealerScore: Int
+    @Schema(description = "Delerens (aka. Magnus') poengsum") var dealerScore: Int,
+    @Schema(description = "Om spillet er automatisk ferdig") var isGameCompleted: Boolean
 )
 
 enum class GameStatus { PLAYER_WINS, DEALER_WINS, NOT_CONCLUDED }

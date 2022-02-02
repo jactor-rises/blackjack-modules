@@ -161,4 +161,47 @@ internal class GameOfBlackjackTest {
             { assertThat(statusDto.playerScore).`as`("player score (${gameOfBlackjack.playerHand})").isEqualTo(14) },
         )
     }
+
+    @Test
+    fun `should automatc complete game when player gets blackjack`() {
+        val gameOfBlackjack = GameOfBlackjack(
+            nick = "Tor Egil",
+            deckOfCards = aDeckOfCardsStartingWith("D10,SA".split(",")),
+            isAutomaticGame = false
+        )
+        val statusDto = gameOfBlackjack.toDto().status
+
+        assertThat(statusDto.isGameCompleted).`as`("$gameOfBlackjack should be complemeted automatic").isEqualTo(true)
+    }
+
+    @Test
+    fun `should automatc complete game when dealer gets blackjack`() {
+        val gameOfBlackjack = GameOfBlackjack(
+            nick = "Tor Egil",
+            deckOfCards = aDeckOfCardsStartingWith("D9,C8,HJ,HA".split(",")),
+            isAutomaticGame = false
+        )
+        val statusDto = gameOfBlackjack.toDto().status
+
+        assertThat(statusDto.isGameCompleted).`as`("$gameOfBlackjack should be complemeted automatic").isEqualTo(true)
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "D10,SK,HQ,C5,D6", // Player: 10, K, 6 (26) - Player busted
+            "DK,C7,H10,H5,D7"  // Dealer: 10, 5, 7 (22) - Dealer busted (player 17)
+        ]
+    )
+    fun `should automatic close game when dealer or player get blackjack or get busted`(firstCardsInDeck: String) {
+        val gameOfBlackjack = GameOfBlackjack(
+            nick = "Tor Egil",
+            deckOfCards = aDeckOfCardsStartingWith(firstCardsInDeck.split(",")),
+            isAutomaticGame = false
+        ).completeGame()
+
+        val statusDto = gameOfBlackjack.toDto().status
+
+        assertThat(statusDto.isGameCompleted).`as`("$gameOfBlackjack should be complemeted automatic").isEqualTo(true)
+    }
 }

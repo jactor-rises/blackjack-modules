@@ -51,7 +51,8 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         status = StatusDto(
             status = GameStatus.valueOf(fetchState().name),
             dealerScore = dealerScore,
-            playerScore = playerScore
+            playerScore = playerScore,
+            isGameCompleted = isGameCompleted()
         )
     )
 
@@ -87,7 +88,7 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         var totalSum = sumOfCardsNotAces
 
         listOfAces.forEach {
-            totalSum += fetchValue(face = it.face, isAceFullScore = (totalSum + Value.ACE_FULL_11) < Value.BLACKJACK_21)
+            totalSum += fetchValue(face = it.face, isAceFullScore = (totalSum + Value.ACE_FULL_11) <= Value.BLACKJACK_21)
         }
 
         return totalSum
@@ -122,6 +123,10 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         }
 
         return this
+    }
+
+    private fun isGameCompleted(): Boolean {
+        return playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21
     }
 
     override fun toString(): String {
