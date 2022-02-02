@@ -18,10 +18,11 @@ class BlackjackResponseEntityExceptionHandler : ResponseEntityExceptionHandler()
     fun handleHttClientErrorException(httpClientErrorException: HttpClientErrorException): ResponseEntity<*>? {
         val exSimpleName = httpClientErrorException::class.simpleName
         val origin = fetchInternalStackOrFirstElement(httpClientErrorException.stackTrace)
+        val message = "$exSimpleName: ${httpClientErrorException.message}"
 
         return ResponseEntity.status(httpClientErrorException.statusCode)
-            .header(HttpHeaders.WARNING, "$exSimpleName: ${httpClientErrorException.message}")
-            .body(ErrorDto(message = "$exSimpleName: ${httpClientErrorException.message}", provider = origin))
+            .header(HttpHeaders.WARNING, message)
+            .body(ErrorDto(message = message, provider = origin))
     }
 
     @ResponseBody
@@ -29,10 +30,23 @@ class BlackjackResponseEntityExceptionHandler : ResponseEntityExceptionHandler()
     fun handleException(exception: Exception): ResponseEntity<*>? {
         val exSimpleName = exception::class.simpleName
         val origin = fetchInternalStackOrFirstElement(exception.stackTrace)
+        val message = "$exSimpleName: ${exception.message}"
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .header(HttpHeaders.WARNING, "$exSimpleName: ${exception.message}")
-            .body(ErrorDto(message = "$exSimpleName: ${exception.message}", provider = origin))
+            .header(HttpHeaders.WARNING, message)
+            .body(ErrorDto(message = message, provider = origin))
+    }
+
+    @ResponseBody
+    @ExceptionHandler
+    fun handleUnknownPlayerException(unknownPlayerException: UnknownPlayerException): ResponseEntity<*>? {
+        val exSimpleName = unknownPlayerException::class.simpleName
+        val origin = fetchInternalStackOrFirstElement(unknownPlayerException.stackTrace)
+        val message = "$exSimpleName: ${unknownPlayerException.message}"
+
+        return ResponseEntity.badRequest()
+            .header(HttpHeaders.WARNING, message)
+            .body(ErrorDto(message = message, provider = origin))
     }
 
     private fun fetchInternalStackOrFirstElement(stackTrace: Array<StackTraceElement>): String {
