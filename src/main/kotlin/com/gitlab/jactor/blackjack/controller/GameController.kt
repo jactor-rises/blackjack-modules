@@ -6,6 +6,8 @@ import com.gitlab.jactor.blackjack.dto.WelcomeDto
 import com.gitlab.jactor.blackjack.model.Action
 import com.gitlab.jactor.blackjack.service.GameService
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.ResponseEntity
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 class GameController(private val gameService: GameService) {
 
     @Operation(description = "Henter en kort melding om hvordan utføre et spill")
+    @ApiResponse(responseCode = "200", description = "Velkommen til blackjack med hvordan beskrivelse")
     @GetMapping("/")
     fun get(): ResponseEntity<WelcomeDto> {
         return ResponseEntity.ok(
@@ -35,26 +38,42 @@ class GameController(private val gameService: GameService) {
     }
 
     @Operation(description = "Utfører et spill av blackjack for et kallenavn")
+    @ApiResponse(responseCode = "200", description = "Status for automatisk spill")
     @PostMapping("/play/{nick}")
     fun play(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto> {
         return ResponseEntity.ok(gameService.createNewGame(nick).completeGame().logResult().toDto())
     }
 
     @Operation(description = "Starter et spill av blackjack for et kallenavn")
+    @ApiResponse(responseCode = "200", description = "Status for manuelt spill")
     @PostMapping("/start/{nick}")
     fun start(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto> {
         return ResponseEntity.ok(gameService.startGame(nick).toDto())
     }
 
     @Operation(description = "Fortsetter et spill av blackjack for et kallenavn")
-    @ApiResponses(ApiResponse(responseCode = "400", description = "Det finnes ikke et spill for oppgitt spiller"))
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "Status for manuelt spill"),
+        ApiResponse(
+            responseCode = "400",
+            description = "Det finnes ikke et spill for oppgitt spiller",
+            content = [Content(schema = Schema(hidden = true))]
+        )
+    )
     @PostMapping("/running/{nick}")
     fun running(@PathVariable nick: String, @RequestBody action: ActionDto): ResponseEntity<GameOfBlackjackDto?> {
         return ResponseEntity.ok(gameService.running(nick, Action(action)).toDto())
     }
 
     @Operation(description = "Avslutter et spill av blackjack for et kallenavn")
-    @ApiResponses(ApiResponse(responseCode = "400", description = "Det finnes ikke et spill for oppgitt spiller"))
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "Status for avsluttet spill"),
+        ApiResponse(
+            responseCode = "400",
+            description = "Det finnes ikke et spill for oppgitt spiller",
+            content = [Content(schema = Schema(hidden = true))]
+        )
+    )
     @PostMapping("/stop/{nick}")
     fun stop(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto?> {
         return ResponseEntity.ok(gameService.stop(nick).toDto())
