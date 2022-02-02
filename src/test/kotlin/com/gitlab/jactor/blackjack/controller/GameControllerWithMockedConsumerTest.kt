@@ -51,12 +51,12 @@ internal class GameControllerWithMockedConsumerTest {
 
     @Test
     @DirtiesContext
-    fun `skal trekke et nytt kort for et spill med kallenavn`() {
+    fun `should draw a card for a started game on a player`() {
         // Spiller trekker kortene spar to og ruter 3
         // "Magnus" får kortene spar 10 og ruter 4
-        // Neste kort (spar ess) vil gå til spilleren...
+        // Neste kort (spar konge) vil gå til spilleren...
         whenever(deckOfCardsConsumer.fetch()).thenReturn(
-            aDeckOfCardsStartingWith("S2,D3,S10,D4,SA".split(","))
+            aDeckOfCardsStartingWith("S2,D3,S10,D4,SK".split(","))
         )
 
         val jactor = "jactor"
@@ -82,7 +82,7 @@ internal class GameControllerWithMockedConsumerTest {
             { assertThat(runResponse.statusCode).`as`("running status code").isEqualTo(HttpStatus.OK) },
             {
                 assertThat(runningGameOfBlackjackDto?.playerHand).`as`("running player hand").isEqualTo(
-                    listOf(CardDto(suit = "SPADES", value = "2"), CardDto(suit = "DIAMONDS", value = "3"), CardDto(suit = "SPADES", value = "A"))
+                    listOf(CardDto(suit = "SPADES", value = "2"), CardDto(suit = "DIAMONDS", value = "3"), CardDto(suit = "SPADES", value = "K"))
                 )
             }
         )

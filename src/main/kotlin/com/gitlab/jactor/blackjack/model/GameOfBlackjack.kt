@@ -125,9 +125,8 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         return this
     }
 
-    private fun isGameCompleted(): Boolean {
-        return playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21
-    }
+    fun isGameCompleted() = playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21
+    fun isNotGameCompleted() = !isGameCompleted()
 
     override fun toString(): String {
         return "$nick: $playerScore/${playerHandAsString()} vs dealer: $dealerScore/${dealerHandAsString()}"
