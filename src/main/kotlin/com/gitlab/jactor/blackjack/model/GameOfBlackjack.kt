@@ -1,7 +1,8 @@
 package com.gitlab.jactor.blackjack.model
 
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
-import com.gitlab.jactor.blackjack.dto.ResultDto
+import com.gitlab.jactor.blackjack.dto.GameStatus
+import com.gitlab.jactor.blackjack.dto.StatusDto
 
 data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val isAutomaticGame: Boolean = true) {
     internal val playerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
@@ -9,23 +10,22 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
 
     private val dealerScore: Int get() = sumOf(dealerHand)
     private val playerScore: Int get() = sumOf(playerHand)
-    private val winner: String
-        get() = when (fetchResult()) {
-            Result.PLAYER -> nick
-            Result.DEALER -> "Magnus"
-        }
 
     fun completeGame(): GameOfBlackjack {
-        if (dealerScore > 21) { // will happen if the dealer get 2 aces
+        if (playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21) {
             return this
         }
 
-        while (playerScore < 17) {
+        while (playerScore < Value.PLAYER_MINIMUM_17) {
             playerHand.add(deckOfCards.takeCard())
         }
 
-        while (playerScore in dealerScore..20) {
-            dealerHand.add(deckOfCards.takeCard())
+        val playerFinalScore = playerScore
+
+        if (playerFinalScore < Value.BLACKJACK_21) {
+            while (dealerScore <= playerFinalScore) {
+                dealerHand.add(deckOfCards.takeCard())
+            }
         }
 
         return this
@@ -48,8 +48,8 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         nickOfPlayer = nick,
         dealerHand = dealerHand.map { it.toDto() },
         playerHand = playerHand.map { it.toDto() },
-        resultat = ResultDto(
-            winner = winner,
+        status = StatusDto(
+            status = GameStatus.valueOf(fetchState().name),
             dealerScore = dealerScore,
             playerScore = playerScore
         )
@@ -75,48 +75,47 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
 
     private fun fetchValue(face: Face, isAceFullScore: Boolean = true): Int {
         if (face.isAce) {
-            return if (isAceFullScore) Value.ACE_FULL else Value.ACE_MIN
+            return if (isAceFullScore) Value.ACE_FULL_11 else Value.ACE_MIN_1
         } else if (face.value.matches("\\d+".toRegex())) {
             return face.value.toInt()
         }
 
-        return Value.FACE_CARD // King, Queen, Jack
+        return Value.FACE_CARD_10 // King, Queen, Jack
     }
 
     private fun calculateTotalSum(sumOfCardsNotAces: Int, listOfAces: List<Card>): Int {
         var totalSum = sumOfCardsNotAces
 
         listOfAces.forEach {
-            totalSum += fetchValue(face = it.face, isAceFullScore = (totalSum + Value.ACE_FULL) < Value.BLACKJACK)
+            totalSum += fetchValue(face = it.face, isAceFullScore = (totalSum + Value.ACE_FULL_11) < Value.BLACKJACK_21)
         }
 
         return totalSum
     }
 
-    private fun fetchResult(): Result {
+    private fun fetchState(): State {
         val dealerFinalScore = dealerScore
         val playerFinalScore = playerScore
 
-        if (playerFinalScore == 21) {
-            return Result.PLAYER
+        if (playerFinalScore == Value.BLACKJACK_21) {
+            return State.PLAYER_WINS
         }
 
-        if (dealerFinalScore == 21) {
-            return Result.DEALER
+        if (dealerFinalScore == Value.BLACKJACK_21) {
+            return State.DEALER_WINS
         }
 
-        if (playerFinalScore > 21) {
-            return Result.DEALER
+        if (playerFinalScore > Value.BLACKJACK_21) {
+            return State.DEALER_WINS
         }
 
-        if (dealerFinalScore in (playerFinalScore + 1)..20) {
-            return Result.DEALER
+        if (dealerFinalScore in (playerFinalScore + 1) until Value.BLACKJACK_21) {
+            return State.DEALER_WINS
         }
 
-        return Result.PLAYER
+        return State.NOT_CONCLUDED
     }
 
-    fun asStart() = StartedGameOfBlackjack(playerHand = playerHand)
     fun play(action: Action): GameOfBlackjack {
         if (action.isDrawNewCard) {
             playerHand.add(deckOfCards.takeCard())
@@ -133,5 +132,5 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         }"
     }
 
-    private enum class Result { PLAYER, DEALER }
+    enum class State { PLAYER_WINS, DEALER_WINS, NOT_CONCLUDED }
 }

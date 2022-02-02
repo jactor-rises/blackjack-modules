@@ -49,8 +49,8 @@ internal class GameControllerTest {
             { assertThat(gameOfBlackjackDto?.nickOfPlayer).`as`("kallenavn").isEqualTo(kallenavn) },
             { assertThat(gameOfBlackjackDto?.dealerHand).`as`("Magnus sine kort").hasSizeGreaterThanOrEqualTo(2) },
             { assertThat(gameOfBlackjackDto?.playerHand).`as`("$kallenavn sine kort").hasSizeGreaterThanOrEqualTo(2) },
-            { assertThat(gameOfBlackjackDto?.resultat?.playerScore).`as`("poeng til $kallenavn").isGreaterThanOrEqualTo(17) },
-            { assertThat(gameOfBlackjackDto?.resultat?.winner).`as`("vinner").isNotNull() }
+            { assertThat(gameOfBlackjackDto?.status?.playerScore).`as`("poeng til $kallenavn").isGreaterThanOrEqualTo(17) },
+            { assertThat(gameOfBlackjackDto?.status?.status).`as`("vinner").isNotNull() }
         )
     }
 }

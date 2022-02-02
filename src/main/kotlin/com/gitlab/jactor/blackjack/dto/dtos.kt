@@ -7,7 +7,7 @@ data class GameOfBlackjackDto(
     @Schema(description = "Kallenavnet til spilleren") var nickOfPlayer: String,
     @Schema(description = "Spillerens kort") var playerHand: List<CardDto>,
     @Schema(description = "Delers (aka. Magnus') kort") var dealerHand: List<CardDto>,
-    @Schema(description = "Resultatet av spillet") var resultat: ResultDto
+    @Schema(description = "Status på spillet") var status: StatusDto
 )
 
 @Schema(description = "Et spillekort")
@@ -16,12 +16,14 @@ data class CardDto(
     @Schema(description = "Verdien til kortet") var value: String = ""
 )
 
-@Schema(description = "Resultatet av et spill")
-data class ResultDto(
-    @Schema(description = "Vinneren av spillet") var winner: String,
+@Schema(description = "Status for et spill")
+data class StatusDto(
+    @Schema(description = "Status på spillet") var status: GameStatus,
     @Schema(description = "Spillerens poengsum") var playerScore: Int,
     @Schema(description = "Dalerens (aka. Magnus') poengsum") var dealerScore: Int
 )
+
+enum class GameStatus { PLAYER_WINS, DEALER_WINS, NOT_CONCLUDED }
 
 @Schema(description = "Velkommen til spill melding")
 data class WelcomeDto(

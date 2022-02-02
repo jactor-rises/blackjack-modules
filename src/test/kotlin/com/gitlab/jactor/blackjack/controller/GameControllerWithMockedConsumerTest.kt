@@ -37,7 +37,7 @@ internal class GameControllerWithMockedConsumerTest {
             aDeckOfCardsStartingWith("SA,DK".split(","))
         )
 
-        val response = testRestTemplate.exchange("/start/jactor", HttpMethod.POST, null, StartedGameOfBlackjackDto::class.java)
+        val response = testRestTemplate.exchange("/start/jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
         val startedGameOfBlackjackDto = response.body
 
         assertAll(

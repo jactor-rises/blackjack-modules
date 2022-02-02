@@ -2,7 +2,6 @@ package com.gitlab.jactor.blackjack.controller
 
 import com.gitlab.jactor.blackjack.dto.ActionDto
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
-import com.gitlab.jactor.blackjack.dto.StartedGameOfBlackjackDto
 import com.gitlab.jactor.blackjack.dto.WelcomeDto
 import com.gitlab.jactor.blackjack.model.Action
 import com.gitlab.jactor.blackjack.service.GameService
@@ -40,7 +39,7 @@ class GameController(private val gameService: GameService) {
 
     @Operation(description = "Starter et spill av blackjack for et kallenavn")
     @PostMapping("/start/{nick}")
-    fun start(@PathVariable nick: String): ResponseEntity<StartedGameOfBlackjackDto> {
+    fun start(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto> {
         return ResponseEntity.ok(gameService.startGame(nick).toDto())
     }
 

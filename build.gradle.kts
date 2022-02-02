@@ -97,8 +97,8 @@ class BlackjackTestListener : TestListener {
 
     private infix fun List<TestDescriptor>.prefixedSummary(subject: String) {
         logger.lifecycle(subject)
-        forEach { test -> logger.lifecycle("\t\t${test.displayName()}") }
+        forEach { test -> logger.lifecycle("\t\t${test.className}: ${test.displayName()}") }
     }
 
-    private fun TestDescriptor.displayName() = parent?.let { "${it.name} - $name" } ?: name
+    private fun TestDescriptor.displayName() = parent?.name ?: name
 }
