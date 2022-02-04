@@ -41,7 +41,7 @@ class GameController(private val gameService: GameService) {
     @ApiResponse(responseCode = "200", description = "Status for automatisk spill")
     @PostMapping("/play/{nick}")
     fun play(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto> {
-        return ResponseEntity.ok(gameService.createNewGame(nick).completeGame().logResult().toDto())
+        return ResponseEntity.ok(gameService.playAutomaticGame(nick).toDto())
     }
 
     @Operation(description = "Starter et spill av blackjack for et kallenavn")

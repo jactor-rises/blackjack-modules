@@ -11,6 +11,7 @@ class GameService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
     private val gameForNick: MutableMap<String, GameOfBlackjack> = HashMap()
 
     fun createNewGame(nick: String) = GameOfBlackjack(deckOfCards = deckOfCardsConsumer.fetch(), nick = nick)
+    fun playAutomaticGame(nick: String) = createNewGame(nick).completeGame().logResult()
     fun startGame(nick: String): GameOfBlackjack {
         val gameOfBlackjack = GameOfBlackjack(deckOfCards = deckOfCardsConsumer.fetch(), nick)
 
