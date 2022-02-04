@@ -153,7 +153,7 @@ internal class GameOfBlackjackTest {
         val gameOfBlackjack = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("DA,SA,DJ,DK,CA,HA".split(",")),
-            isAutomaticGame = false
+            isManualGame = true
         ).play(Action(isDrawNewCard = true)).play(Action(isDrawNewCard = true))
         val statusDto = gameOfBlackjack.toDto().status
 
@@ -167,7 +167,7 @@ internal class GameOfBlackjackTest {
         val gameOfBlackjack = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("D10,SA".split(",")),
-            isAutomaticGame = false
+            isManualGame = true
         )
         val statusDto = gameOfBlackjack.toDto().status
 
@@ -179,7 +179,7 @@ internal class GameOfBlackjackTest {
         val gameOfBlackjack = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("D9,C8,HJ,HA".split(",")),
-            isAutomaticGame = false
+            isManualGame = true
         )
         val statusDto = gameOfBlackjack.toDto().status
 
@@ -197,11 +197,28 @@ internal class GameOfBlackjackTest {
         val gameOfBlackjack = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith(firstCardsInDeck.split(",")),
-            isAutomaticGame = false
+            isManualGame = true
         ).completeGame()
 
         val statusDto = gameOfBlackjack.toDto().status
 
         assertThat(statusDto.isGameCompleted).`as`("$gameOfBlackjack should be complemeted automatic").isEqualTo(true)
+    }
+
+    @Test
+    fun `should award win to player when dealer is busted`() {
+        // Magnus   | 22 | DJ,H5,D7
+        // Tor Egil | 19 | CJ,C9
+
+        val statusDto = GameOfBlackjack(
+            nick = "Tor Egil",
+            deckOfCards = aDeckOfCardsStartingWith("CJ,C9,DJ,H5,D7".split(","))
+        ).completeGame().toDto().status
+
+        assertAll(
+            { assertThat(statusDto.status).`as`("game status").isEqualTo(GameStatus.PLAYER_WINS) },
+            { assertThat(statusDto.dealerScore).`as`("dealerScore").isEqualTo(22) },
+            { assertThat(statusDto.playerScore).`as`("playerScore").isEqualTo(19) }
+        )
     }
 }

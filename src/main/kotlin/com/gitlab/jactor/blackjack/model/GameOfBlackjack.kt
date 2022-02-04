@@ -4,7 +4,7 @@ import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
 import com.gitlab.jactor.blackjack.dto.GameStatus
 import com.gitlab.jactor.blackjack.dto.StatusDto
 
-data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val isAutomaticGame: Boolean = true) {
+data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val isManualGame: Boolean = false) {
     internal val playerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
     internal val dealerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
 
@@ -16,7 +16,7 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
             return this
         }
 
-        if (isAutomaticGame) {
+        if (!isManualGame) {
             while (playerScore < Value.PLAYER_MINIMUM_17) {
                 playerHand.add(deckOfCards.takeCard())
             }
@@ -34,12 +34,16 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
     }
 
     fun logResult(): GameOfBlackjack {
+        val dealerString = if (nick.length < 7) "Magnus".padEnd(7) else "Magnus".padEnd(nick.length)
+        val playerString = if (nick.length < 7) nick.padEnd(7) else nick.padEnd(nick.length)
+
         println(
             """
-                Vinner: $nick
-                
-                Magnus | $dealerScore | ${dealerHandAsString()}
-                $nick | $playerScore | ${playerHandAsString()}
+                /=================================
+                | ${fetchState()}
+                +---------------------------------
+                | $dealerString | $dealerScore | ${dealerHandAsString()}
+                | $playerString | $playerScore | ${playerHandAsString()}
             """.trimIndent()
         )
 
@@ -59,7 +63,7 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
     )
 
     private fun sumOf(cards: List<Card>): Int {
-        if (isAutomaticGame) {
+        if (!isManualGame) {
             return cards.sumOf { fetchValue(it.face) }
         }
 
@@ -114,6 +118,10 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
 
         if (dealerFinalScore in (playerFinalScore + 1) until Value.BLACKJACK_21) {
             return State.DEALER_WINS
+        }
+
+        if (dealerFinalScore > Value.BLACKJACK_21) {
+            return State.PLAYER_WINS
         }
 
         return State.NOT_CONCLUDED
