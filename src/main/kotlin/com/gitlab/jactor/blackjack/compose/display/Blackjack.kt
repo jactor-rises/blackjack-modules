@@ -16,11 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.gitlab.jactor.blackjack.compose.model.PlayerName
 
 @Composable
-internal fun composeBlackjackWindow(playerName: String?) {
+internal fun composeBlackjack(playerName: PlayerName) {
     var count by remember { mutableStateOf(0) }
-    val nick by remember { mutableStateOf(playerName?.replace(" ", "-")?.lowercase()) }
 
     MaterialTheme {
         Box(
@@ -37,7 +37,7 @@ internal fun composeBlackjackWindow(playerName: String?) {
                         },
 
                         ) {
-                        Text(if (count == 0) "Yo $playerName!" else "$playerName clicked $count")
+                        Text(if (count == 0) "Yo ${playerName.name}!" else "${playerName.name} clicked $count")
                     }
 
                     Button(
@@ -46,7 +46,7 @@ internal fun composeBlackjackWindow(playerName: String?) {
                             count = 0
                         }
                     ) {
-                        Text("reset for $nick!")
+                        Text("reset for ${playerName.name} - (${playerName.nick})!")
                     }
                 }
             }

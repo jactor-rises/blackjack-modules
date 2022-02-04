@@ -9,9 +9,10 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.gitlab.jactor.blackjack.compose.Constants.WHAT_NAME
+import com.gitlab.jactor.blackjack.compose.model.PlayerName
 
 fun main() = application {
-    var playerName: String? by remember { mutableStateOf(null) }
+    var playerName: PlayerName? by remember { mutableStateOf(null) }
 
     if (playerName == null) {
         Window(
@@ -19,7 +20,7 @@ fun main() = application {
             title = WHAT_NAME,
             state = rememberWindowState(width = 400.dp, height = 175.dp)
         ) {
-            playerName = composePlayerNameWindow()
+            playerName = composePlayerName()
         }
     } else {
         Window(
@@ -27,7 +28,7 @@ fun main() = application {
             title = "Blackjack",
             state = rememberWindowState(width = 900.dp, height = 900.dp)
         ) {
-            composeBlackjackWindow(playerName)
+            composeBlackjack(playerName!!)
         }
     }
 }
