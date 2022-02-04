@@ -1,3 +1,4 @@
 server:
   servlet:
     context-path: "/blackjack"
+  port: 1337
