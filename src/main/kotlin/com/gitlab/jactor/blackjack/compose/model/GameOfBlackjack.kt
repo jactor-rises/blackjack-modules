@@ -14,4 +14,10 @@ data class GameOfBlackjack(
         playerHand = gameOfBlackjackDto.playerHand.map { Card(it) },
         status = Status(gameOfBlackjackDto.status)
     )
+
+    fun displayWinner() = "Vinneren er " + when (status.status) {
+        GameStatus.DEALER_WINS -> "Magnus"
+        GameStatus.PLAYER_WINS -> nickOfPlayer
+        GameStatus.NOT_CONCLUDED -> "ikke bestemt!"
+    }
 }

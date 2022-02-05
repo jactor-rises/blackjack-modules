@@ -12,5 +12,10 @@ class BlackjackConsumer(private val restTemplate: RestTemplate) {
         return GameOfBlackjack(response.body ?: throw illegalState(nick, response.statusCode))
     }
 
+    fun playManual(nick: String): GameOfBlackjack {
+        val response = restTemplate.exchange("/start/$nick", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+        return GameOfBlackjack(response.body ?: throw illegalState(nick, response.statusCode))
+    }
+
     private fun illegalState(nick: String, status: HttpStatus) = IllegalStateException("Kunne ikke spille blackjack med $nick, status: ${status}")
 }

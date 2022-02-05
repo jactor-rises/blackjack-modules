@@ -8,3 +8,5 @@ enum class Face(val value: String) {
 enum class GameStatus { PLAYER_WINS, DEALER_WINS, NOT_CONCLUDED }
 
 enum class Suit { HEARTS, DIAMONDS, SPADES, CLUBS }
+
+enum class GameType { AUTOMATIC, MANUAL }
