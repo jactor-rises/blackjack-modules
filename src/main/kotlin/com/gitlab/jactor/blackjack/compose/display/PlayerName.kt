@@ -1,8 +1,7 @@
-package com.gitlab.jactor.blackjack.compose
+package com.gitlab.jactor.blackjack.compose.display
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
@@ -12,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.gitlab.jactor.blackjack.compose.Constants
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 
 @Composable
@@ -28,10 +29,14 @@ internal fun composePlayerName(): PlayerName? {
     var playerName: PlayerName? by remember { mutableStateOf(null) }
 
     MaterialTheme {
-        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
             TextField(
                 value = "",
-                modifier = Modifier.padding(8.dp).fillMaxWidth(),
+                modifier = Modifier.padding(end = 16.dp).weight(1f),
                 label = { Text(Constants.WHAT_NAME) },
                 placeholder = { Text(newName) },
                 onValueChange = { newValue ->
@@ -45,12 +50,11 @@ internal fun composePlayerName(): PlayerName? {
             )
 
             Button(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
                 onClick = {
                     playerName = PlayerName(fetchPlayerName(newName))
                 }
             ) {
-                Text("OK")
+                Icon(Icons.Outlined.Send, "OK")
             }
         }
     }
