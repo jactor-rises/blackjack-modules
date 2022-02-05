@@ -15,7 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.gitlab.jactor.blackjack.compose.model.Card
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameType
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
@@ -66,15 +68,27 @@ internal fun composeBlackjack(playerName: PlayerName) {
                             Text("Dealer")
 
                             it.dealerHand.forEach {
-                                Text("${it.suit}(${it.face})")
+                                Text(
+                                    text = it.text,
+                                    color = when (it.color) {
+                                        Card.Color.BLACK -> Color.Black
+                                        Card.Color.RED -> Color.Red
+                                    }
+                                )
                             }
                         }
 
                         Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                            Text("Player")
+                            Text(text = "Player")
 
                             it.playerHand.forEach {
-                                Text("${it.suit}(${it.face})")
+                                Text(
+                                    text = it.text,
+                                    color = when (it.color) {
+                                        Card.Color.BLACK -> Color.Black
+                                        Card.Color.RED -> Color.Red
+                                    }
+                                )
                             }
                         }
 
