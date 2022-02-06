@@ -1,6 +1,7 @@
 package com.gitlab.jactor.blackjack.controller
 
 import com.gitlab.jactor.blackjack.consumer.DeckOfCardsConsumer
+import com.gitlab.jactor.blackjack.dto.Action
 import com.gitlab.jactor.blackjack.dto.ActionDto
 import com.gitlab.jactor.blackjack.dto.CardDto
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
@@ -17,20 +18,19 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.test.annotation.DirtiesContext
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("A com.gitlab.jactor.blackjack.controller.GameController")
-internal class GameControllerWithMockedConsumerTest {
+internal class GameControllerWithMockedConsumerTest(@Autowired private val testRestTemplate: TestRestTemplate) {
 
     @MockBean
-    private lateinit var deckOfCardsConsumer: DeckOfCardsConsumer
-
-    @Autowired
-    private lateinit var testRestTemplate: TestRestTemplate
+    private lateinit var deckOfCardsConsumerMock: DeckOfCardsConsumer
 
     @Test
+    @DirtiesContext
     fun `should start a game of blackjack for player`() {
-        whenever(deckOfCardsConsumer.fetch()).thenReturn(
+        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(
             aDeckOfCardsStartingWith("SA,DK".split(","))
         )
 
@@ -52,7 +52,7 @@ internal class GameControllerWithMockedConsumerTest {
         // Spiller trekker kortene spar to og ruter 3
         // "Magnus" får kortene spar 10 og ruter 4
         // Neste kort (spar konge) vil gå til spilleren...
-        whenever(deckOfCardsConsumer.fetch()).thenReturn(
+        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(
             aDeckOfCardsStartingWith("S2,D3,S10,D4,SK".split(","))
         )
 
@@ -63,7 +63,7 @@ internal class GameControllerWithMockedConsumerTest {
         val runResponse = testRestTemplate.exchange(
             "/running/$jactor",
             HttpMethod.POST,
-            HttpEntity(ActionDto(isDrawNewCard = true)),
+            HttpEntity(ActionDto(value = Action.HIT)),
             GameOfBlackjackDto::class.java
         )
 
@@ -86,16 +86,17 @@ internal class GameControllerWithMockedConsumerTest {
     }
 
     @Test
-    fun `should stop manual game`() {
-        whenever(deckOfCardsConsumer.fetch()).thenReturn(
+    @DirtiesContext
+    fun `should complete manual game when action == END`() {
+        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(
             aDeckOfCardsStartingWith("S2,D3,S10,D4,S2".split(","))
         )
 
         val jactor = "jactor"
         val startResponse = testRestTemplate.exchange("/start/$jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
         val startedGameOfBlackjackDto = startResponse.body
-        val stopResponse = testRestTemplate.exchange("/stop/$jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
-        val stoppedGameOfBlackjackDto = stopResponse.body
+        val endResponse = testRestTemplate.exchange("/stop/$jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+        val stoppedGameOfBlackjackDto = endResponse.body
 
         assertAll(
             "startResponse",
@@ -104,13 +105,13 @@ internal class GameControllerWithMockedConsumerTest {
         )
 
         assertAll(
-            "stopResponse",
-            { assertThat(stopResponse.statusCode).`as`("stop status code").isEqualTo(HttpStatus.OK) },
+            "endResponse",
+            { assertThat(endResponse.statusCode).`as`("end status code").isEqualTo(HttpStatus.OK) },
             { assertThat(stoppedGameOfBlackjackDto?.status?.isGameCompleted).`as`("$startedGameOfBlackjackDto should be completed").isTrue }
         )
 
         val stopAgainResponse = testRestTemplate.exchange("/stop/$jactor", HttpMethod.POST, null, Any::class.java)
 
-        assertThat(stopAgainResponse.statusCode).`as`("stopping already stopped game").isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(stopAgainResponse.statusCode).`as`("completing already ended game").isEqualTo(HttpStatus.BAD_REQUEST)
     }
 }

@@ -1,5 +1,6 @@
 package com.gitlab.jactor.blackjack.model
 
+import com.gitlab.jactor.blackjack.dto.ActionDto
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
 import com.gitlab.jactor.blackjack.dto.GameStatus
 import com.gitlab.jactor.blackjack.dto.StatusDto
@@ -50,17 +51,23 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         return this
     }
 
-    fun toDto() = GameOfBlackjackDto(
-        nickOfPlayer = nick,
-        dealerHand = dealerHand.map { it.toDto() },
-        playerHand = playerHand.map { it.toDto() },
-        status = StatusDto(
-            status = GameStatus.valueOf(fetchState().name),
-            dealerScore = dealerScore,
-            playerScore = playerScore,
-            isGameCompleted = isGameCompleted()
+    fun toDto(action: ActionDto?): GameOfBlackjackDto {
+        val actionValue = if (action != null) Action.valueOf(action) else null
+
+        return GameOfBlackjackDto(
+            nickOfPlayer = nick,
+            dealerHand = dealerHand.map { it.toDto() },
+            playerHand = playerHand.map { it.toDto() },
+            status = StatusDto(
+                result = GameStatus.valueOf(fetchState().name),
+                dealerScore = dealerScore,
+                playerScore = playerScore,
+                isGameCompleted = actionValue == Action.END || isGameCompleted(actionValue)
+            )
         )
-    )
+    }
+
+    fun toDto() = toDto(action = null)
 
     private fun sumOf(cards: List<Card>): Int {
         if (!isManualGame) {
@@ -120,23 +127,21 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
             return State.DEALER_WINS
         }
 
-        if (dealerFinalScore > Value.BLACKJACK_21) {
-            return State.PLAYER_WINS
-        }
-
-        return State.NOT_CONCLUDED
+        return State.PLAYER_WINS
     }
 
-    fun play(action: Action): GameOfBlackjack {
-        if (action.isDrawNewCard) {
+    fun play(action: Action?): GameOfBlackjack {
+        if (action == Action.HIT) {
             playerHand.add(deckOfCards.takeCard())
         }
 
         return this
     }
 
-    fun isGameCompleted() = playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21
-    fun isNotGameCompleted() = !isGameCompleted()
+    fun isGameCompleted(action: Action?) =
+        !isManualGame || isManualGame && action == Action.END || playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21
+
+    fun isNotGameCompleted() = !isGameCompleted(null)
 
     override fun toString(): String {
         return "$nick: $playerScore/${playerHandAsString()} vs dealer: $dealerScore/${dealerHandAsString()}"
@@ -145,5 +150,5 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
     private fun playerHandAsString() = playerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
     private fun dealerHandAsString() = dealerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
 
-    enum class State { PLAYER_WINS, DEALER_WINS, NOT_CONCLUDED }
+    enum class State { PLAYER_WINS, DEALER_WINS }
 }

@@ -62,7 +62,7 @@ class GameController(private val gameService: GameService) {
     )
     @PostMapping("/running/{nick}")
     fun running(@PathVariable nick: String, @RequestBody action: ActionDto): ResponseEntity<GameOfBlackjackDto?> {
-        return ResponseEntity.ok(gameService.running(nick, Action(action)).toDto())
+        return ResponseEntity.ok(gameService.running(nick, Action.valueOf(action)).toDto(action))
     }
 
     @Operation(description = "Avslutter et spill av blackjack for et kallenavn")
@@ -76,6 +76,6 @@ class GameController(private val gameService: GameService) {
     )
     @PostMapping("/stop/{nick}")
     fun stop(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto?> {
-        return ResponseEntity.ok(gameService.stop(nick).toDto())
+        return ResponseEntity.ok(gameService.stop(nick).toDto(ActionDto(value = com.gitlab.jactor.blackjack.dto.Action.END)))
     }
 }

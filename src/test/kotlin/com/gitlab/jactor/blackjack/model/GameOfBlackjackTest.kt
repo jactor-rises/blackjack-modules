@@ -44,7 +44,7 @@ internal class GameOfBlackjackTest {
 
         assertAll(
             { assertThat(resultDto.playerScore).`as`("score from $firstCardsInDeck").isEqualTo(21) },
-            { assertThat(resultDto.status).`as`("game status").isEqualTo(GameStatus.PLAYER_WINS) }
+            { assertThat(resultDto.result).`as`("game status").isEqualTo(GameStatus.PLAYER_WINS) }
         )
     }
 
@@ -66,7 +66,7 @@ internal class GameOfBlackjackTest {
         assertAll(
             { assertThat(statusDto.dealerScore).`as`("dealer score ($gameOfBlackjack)").isEqualTo(21) },
             { assertThat(statusDto.playerScore).`as`("player score ($gameOfBlackjack)").isNotEqualTo(21) },
-            { assertThat(statusDto.status).`as`("game status").isEqualTo(GameStatus.DEALER_WINS) }
+            { assertThat(statusDto.result).`as`("game status").isEqualTo(GameStatus.DEALER_WINS) }
         )
     }
 
@@ -80,7 +80,7 @@ internal class GameOfBlackjackTest {
         assertAll(
             { assertThat(resultDto.dealerScore).`as`("dealer score").isEqualTo(12) },
             { assertThat(resultDto.playerScore).`as`("player score").isEqualTo(22) },
-            { assertThat(resultDto.status).`as`("status").isEqualTo(GameStatus.DEALER_WINS) }
+            { assertThat(resultDto.result).`as`("status").isEqualTo(GameStatus.DEALER_WINS) }
         )
     }
 
@@ -105,7 +105,7 @@ internal class GameOfBlackjackTest {
 
         assertAll(
             { assertThat(statusDto.playerScore).`as`("player score").isEqualTo(24) },
-            { assertThat(statusDto.status).`as`("status").isEqualTo(GameStatus.DEALER_WINS) }
+            { assertThat(statusDto.result).`as`("status").isEqualTo(GameStatus.DEALER_WINS) }
         )
     }
 
@@ -128,7 +128,7 @@ internal class GameOfBlackjackTest {
         assertAll(
             { assertThat(statusDto.playerScore).`as`("player score ($gameOfBlackjack)").isEqualTo(17) },
             { assertThat(statusDto.dealerScore).`as`("dealer score ($gameOfBlackjack)").isGreaterThan(17) },
-            { assertThat(statusDto.status).`as`("status ($gameOfBlackjack)").isEqualTo(GameStatus.DEALER_WINS) }
+            { assertThat(statusDto.result).`as`("status ($gameOfBlackjack)").isEqualTo(GameStatus.DEALER_WINS) }
         )
     }
 
@@ -143,7 +143,7 @@ internal class GameOfBlackjackTest {
         assertAll(
             { assertThat(statusDto.dealerScore).`as`("dealer score ($gameOfBlackjack)").isEqualTo(19) },
             { assertThat(statusDto.playerScore).`as`("player score ($gameOfBlackjack)").isEqualTo(26) },
-            { assertThat(statusDto.status).`as`("status ($gameOfBlackjack)").isEqualTo(GameStatus.DEALER_WINS) }
+            { assertThat(statusDto.result).`as`("status ($gameOfBlackjack)").isEqualTo(GameStatus.DEALER_WINS) }
         )
     }
 
@@ -154,7 +154,7 @@ internal class GameOfBlackjackTest {
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("DA,SA,DJ,DK,CA,HA".split(",")),
             isManualGame = true
-        ).play(Action(isDrawNewCard = true)).play(Action(isDrawNewCard = true))
+        ).play(Action.HIT).play(Action.HIT)
         val statusDto = gameOfBlackjack.toDto().status
 
         assertAll(
@@ -216,9 +216,27 @@ internal class GameOfBlackjackTest {
         ).completeGame().toDto().status
 
         assertAll(
-            { assertThat(statusDto.status).`as`("game status").isEqualTo(GameStatus.PLAYER_WINS) },
+            { assertThat(statusDto.result).`as`("game status").isEqualTo(GameStatus.PLAYER_WINS) },
             { assertThat(statusDto.dealerScore).`as`("dealerScore").isEqualTo(22) },
             { assertThat(statusDto.playerScore).`as`("playerScore").isEqualTo(19) }
+        )
+    }
+
+    @Test
+    fun `should have an automatic game completed`() {
+        // jactor  | 17 | S6,DA
+        // Magnus  | 20 | HQ,S10
+
+        val statusDto = GameOfBlackjack(
+            nick = "jactor",
+            deckOfCards = aDeckOfCardsStartingWith("S6,DA,HQ,S10".split(","))
+        ).completeGame().toDto().status
+
+        assertAll(
+            { assertThat(statusDto.result).`as`("game status").isEqualTo(GameStatus.DEALER_WINS) },
+            { assertThat(statusDto.dealerScore).`as`("dealerScore").isEqualTo(20) },
+            { assertThat(statusDto.playerScore).`as`("playerScore").isEqualTo(17) },
+            { assertThat(statusDto.isGameCompleted).`as`("isGameCompleted").isTrue() }
         )
     }
 }

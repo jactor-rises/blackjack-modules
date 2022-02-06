@@ -1,9 +1,11 @@
 package com.gitlab.jactor.blackjack.controller
 
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
+import com.gitlab.jactor.blackjack.dto.GameStatus
 import com.gitlab.jactor.blackjack.dto.WelcomeDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,10 +16,7 @@ import org.springframework.http.HttpStatus
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("A com.gitlab.jactor.blackjack.controller.GameController")
-internal class GameControllerTest {
-
-    @Autowired
-    private lateinit var testRestTemplate: TestRestTemplate
+internal class GameControllerTest(@Autowired private val testRestTemplate: TestRestTemplate) {
 
     @Test
     fun `should get start messages`() {
@@ -51,7 +50,27 @@ internal class GameControllerTest {
             { assertThat(gameOfBlackjackDto?.dealerHand).`as`("Magnus sine kort").hasSizeGreaterThanOrEqualTo(2) },
             { assertThat(gameOfBlackjackDto?.playerHand).`as`("$kallenavn sine kort").hasSizeGreaterThanOrEqualTo(2) },
             { assertThat(gameOfBlackjackDto?.status?.playerScore).`as`("poeng til $kallenavn").isGreaterThanOrEqualTo(17) },
-            { assertThat(gameOfBlackjackDto?.status?.status).`as`("vinner").isNotNull() }
+            { assertThat(gameOfBlackjackDto?.status?.result).`as`("vinner").isNotNull() }
+        )
+    }
+
+    @RepeatedTest(25)
+    fun `should play an automatic game of blackjack`() {
+        val response = testRestTemplate.exchange("/play/jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+
+        val gameOfBlackjack = response.body!!
+        val gameStatus = gameOfBlackjack.status.result
+        val dealerScore = gameOfBlackjack.status.dealerScore
+
+        assertAll(
+            {
+                if (gameStatus != GameStatus.DEALER_WINS && dealerScore <= 21) {
+                    assertThat(gameOfBlackjack.status.playerScore).`as`("status.playerScore ($gameOfBlackjack)").isGreaterThanOrEqualTo(17)
+                }
+            },
+            { assertThat(gameOfBlackjack.status.isGameCompleted).`as`("status.isGameCompleted ($gameOfBlackjack)").isTrue() }
         )
     }
 }

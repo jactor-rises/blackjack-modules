@@ -18,13 +18,13 @@ data class CardDto(
 
 @Schema(description = "Status for et spill")
 data class StatusDto(
-    @Schema(description = "Status på spillet") var status: GameStatus,
+    @Schema(description = "Resultatet av omgangen") var result: GameStatus,
     @Schema(description = "Spillerens poengsum") var playerScore: Int,
     @Schema(description = "Delerens (aka. Magnus') poengsum") var dealerScore: Int,
     @Schema(description = "Om spillet er automatisk ferdig") var isGameCompleted: Boolean
 )
 
-enum class GameStatus { PLAYER_WINS, DEALER_WINS, NOT_CONCLUDED }
+enum class GameStatus { PLAYER_WINS, DEALER_WINS }
 
 @Schema(description = "Velkommen til spill melding")
 data class WelcomeDto(
@@ -45,5 +45,16 @@ data class ErrorDto(
 
 @Schema(description = "Handlingen til en spiller av blackjack")
 data class ActionDto(
-    @Schema(description = "Skal trekke nytt kort eller ikke") var isDrawNewCard: Boolean = false
+    @Schema(description = "Start et nytt spill, trekk et kort eller avslutt et spill") var value: Action? = null
 )
+
+enum class Action {
+    @Schema(description = "Start et nytt spill")
+    START,
+
+    @Schema(description = "Trekk et kortl")
+    HIT,
+
+    @Schema(description = "Avslutt et spill")
+    END
+}

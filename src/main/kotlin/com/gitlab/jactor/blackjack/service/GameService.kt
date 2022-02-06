@@ -13,7 +13,7 @@ class GameService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
     fun createNewGame(nick: String) = GameOfBlackjack(deckOfCards = deckOfCardsConsumer.fetch(), nick = nick)
     fun playAutomaticGame(nick: String) = createNewGame(nick).completeGame().logResult()
     fun startGame(nick: String): GameOfBlackjack {
-        val gameOfBlackjack = GameOfBlackjack(deckOfCards = deckOfCardsConsumer.fetch(), nick)
+        val gameOfBlackjack = GameOfBlackjack(deckOfCards = deckOfCardsConsumer.fetch(), nick = nick, isManualGame = true)
 
         if (gameOfBlackjack.isNotGameCompleted()) {
             gameForNick[nick] = gameOfBlackjack
@@ -22,10 +22,10 @@ class GameService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
         return gameOfBlackjack
     }
 
-    fun running(nick: String, action: Action): GameOfBlackjack {
+    fun running(nick: String, action: Action?): GameOfBlackjack {
         val gameOfBlackjack = gameForNick[nick]?.play(action = action) ?: throw UnknownPlayerException(nick)
 
-        if (gameOfBlackjack.isGameCompleted()) {
+        if (gameOfBlackjack.isGameCompleted(action)) {
             gameForNick.remove(nick)
         }
 
