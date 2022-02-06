@@ -25,7 +25,7 @@ class GameService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
     fun running(nick: String, action: Action?): GameOfBlackjack {
         val gameOfBlackjack = gameForNick[nick]?.play(action = action) ?: throw UnknownPlayerException(nick)
 
-        if (gameOfBlackjack.isGameCompleted(action)) {
+        if (gameOfBlackjack.isGameCompleted()) {
             gameForNick.remove(nick)
         }
 

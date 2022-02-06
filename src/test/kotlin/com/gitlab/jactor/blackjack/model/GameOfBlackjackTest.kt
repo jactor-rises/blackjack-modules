@@ -40,7 +40,7 @@ internal class GameOfBlackjackTest {
         val resultDto = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith(firstCardsInDeck.split(","))
-        ).completeGame().toDto().status
+        ).completeGame().toDto().status!!
 
         assertAll(
             { assertThat(resultDto.playerScore).`as`("score from $firstCardsInDeck").isEqualTo(21) },
@@ -61,7 +61,7 @@ internal class GameOfBlackjackTest {
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith(firstCardsInDeck.split(","))
         ).completeGame()
-        val statusDto = gameOfBlackjack.toDto().status
+        val statusDto = gameOfBlackjack.toDto().status!!
 
         assertAll(
             { assertThat(statusDto.dealerScore).`as`("dealer score ($gameOfBlackjack)").isEqualTo(21) },
@@ -75,7 +75,7 @@ internal class GameOfBlackjackTest {
         val resultDto = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("HA,CA,D9,C3".split(","))
-        ).completeGame().toDto().status
+        ).completeGame().toDto().status!!
 
         assertAll(
             { assertThat(resultDto.dealerScore).`as`("dealer score").isEqualTo(12) },
@@ -90,7 +90,7 @@ internal class GameOfBlackjackTest {
         val statusDto = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("D9,C3,H5,CK,D2,S3,H2".split(","))
-        ).completeGame().toDto().status
+        ).completeGame().toDto().status!!
 
         assertThat(statusDto.playerScore).isEqualTo(17)
     }
@@ -101,7 +101,7 @@ internal class GameOfBlackjackTest {
         val statusDto = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("D9,C3,H5,CK,D2,SK".split(","))
-        ).completeGame().toDto().status
+        ).completeGame().toDto().status!!
 
         assertAll(
             { assertThat(statusDto.playerScore).`as`("player score").isEqualTo(24) },
@@ -123,7 +123,7 @@ internal class GameOfBlackjackTest {
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith(firstCardsInDeck.split(","))
         ).completeGame()
-        val statusDto = gameOfBlackjack.toDto().status
+        val statusDto = gameOfBlackjack.toDto().status!!
 
         assertAll(
             { assertThat(statusDto.playerScore).`as`("player score ($gameOfBlackjack)").isEqualTo(17) },
@@ -138,7 +138,7 @@ internal class GameOfBlackjackTest {
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("D5,DK,DA,D8,SA".split(","))
         ).completeGame().logResult()
-        val statusDto = gameOfBlackjack.toDto().status
+        val statusDto = gameOfBlackjack.toDto().status!!
 
         assertAll(
             { assertThat(statusDto.dealerScore).`as`("dealer score ($gameOfBlackjack)").isEqualTo(19) },
@@ -155,7 +155,7 @@ internal class GameOfBlackjackTest {
             deckOfCards = aDeckOfCardsStartingWith("DA,SA,DJ,DK,CA,HA".split(",")),
             isManualGame = true
         ).play(Action.HIT).play(Action.HIT)
-        val statusDto = gameOfBlackjack.toDto().status
+        val statusDto = gameOfBlackjack.toDto().status!!
 
         assertAll(
             { assertThat(statusDto.playerScore).`as`("player score (${gameOfBlackjack.playerHand})").isEqualTo(14) },
@@ -169,7 +169,7 @@ internal class GameOfBlackjackTest {
             deckOfCards = aDeckOfCardsStartingWith("D10,SA".split(",")),
             isManualGame = true
         )
-        val statusDto = gameOfBlackjack.toDto().status
+        val statusDto = gameOfBlackjack.toDto().status!!
 
         assertThat(statusDto.isGameCompleted).`as`("$gameOfBlackjack should be complemeted automatic").isEqualTo(true)
     }
@@ -181,7 +181,7 @@ internal class GameOfBlackjackTest {
             deckOfCards = aDeckOfCardsStartingWith("D9,C8,HJ,HA".split(",")),
             isManualGame = true
         )
-        val statusDto = gameOfBlackjack.toDto().status
+        val statusDto = gameOfBlackjack.toDto().status!!
 
         assertThat(statusDto.isGameCompleted).`as`("$gameOfBlackjack should be complemeted automatic").isEqualTo(true)
     }
@@ -200,7 +200,7 @@ internal class GameOfBlackjackTest {
             isManualGame = true
         ).completeGame()
 
-        val statusDto = gameOfBlackjack.toDto().status
+        val statusDto = gameOfBlackjack.toDto().status!!
 
         assertThat(statusDto.isGameCompleted).`as`("$gameOfBlackjack should be complemeted automatic").isEqualTo(true)
     }
@@ -213,7 +213,7 @@ internal class GameOfBlackjackTest {
         val statusDto = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("CJ,C9,DJ,H5,D7".split(","))
-        ).completeGame().toDto().status
+        ).completeGame().toDto().status!!
 
         assertAll(
             { assertThat(statusDto.result).`as`("game status").isEqualTo(GameStatus.PLAYER_WINS) },
@@ -230,7 +230,7 @@ internal class GameOfBlackjackTest {
         val statusDto = GameOfBlackjack(
             nick = "jactor",
             deckOfCards = aDeckOfCardsStartingWith("S6,DA,HQ,S10".split(","))
-        ).completeGame().toDto().status
+        ).completeGame().toDto().status!!
 
         assertAll(
             { assertThat(statusDto.result).`as`("game status").isEqualTo(GameStatus.DEALER_WINS) },

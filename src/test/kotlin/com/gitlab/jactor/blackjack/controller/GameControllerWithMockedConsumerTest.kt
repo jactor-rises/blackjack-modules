@@ -5,6 +5,7 @@ import com.gitlab.jactor.blackjack.dto.Action
 import com.gitlab.jactor.blackjack.dto.ActionDto
 import com.gitlab.jactor.blackjack.dto.CardDto
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
+import com.gitlab.jactor.blackjack.dto.GameType
 import com.gitlab.jactor.blackjack.model.TestUtil.aDeckOfCardsStartingWith
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -34,7 +35,13 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
             aDeckOfCardsStartingWith("SA,DK".split(","))
         )
 
-        val response = testRestTemplate.exchange("/start/jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+        val response = testRestTemplate.exchange(
+            "/play/jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.START)),
+            GameOfBlackjackDto::class.java
+        )
+
         val startedGameOfBlackjackDto = response.body
 
         assertAll(
@@ -57,13 +64,19 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
         )
 
         val jactor = "jactor"
-        val startResponse = testRestTemplate.exchange("/start/$jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+        val startResponse = testRestTemplate.exchange(
+            "/play/$jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.START)),
+            GameOfBlackjackDto::class.java
+        )
+
         val startedGameOfBlackjackDto = startResponse.body
 
         val runResponse = testRestTemplate.exchange(
-            "/running/$jactor",
+            "/play/$jactor",
             HttpMethod.POST,
-            HttpEntity(ActionDto(value = Action.HIT)),
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.HIT)),
             GameOfBlackjackDto::class.java
         )
 
@@ -86,17 +99,28 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
     }
 
     @Test
-    @DirtiesContext
     fun `should complete manual game when action == END`() {
         whenever(deckOfCardsConsumerMock.fetch()).thenReturn(
             aDeckOfCardsStartingWith("S2,D3,S10,D4,S2".split(","))
         )
 
         val jactor = "jactor"
-        val startResponse = testRestTemplate.exchange("/start/$jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+        val startResponse = testRestTemplate.exchange(
+            "/play/$jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.START)),
+            GameOfBlackjackDto::class.java
+        )
+
         val startedGameOfBlackjackDto = startResponse.body
-        val endResponse = testRestTemplate.exchange("/stop/$jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
-        val stoppedGameOfBlackjackDto = endResponse.body
+        val endResponse = testRestTemplate.exchange(
+            "/play/$jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.END)),
+            GameOfBlackjackDto::class.java
+        )
+
+        val endeddGameOfBlackjackDto = endResponse.body
 
         assertAll(
             "startResponse",
@@ -107,11 +131,16 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
         assertAll(
             "endResponse",
             { assertThat(endResponse.statusCode).`as`("end status code").isEqualTo(HttpStatus.OK) },
-            { assertThat(stoppedGameOfBlackjackDto?.status?.isGameCompleted).`as`("$startedGameOfBlackjackDto should be completed").isTrue }
+            { assertThat(endeddGameOfBlackjackDto?.status?.isGameCompleted).`as`("$startedGameOfBlackjackDto should be completed").isTrue }
         )
 
-        val stopAgainResponse = testRestTemplate.exchange("/stop/$jactor", HttpMethod.POST, null, Any::class.java)
+        val endAgainResponse = testRestTemplate.exchange(
+            "/play/$jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.END)),
+            GameOfBlackjackDto::class.java
+        )
 
-        assertThat(stopAgainResponse.statusCode).`as`("completing already ended game").isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(endAgainResponse.statusCode).`as`("completing already ended game").isEqualTo(HttpStatus.BAD_REQUEST)
     }
 }

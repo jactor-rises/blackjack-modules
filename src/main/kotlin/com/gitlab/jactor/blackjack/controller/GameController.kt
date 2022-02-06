@@ -2,12 +2,11 @@ package com.gitlab.jactor.blackjack.controller
 
 import com.gitlab.jactor.blackjack.dto.ActionDto
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
+import com.gitlab.jactor.blackjack.dto.GameType
 import com.gitlab.jactor.blackjack.dto.WelcomeDto
 import com.gitlab.jactor.blackjack.model.Action
 import com.gitlab.jactor.blackjack.service.GameService
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.ResponseEntity
@@ -28,54 +27,33 @@ class GameController(private val gameService: GameService) {
             WelcomeDto(
                 message = "Velkommen til en runde med Blackjack",
                 howTo = """
-                    * Gjør en post til endepunkt '/play/{kallenavn} for å utføre et helautmatisk spill (Ace = 11 poeng)
-                    * Gjør en post til endepunkt '/start/{kallenavn} for å starte et spill (Ace er 11 eller 1 poeng)
-                      * Videre spill på samme kallenavn ved post til endepunkt '/running/{kallenavn}'
-                      * Avslutt et pågående spill for et kallenavn ved post til endepunkt '/stop/{kallenavn}'
+                    * Gjør en post til endepunkt '/play/{kallenavn}' og med GameType.AUTOMATIC for å utføre et helautmatisk spill (Ace = 11 poeng)
+                    * Gjør en post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt Action.START for å starte et spill (Ace er 11 eller 1 poeng)
+                      * Videre spill på samme kallenavn ved post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt Action.START, HIT eller END
                     """.trimIndent()
             )
         )
     }
 
     @Operation(description = "Utfører et spill av blackjack for et kallenavn")
-    @ApiResponse(responseCode = "200", description = "Status for automatisk spill")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "Status på et spill"),
+        ApiResponse(
+            responseCode = "400",
+            description = "Når spillet er pågående (GameType == MANUAL && Action != START) men det ikke finnes et spill for spillernavnet"
+        )
+    )
     @PostMapping("/play/{nick}")
-    fun play(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto> {
-        return ResponseEntity.ok(gameService.playAutomaticGame(nick).toDto())
-    }
-
-    @Operation(description = "Starter et spill av blackjack for et kallenavn")
-    @ApiResponse(responseCode = "200", description = "Status for manuelt spill")
-    @PostMapping("/start/{nick}")
-    fun start(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto> {
-        return ResponseEntity.ok(gameService.startGame(nick).toDto())
-    }
-
-    @Operation(description = "Fortsetter et spill av blackjack for et kallenavn")
-    @ApiResponses(
-        ApiResponse(responseCode = "200", description = "Status for manuelt spill"),
-        ApiResponse(
-            responseCode = "400",
-            description = "Det finnes ikke et spill for oppgitt spiller",
-            content = [Content(schema = Schema(hidden = true))]
-        )
-    )
-    @PostMapping("/running/{nick}")
-    fun running(@PathVariable nick: String, @RequestBody action: ActionDto): ResponseEntity<GameOfBlackjackDto?> {
-        return ResponseEntity.ok(gameService.running(nick, Action.valueOf(action)).toDto(action))
-    }
-
-    @Operation(description = "Avslutter et spill av blackjack for et kallenavn")
-    @ApiResponses(
-        ApiResponse(responseCode = "200", description = "Status for avsluttet spill"),
-        ApiResponse(
-            responseCode = "400",
-            description = "Det finnes ikke et spill for oppgitt spiller",
-            content = [Content(schema = Schema(hidden = true))]
-        )
-    )
-    @PostMapping("/stop/{nick}")
-    fun stop(@PathVariable nick: String): ResponseEntity<GameOfBlackjackDto?> {
-        return ResponseEntity.ok(gameService.stop(nick).toDto(ActionDto(value = com.gitlab.jactor.blackjack.dto.Action.END)))
+    fun play(@PathVariable nick: String, @RequestBody action: ActionDto): ResponseEntity<GameOfBlackjackDto> {
+        return when (action.type) {
+            GameType.AUTOMATIC -> ResponseEntity.ok(gameService.playAutomaticGame(nick).toDto())
+            GameType.MANUAL -> {
+                when (Action.valueOf(action)) {
+                    Action.START -> ResponseEntity.ok(gameService.startGame(nick).toDto())
+                    Action.HIT -> ResponseEntity.ok(gameService.running(nick, Action.HIT).toDto(Action.HIT))
+                    Action.END -> ResponseEntity.ok(gameService.stop(nick).toDto(Action.END))
+                }
+            }
+        }
     }
 }

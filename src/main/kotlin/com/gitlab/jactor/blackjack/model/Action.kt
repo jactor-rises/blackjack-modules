@@ -6,9 +6,9 @@ enum class Action {
     START, HIT, END;
 
     companion object {
-        fun valueOf(action: ActionDto): Action? {
-            val name = action.value?.name ?: return null
-            return values().first { it.name == name }
+        fun valueOf(action: ActionDto): Action {
+            val enum = action.value ?: throw IllegalStateException("Cannot map when value is null")
+            return values().first { it.name == enum.name }
         }
     }
 }

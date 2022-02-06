@@ -1,7 +1,9 @@
 package com.gitlab.jactor.blackjack.controller
 
+import com.gitlab.jactor.blackjack.dto.ActionDto
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
 import com.gitlab.jactor.blackjack.dto.GameStatus
+import com.gitlab.jactor.blackjack.dto.GameType
 import com.gitlab.jactor.blackjack.dto.WelcomeDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
@@ -28,10 +31,9 @@ internal class GameControllerTest(@Autowired private val testRestTemplate: TestR
             {
                 assertThat(response.body?.howTo).`as`("how to").isEqualTo(
                     """
-                    * Gjør en post til endepunkt '/play/{kallenavn} for å utføre et helautmatisk spill (Ace = 11 poeng)
-                    * Gjør en post til endepunkt '/start/{kallenavn} for å starte et spill (Ace er 11 eller 1 poeng)
-                      * Videre spill på samme kallenavn ved post til endepunkt '/running/{kallenavn}'
-                      * Avslutt et pågående spill for et kallenavn ved post til endepunkt '/stop/{kallenavn}'
+                    * Gjør en post til endepunkt '/play/{kallenavn}' og med GameType.AUTOMATIC for å utføre et helautmatisk spill (Ace = 11 poeng)
+                    * Gjør en post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt Action.START for å starte et spill (Ace er 11 eller 1 poeng)
+                      * Videre spill på samme kallenavn ved post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt Action.START, HIT eller END
                     """.trimIndent()
                 )
             }
@@ -41,7 +43,13 @@ internal class GameControllerTest(@Autowired private val testRestTemplate: TestR
     @Test
     fun `should perform a game of blackjack for player with nick`() {
         val kallenavn = "jactor"
-        val response = testRestTemplate.exchange("/play/$kallenavn", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+        val response = testRestTemplate.exchange(
+            "/play/$kallenavn",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.AUTOMATIC)),
+            GameOfBlackjackDto::class.java
+        )
+
         val gameOfBlackjackDto = response.body
 
         assertAll(
@@ -56,21 +64,26 @@ internal class GameControllerTest(@Autowired private val testRestTemplate: TestR
 
     @RepeatedTest(25)
     fun `should play an automatic game of blackjack`() {
-        val response = testRestTemplate.exchange("/play/jactor", HttpMethod.POST, null, GameOfBlackjackDto::class.java)
+        val response = testRestTemplate.exchange(
+            "/play/jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.AUTOMATIC)),
+            GameOfBlackjackDto::class.java
+        )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
 
         val gameOfBlackjack = response.body!!
-        val gameStatus = gameOfBlackjack.status.result
-        val dealerScore = gameOfBlackjack.status.dealerScore
+        val gameStatus = gameOfBlackjack.status?.result!!
+        val dealerScore = gameOfBlackjack.status?.dealerScore!!
 
         assertAll(
             {
                 if (gameStatus != GameStatus.DEALER_WINS && dealerScore <= 21) {
-                    assertThat(gameOfBlackjack.status.playerScore).`as`("status.playerScore ($gameOfBlackjack)").isGreaterThanOrEqualTo(17)
+                    assertThat(gameOfBlackjack.status?.playerScore).`as`("status.playerScore ($gameOfBlackjack)").isGreaterThanOrEqualTo(17)
                 }
             },
-            { assertThat(gameOfBlackjack.status.isGameCompleted).`as`("status.isGameCompleted ($gameOfBlackjack)").isTrue() }
+            { assertThat(gameOfBlackjack.status?.isGameCompleted).`as`("status.isGameCompleted ($gameOfBlackjack)").isTrue() }
         )
     }
 }

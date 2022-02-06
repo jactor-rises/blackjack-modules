@@ -1,6 +1,7 @@
 package com.gitlab.jactor.blackjack.failure
 
 import com.gitlab.jactor.blackjack.dto.ErrorDto
+import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -46,7 +47,7 @@ class BlackjackResponseEntityExceptionHandler : ResponseEntityExceptionHandler()
 
         return ResponseEntity.badRequest()
             .header(HttpHeaders.WARNING, message)
-            .body(ErrorDto(message = message, provider = origin))
+            .body(GameOfBlackjackDto(error = ErrorDto(message = message, provider = origin)))
     }
 
     private fun fetchInternalStackOrFirstElement(stackTrace: Array<StackTraceElement>): String {

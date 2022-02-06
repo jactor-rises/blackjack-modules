@@ -4,10 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "Status for spillet 'blackjack'")
 data class GameOfBlackjackDto(
-    @Schema(description = "Kallenavnet til spilleren") var nickOfPlayer: String,
-    @Schema(description = "Spillerens kort") var playerHand: List<CardDto>,
-    @Schema(description = "Delers (aka. Magnus') kort") var dealerHand: List<CardDto>,
-    @Schema(description = "Status på spillet") var status: StatusDto
+    @Schema(description = "Kallenavnet til spilleren") var nickOfPlayer: String = "",
+    @Schema(description = "Spillerens kort") var playerHand: List<CardDto> = emptyList(),
+    @Schema(description = "Delers (aka. Magnus') kort") var dealerHand: List<CardDto> = emptyList(),
+    @Schema(description = "Status på spillet") var status: StatusDto? = null,
+    @Schema(description = "An error occured on the server") val error: ErrorDto? = null
 )
 
 @Schema(description = "Et spillekort")
@@ -45,8 +46,11 @@ data class ErrorDto(
 
 @Schema(description = "Handlingen til en spiller av blackjack")
 data class ActionDto(
+    @Schema(description = "Om det er et automatisk eller et manuelt spill") var type: GameType = GameType.AUTOMATIC,
     @Schema(description = "Start et nytt spill, trekk et kort eller avslutt et spill") var value: Action? = null
 )
+
+enum class GameType { AUTOMATIC, MANUAL }
 
 enum class Action {
     @Schema(description = "Start et nytt spill")
