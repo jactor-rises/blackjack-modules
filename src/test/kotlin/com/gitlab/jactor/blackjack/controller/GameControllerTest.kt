@@ -1,5 +1,6 @@
 package com.gitlab.jactor.blackjack.controller
 
+import com.gitlab.jactor.blackjack.dto.Action
 import com.gitlab.jactor.blackjack.dto.ActionDto
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
 import com.gitlab.jactor.blackjack.dto.GameStatus
@@ -83,7 +84,25 @@ internal class GameControllerTest(@Autowired private val testRestTemplate: TestR
                     assertThat(gameOfBlackjack.status?.playerScore).`as`("status.playerScore ($gameOfBlackjack)").isGreaterThanOrEqualTo(17)
                 }
             },
-            { assertThat(gameOfBlackjack.status?.isGameCompleted).`as`("status.isGameCompleted ($gameOfBlackjack)").isTrue() }
+            { assertThat(gameOfBlackjack.status?.isGameCompleted).`as`("status.isGameCompleted ($gameOfBlackjack)").isTrue() },
+            { assertThat(response.body?.gameType).`as`("gameType").isEqualTo(GameType.AUTOMATIC) }
+        )
+    }
+
+    @RepeatedTest(25)
+    fun `should play an manual game of blackjack`() {
+        val response = testRestTemplate.exchange(
+            "/play/jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.START)),
+            GameOfBlackjackDto::class.java
+        )
+
+        assertAll(
+            { assertThat(response.body?.playerHand).`as`("playerHand (${response.body})").hasSize(2) },
+            { assertThat(response.body?.status?.dealerScore).`as`("status.dealerScore (${response.body})").isLessThanOrEqualTo(21) },
+            { assertThat(response.body?.status?.playerScore).`as`("status.playerScore (${response.body})").isLessThanOrEqualTo(21) },
+            { assertThat(response.body?.gameType).`as`("gameType").isEqualTo(GameType.MANUAL) }
         )
     }
 }
