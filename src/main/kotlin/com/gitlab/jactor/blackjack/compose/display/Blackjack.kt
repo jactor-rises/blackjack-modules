@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.model.Card
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
+import com.gitlab.jactor.blackjack.compose.model.GameStatus
 import com.gitlab.jactor.blackjack.compose.model.GameType
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
@@ -63,41 +64,56 @@ internal fun composeBlackjack(playerName: PlayerName) {
                         }
                     }
 
+
                     gameOfBlackjack?.let {
-                        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                            Text("Dealer")
-
-                            it.dealerHand.forEach {
-                                Text(
-                                    text = it.text,
-                                    color = when (it.color) {
-                                        Card.Color.BLACK -> Color.Black
-                                        Card.Color.RED -> Color.Red
-                                    }
-                                )
-                            }
-                        }
-
-                        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                            Text(text = "Player")
-
-                            it.playerHand.forEach {
-                                Text(
-                                    text = it.text,
-                                    color = when (it.color) {
-                                        Card.Color.BLACK -> Color.Black
-                                        Card.Color.RED -> Color.Red
-                                    }
-                                )
-                            }
-                        }
-
-                        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                            Text("Resultat"); Text(it.displayWinner())
-                        }
+                        composeGameOfBlackjack(it)
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun composeGameOfBlackjack(it: GameOfBlackjack) {
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Text("Dealer")
+
+            it.dealerHand.forEach {
+                Text(
+                    text = it.text,
+                    color = when (it.color) {
+                        Card.Color.BLACK -> Color.Black
+                        Card.Color.RED -> Color.Red
+                    }
+                )
+            }
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Text(text = "Player")
+
+            it.playerHand.forEach {
+                Text(
+                    text = it.text,
+                    color = when (it.color) {
+                        Card.Color.BLACK -> Color.Black
+                        Card.Color.RED -> Color.Red
+                    }
+                )
+            }
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Text("Resultat")
+            Text(
+                text = it.displayWinner(),
+                color = when (it.status.fetchResultOfGame()) {
+                    GameStatus.DEALER_WINS -> Color.DarkGray
+                    GameStatus.PLAYER_WINS -> Color.Blue
+                }
+            )
         }
     }
 }

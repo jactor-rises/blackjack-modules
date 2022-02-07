@@ -15,9 +15,8 @@ data class GameOfBlackjack(
         status = Status(gameOfBlackjackDto.status)
     )
 
-    fun displayWinner() = "Vinneren er " + when (status.status) {
+    fun displayWinner() = "Vinneren er " + when (status.fetchResultOfGame()) {
         GameStatus.DEALER_WINS -> "Magnus"
         GameStatus.PLAYER_WINS -> nickOfPlayer
-        GameStatus.NOT_CONCLUDED -> "ikke bestemt!"
     }
 }
