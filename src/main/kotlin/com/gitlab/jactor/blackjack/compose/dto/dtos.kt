@@ -5,7 +5,8 @@ data class GameOfBlackjackDto(
     var playerHand: List<CardDto> = emptyList(),
     var dealerHand: List<CardDto> = emptyList(),
     var status: StatusDto? = null,
-    var error: String? = null
+    var error: String? = null,
+    var gameType: GameTypeDto? = null
 )
 
 data class CardDto(
@@ -21,11 +22,11 @@ data class StatusDto(
 )
 
 data class ActionDto(
-    var type: GameType = GameType.AUTOMATIC,
+    var type: GameTypeDto = GameTypeDto.AUTOMATIC,
     var value: Action? = null
 )
 
 @Suppress("unused") // used in lamda
-enum class GameType { AUTOMATIC, MANUAL }
+enum class GameTypeDto { AUTOMATIC, MANUAL }
 @Suppress("unused") // used in lamda
 enum class Action { START, HIT, END }

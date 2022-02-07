@@ -79,8 +79,10 @@ internal fun composeBlackjack(playerName: PlayerName) {
 private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
         Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-            Text("Dealer")
+            Text("Dealer - ${gameOfBlackjack.status.dealerScore}")
+        }
 
+        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
             gameOfBlackjack.dealerHand.forEach {
                 Text(
                     text = it.text,
@@ -93,8 +95,10 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
         }
 
         Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-            Text(text = "Player")
+            Text(text = "Player - ${gameOfBlackjack.status.playerScore}")
+        }
 
+        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
             gameOfBlackjack.playerHand.forEach {
                 Text(
                     text = it.text,
@@ -107,7 +111,7 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
         }
 
         Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-            Text("Resultat")
+            Text("${if (gameOfBlackjack.isAutomsticGame()) "Spillets" else "Rundens"} resultat")
             Text(
                 text = gameOfBlackjack.displayWinner(),
                 color = when (gameOfBlackjack.status.fetchResultOfGame()) {
