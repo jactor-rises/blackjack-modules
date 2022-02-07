@@ -8,7 +8,8 @@ data class GameOfBlackjackDto(
     @Schema(description = "Spillerens kort") var playerHand: List<CardDto> = emptyList(),
     @Schema(description = "Delers (aka. Magnus') kort") var dealerHand: List<CardDto> = emptyList(),
     @Schema(description = "Status på spillet") var status: StatusDto? = null,
-    @Schema(description = "An error occured on the server") val error: ErrorDto? = null
+    @Schema(description = "En feil oppstod under spilling") val error: ErrorDto? = null,
+    @Schema(description = "Er dette et automatisk eller manuelt spill") val gameType: GameType = GameType.AUTOMATIC
 )
 
 @Schema(description = "Et spillekort")

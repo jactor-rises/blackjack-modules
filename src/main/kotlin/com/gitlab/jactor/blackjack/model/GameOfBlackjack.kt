@@ -2,6 +2,7 @@ package com.gitlab.jactor.blackjack.model
 
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
 import com.gitlab.jactor.blackjack.dto.GameStatus
+import com.gitlab.jactor.blackjack.dto.GameType
 import com.gitlab.jactor.blackjack.dto.StatusDto
 
 data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val isManualGame: Boolean = false) {
@@ -54,6 +55,7 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         nickOfPlayer = nick,
         playerHand = playerHand.map { it.toDto() },
         dealerHand = dealerHand.map { it.toDto() },
+        gameType = if (isManualGame) GameType.MANUAL else GameType.AUTOMATIC,
         status = StatusDto(
             result = GameStatus.valueOf(fetchState().name),
             dealerScore = dealerScore,

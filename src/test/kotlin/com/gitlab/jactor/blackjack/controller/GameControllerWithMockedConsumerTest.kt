@@ -7,6 +7,7 @@ import com.gitlab.jactor.blackjack.dto.CardDto
 import com.gitlab.jactor.blackjack.dto.GameOfBlackjackDto
 import com.gitlab.jactor.blackjack.dto.GameType
 import com.gitlab.jactor.blackjack.model.TestUtil.aDeckOfCardsStartingWith
+import com.gitlab.jactor.blackjack.model.TestUtil.aFullDeckOfCards
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -142,5 +143,33 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
         )
 
         assertThat(endAgainResponse.statusCode).`as`("completing already ended game").isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    fun `should state game as automatic when an automatic game is played`() {
+        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(aFullDeckOfCards())
+
+        val response = testRestTemplate.exchange(
+            "/play/jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.AUTOMATIC)),
+            GameOfBlackjackDto::class.java
+        )
+
+        assertThat(response?.body?.gameType).isEqualTo(GameType.AUTOMATIC)
+    }
+
+    @Test
+    fun `should state game as manual when a manual game is played`() {
+        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(aFullDeckOfCards())
+
+        val response = testRestTemplate.exchange(
+            "/play/jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.START)),
+            GameOfBlackjackDto::class.java
+        )
+
+        assertThat(response?.body?.gameType).isEqualTo(GameType.MANUAL)
     }
 }
