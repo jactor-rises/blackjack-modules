@@ -27,6 +27,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+private val ARRANGE_5DP_SPACING = Arrangement.spacedBy(5.dp)
+
 @Composable
 internal fun composeBlackjack(playerName: PlayerName) {
 
@@ -39,8 +41,8 @@ internal fun composeBlackjack(playerName: PlayerName) {
             var gameOfBlackjack: GameOfBlackjack? by remember { mutableStateOf(null) }
 
             Row {
-                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                    Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
+                    Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                         Button(
                             onClick = {
                                 CoroutineScope(Dispatchers.Main).launch {
@@ -64,7 +66,6 @@ internal fun composeBlackjack(playerName: PlayerName) {
                         }
                     }
 
-
                     gameOfBlackjack?.let {
                         composeGameOfBlackjack(it)
                     }
@@ -75,12 +76,12 @@ internal fun composeBlackjack(playerName: PlayerName) {
 }
 
 @Composable
-private fun composeGameOfBlackjack(it: GameOfBlackjack) {
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
+        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
             Text("Dealer")
 
-            it.dealerHand.forEach {
+            gameOfBlackjack.dealerHand.forEach {
                 Text(
                     text = it.text,
                     color = when (it.color) {
@@ -91,10 +92,10 @@ private fun composeGameOfBlackjack(it: GameOfBlackjack) {
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
             Text(text = "Player")
 
-            it.playerHand.forEach {
+            gameOfBlackjack.playerHand.forEach {
                 Text(
                     text = it.text,
                     color = when (it.color) {
@@ -105,11 +106,11 @@ private fun composeGameOfBlackjack(it: GameOfBlackjack) {
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
             Text("Resultat")
             Text(
-                text = it.displayWinner(),
-                color = when (it.status.fetchResultOfGame()) {
+                text = gameOfBlackjack.displayWinner(),
+                color = when (gameOfBlackjack.status.fetchResultOfGame()) {
                     GameStatus.DEALER_WINS -> Color.DarkGray
                     GameStatus.PLAYER_WINS -> Color.Blue
                 }
