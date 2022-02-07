@@ -1,8 +1,9 @@
 package com.gitlab.jactor.blackjack.compose.service
 
 import com.gitlab.jactor.blackjack.compose.ApplicationConfiguration
-import com.gitlab.jactor.blackjack.compose.model.Action
+import com.gitlab.jactor.blackjack.compose.model.ActionInternal
 import com.gitlab.jactor.blackjack.compose.model.GameStatus
+import com.gitlab.jactor.blackjack.compose.model.GameType
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assumptions.assumeThat
@@ -52,18 +53,20 @@ internal class BlackjackServiceIntegrationTest {
                     assertThat(gameOfBlackjack.status.playerScore).`as`("status.playerScore ($gameOfBlackjack)").isGreaterThanOrEqualTo(17)
                 }
             },
-            { assertThat(gameOfBlackjack.status.isGameCompleted).`as`("status.isGameCompleted ($gameOfBlackjack)").isTrue() }
+            { assertThat(gameOfBlackjack.status.isGameCompleted).`as`("status.isGameCompleted ($gameOfBlackjack)").isTrue() },
+            { assertThat(gameOfBlackjack.gameType).`as`("gameType").isEqualTo(GameType.AUTOMATIC) }
         )
     }
 
     @RepeatedTest(25)
     fun `should play a manual game of blackjack`() {
-        val gameOfBlackjack = blackjackConsumer.playManual(playerName = PlayerName("jactor"), action = Action.START)
+        val gameOfBlackjack = blackjackConsumer.playManual(playerName = PlayerName("jactor"), actionInternal = ActionInternal.START)
 
         assertAll(
             { assertThat(gameOfBlackjack.playerHand).`as`("playerHand ($gameOfBlackjack)").hasSize(2) },
             { assertThat(gameOfBlackjack.status.dealerScore).`as`("status.dealerScore ($gameOfBlackjack)").isLessThanOrEqualTo(21) },
-            { assertThat(gameOfBlackjack.status.playerScore).`as`("status.playerScore ($gameOfBlackjack)").isLessThanOrEqualTo(21) }
+            { assertThat(gameOfBlackjack.status.playerScore).`as`("status.playerScore ($gameOfBlackjack)").isLessThanOrEqualTo(21) },
+            { assertThat(gameOfBlackjack.gameType).`as`("gameType").isEqualTo(GameType.MANUAL) }
         )
     }
 }
