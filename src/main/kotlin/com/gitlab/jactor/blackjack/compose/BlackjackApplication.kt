@@ -12,6 +12,7 @@ import com.gitlab.jactor.blackjack.compose.Constants.WHAT_NAME
 import com.gitlab.jactor.blackjack.compose.display.composeBlackjack
 import com.gitlab.jactor.blackjack.compose.display.composePlayerName
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
+import kotlinx.coroutines.Dispatchers
 
 fun main() = application {
     var playerName: PlayerName? by remember { mutableStateOf(null) }
@@ -30,7 +31,7 @@ fun main() = application {
             title = "Blackjack",
             state = rememberWindowState(width = 900.dp, height = 900.dp)
         ) {
-            composeBlackjack(playerName!!)
+            composeBlackjack(playerName!!, Dispatchers.Main)
         }
     }
 }
