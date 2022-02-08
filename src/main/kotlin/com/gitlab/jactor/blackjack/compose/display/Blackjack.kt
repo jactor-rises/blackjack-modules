@@ -52,9 +52,9 @@ internal fun composeBlackjack(playerName: PlayerName, scope: MainCoroutineDispat
                     Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                         Button(
                             onClick = {
-                                CoroutineScope(Dispatchers.Main).launch {
+                                CoroutineScope(Dispatchers.IO).launch {
                                     val game = blackjackState?.play(GameType.AUTOMATIC, playerName)
-                                    gameOfBlackjack = game
+                                    withContext(scope) { gameOfBlackjack = game }
                                 }
                             }
                         ) {
@@ -63,9 +63,9 @@ internal fun composeBlackjack(playerName: PlayerName, scope: MainCoroutineDispat
 
                         Button(
                             onClick = {
-                                CoroutineScope(Dispatchers.Main).launch {
+                                CoroutineScope(Dispatchers.IO).launch {
                                     val game = blackjackState?.play(GameType.MANUAL, playerName)
-                                    gameOfBlackjack = game
+                                    withContext(scope) { gameOfBlackjack = game }
                                 }
                             }
                         ) {
