@@ -1,5 +1,6 @@
 package com.gitlab.jactor.blackjack.compose.display
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.Constants
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 
+@Preview
 @Composable
 internal fun composePlayerName(): PlayerName? {
     var newName by remember { mutableStateOf("") }
