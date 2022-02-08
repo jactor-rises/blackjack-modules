@@ -10,7 +10,7 @@ enum class Face(val value: String) {
 
 enum class GameStatus { PLAYER_WINS, DEALER_WINS }
 
-enum class Suit { HEARTS, DIAMONDS, SPADES, CLUBS }
+enum class Suit(val char: Char) { HEARTS('H'), DIAMONDS('D'), SPADES('S'), CLUBS('C'); }
 
 enum class GameType {
     AUTOMATIC, MANUAL;
@@ -24,7 +24,7 @@ enum class GameType {
     }
 
     companion object {
-        fun     valueOf(gameTypeDto: GameTypeDto): GameType {
+        fun valueOf(gameTypeDto: GameTypeDto): GameType {
             values().forEach {
                 if (it.isSameAs(gameTypeDto)) {
                     return it
