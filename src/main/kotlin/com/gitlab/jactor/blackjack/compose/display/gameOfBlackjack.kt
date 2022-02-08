@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -85,6 +86,18 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
                     gameOfBlackjack?.let {
                         composeGameOfBlackjack(it)
                     }
+
+                    if (gameOfBlackjack?.status?.isGameCompleted == true) {
+                        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+                            Button(
+                                onClick = {
+                                    println("i am outtahere...")
+                                }
+                            ) {
+                                Text("Exit")
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -94,15 +107,16 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
 @Composable
 private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
-        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_50DP_SPACING) {
+        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_50DP_SPACING) {
             Text("Dealer - ${gameOfBlackjack.status.dealerScore}")
         }
 
-        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_15DP_SPACING) {
+        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_15DP_SPACING) {
             val imageModifier = Modifier
                 .height(95.dp)
                 .width(70.dp)
                 .align(alignment = Alignment.CenterVertically)
+                .shadow(8.dp)
 
             gameOfBlackjack.dealerHand.forEach {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -113,21 +127,22 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
                         contentScale = ContentScale.Fit,
                     )
 
-                    Text(text = it.suit.name.lowercase(), color = withColor(it))
-                    Text(text = it.face.name.lowercase(), color = withColor(it))
+                    Text(text = it.suit.name.lowercase(), color = withColor(it.color))
+                    Text(text = it.face.name.lowercase(), color = withColor(it.color))
                 }
             }
         }
 
-        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
             Text(text = "Player - ${gameOfBlackjack.status.playerScore}")
         }
 
-        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_15DP_SPACING) {
+        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_15DP_SPACING) {
             val imageModifier = Modifier
                 .height(95.dp)
                 .width(70.dp)
                 .align(alignment = Alignment.CenterVertically)
+                .shadow(8.dp)
 
             gameOfBlackjack.playerHand.forEach {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -138,13 +153,13 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
                         contentScale = ContentScale.Fit,
                     )
 
-                    Text(text = it.suit.name.lowercase(), color = withColor(it))
-                    Text(text = it.face.name.lowercase(), color = withColor(it))
+                    Text(text = it.suit.name.lowercase(), color = withColor(it.color))
+                    Text(text = it.face.name.lowercase(), color = withColor(it.color))
                 }
             }
         }
 
-        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
             Text("${if (gameOfBlackjack.isAutomaticGame()) "Spillets" else "Rundens"} resultat:")
             Text(
                 text = gameOfBlackjack.displayWinner(),
@@ -157,10 +172,9 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
     }
 }
 
-private fun withColor(it: Card): Color {
-    val color = when (it.color) {
+private fun withColor(color: Card.Color): Color {
+    return when (color) {
         Card.Color.BLACK -> Color.Black
         Card.Color.RED -> Color.Red
     }
-    return color
 }
