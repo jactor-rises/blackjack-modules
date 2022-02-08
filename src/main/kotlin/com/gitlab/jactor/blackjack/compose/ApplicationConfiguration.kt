@@ -25,7 +25,7 @@ open class ApplicationConfiguration {
     private val gameUrl: String = ""
 
     @Bean
-    open fun blackjackFonsumer(): BlackjackConsumer {
+    open fun blackjackConsumer(): BlackjackConsumer {
         val restTemplate = restTemplate()
         restTemplate.uriTemplateHandler = uriTemplateHandler()
 

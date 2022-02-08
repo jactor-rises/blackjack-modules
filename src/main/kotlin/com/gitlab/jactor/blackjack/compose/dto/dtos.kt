@@ -26,7 +26,7 @@ data class ActionDto(
     var value: Action? = null
 )
 
-@Suppress("unused") // used in lamda
+@Suppress("unused") // used in lambda
 enum class GameTypeDto { AUTOMATIC, MANUAL }
-@Suppress("unused") // used in lamda
+@Suppress("unused") // used in lambda
 enum class Action { START, HIT, END }

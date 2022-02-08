@@ -118,7 +118,7 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
         }
 
         Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-            Text("${if (gameOfBlackjack.isAutomsticGame()) "Spillets" else "Rundens"} resultat:")
+            Text("${if (gameOfBlackjack.isAutomaticGame()) "Spillets" else "Rundens"} resultat:")
             Text(
                 text = gameOfBlackjack.displayWinner(),
                 color = when (gameOfBlackjack.status.fetchResultOfGame()) {
