@@ -1,5 +1,6 @@
 package com.gitlab.jactor.blackjack.compose.display
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -128,4 +129,10 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun previewBlackjack() {
+    composeBlackjack(PlayerName("Tor Egil"), Dispatchers.Main)
 }
