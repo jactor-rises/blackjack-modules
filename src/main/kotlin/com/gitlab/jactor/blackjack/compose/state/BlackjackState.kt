@@ -9,7 +9,7 @@ import com.gitlab.jactor.blackjack.compose.service.BlackjackService
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
-class BlackjackState(private val fromContext: CoroutineContext) : Lce<GameOfBlackjack>() {
+class BlackjackState(private val fromContext: CoroutineContext) {
     private val blackjackService = ApplicationConfiguration.fetchBean(BlackjackService::class.java)
 
     suspend fun play(type: GameType, playerName: PlayerName): GameOfBlackjack {

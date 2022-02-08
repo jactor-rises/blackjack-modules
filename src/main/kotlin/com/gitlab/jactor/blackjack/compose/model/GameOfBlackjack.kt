@@ -22,5 +22,5 @@ data class GameOfBlackjack(
         GameStatus.PLAYER_WINS -> nickOfPlayer
     }
 
-    fun isAutomsticGame() = gameType == GameType.AUTOMATIC
+    fun isAutomaticGame() = gameType == GameType.AUTOMATIC
 }
