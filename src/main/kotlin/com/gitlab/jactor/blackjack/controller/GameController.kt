@@ -40,7 +40,7 @@ class GameController(private val gameService: GameService) {
         ApiResponse(responseCode = "200", description = "Status på et spill"),
         ApiResponse(
             responseCode = "400",
-            description = "Når spillet er pågående (GameType == MANUAL && Action != START) men det ikke finnes et spill for spillernavnet. (Se ErrorDto)"
+            description = "Når spillet er pågående (GameType == MANUAL && Action != START) men det ikke finnes et spill for navnet. (Se ErrorDto)"
         )
     )
     @PostMapping("/play/{nick}")

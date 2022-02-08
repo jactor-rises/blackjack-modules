@@ -14,7 +14,7 @@ data class GameOfBlackjackDto(
 
 @Schema(description = "Et spillekort")
 data class CardDto(
-    @Schema(description = "Sjanger til kort (en av hjerter, spar, ruter eller kløver)") var suit: String = "",
+    @Schema(description = "Type kort (en av hjerter, spar, ruter eller kløver)") var suit: String = "",
     @Schema(description = "Verdien til kortet") var value: String = ""
 )
 
@@ -23,7 +23,7 @@ data class StatusDto(
     @Schema(description = "Resultatet av omgangen") var result: GameStatus,
     @Schema(description = "Spillerens poengsum") var playerScore: Int,
     @Schema(description = "Delerens (aka. Magnus') poengsum") var dealerScore: Int,
-    @Schema(description = "Om spillet er automatisk ferdig") var isGameCompleted: Boolean
+    @Schema(description = "Om spillet er ferdig") var isGameCompleted: Boolean
 )
 
 enum class GameStatus { PLAYER_WINS, DEALER_WINS }
@@ -57,7 +57,7 @@ enum class Action {
     @Schema(description = "Start et nytt spill")
     START,
 
-    @Schema(description = "Trekk et kortl")
+    @Schema(description = "Trekk et kort")
     HIT,
 
     @Schema(description = "Avslutt et spill")
