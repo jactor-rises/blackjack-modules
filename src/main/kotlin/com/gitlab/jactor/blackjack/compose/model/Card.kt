@@ -4,6 +4,7 @@ import com.gitlab.jactor.blackjack.compose.dto.CardDto
 
 data class Card(val face: Face, val suit: Suit) {
     val text: String get() = "${suit}(${face})"
+    val imageFileName: String get() = "${suit.char}${face.value}.png".lowercase()
     val color: Color get() = when(suit) {
         Suit.SPADES, Suit.CLUBS -> Color.BLACK
         Suit.DIAMONDS, Suit.HEARTS -> Color.RED
