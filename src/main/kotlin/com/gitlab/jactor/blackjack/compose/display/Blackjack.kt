@@ -25,19 +25,26 @@ import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private val ARRANGE_5DP_SPACING = Arrangement.spacedBy(5.dp)
 
 @Composable
-internal fun composeBlackjack(playerName: PlayerName) {
+internal fun composeBlackjack(playerName: PlayerName, scope: MainCoroutineDispatcher) {
+    var blackjackState: BlackjackState? by remember { mutableStateOf(null) }
+
+    CoroutineScope(Dispatchers.Default).launch {
+        val defaultBlackjackState = BlackjackState(Dispatchers.IO)
+        withContext(scope) { blackjackState = defaultBlackjackState }
+    }
 
     MaterialTheme {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            val blackjackState = BlackjackState(Dispatchers.IO)
             var gameOfBlackjack: GameOfBlackjack? by remember { mutableStateOf(null) }
 
             Row {
@@ -46,7 +53,7 @@ internal fun composeBlackjack(playerName: PlayerName) {
                         Button(
                             onClick = {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    val game = blackjackState.play(GameType.AUTOMATIC, playerName)
+                                    val game = blackjackState?.play(GameType.AUTOMATIC, playerName)
                                     gameOfBlackjack = game
                                 }
                             }
@@ -57,7 +64,7 @@ internal fun composeBlackjack(playerName: PlayerName) {
                         Button(
                             onClick = {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    val game = blackjackState.play(GameType.MANUAL, playerName)
+                                    val game = blackjackState?.play(GameType.MANUAL, playerName)
                                     gameOfBlackjack = game
                                 }
                             }
@@ -111,7 +118,7 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
         }
 
         Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-            Text("${if (gameOfBlackjack.isAutomsticGame()) "Spillets" else "Rundens"} resultat")
+            Text("${if (gameOfBlackjack.isAutomsticGame()) "Spillets" else "Rundens"} resultat:")
             Text(
                 text = gameOfBlackjack.displayWinner(),
                 color = when (gameOfBlackjack.status.fetchResultOfGame()) {
