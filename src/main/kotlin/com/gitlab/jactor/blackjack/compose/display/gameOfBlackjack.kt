@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
@@ -24,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.gitlab.jactor.blackjack.compose.dto.Action
 import com.gitlab.jactor.blackjack.compose.model.Card
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameStatus
@@ -35,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.system.exitProcess
 
 private val ARRANGE_5DP_SPACING = Arrangement.spacedBy(5.dp)
 private val ARRANGE_15DP_SPACING = Arrangement.spacedBy(15.dp)
@@ -85,16 +88,29 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
 
                     gameOfBlackjack?.let {
                         composeGameOfBlackjack(it)
-                    }
 
-                    if (gameOfBlackjack?.status?.isGameCompleted == true) {
                         Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                            Button(
-                                onClick = {
-                                    println("i am outtahere...")
+                            if (it.status.isGameCompleted) {
+                                Button(
+                                    onClick = {
+                                        exitProcess(0)
+                                    }
+                                ) {
+                                    Text("Exit game!")
                                 }
-                            ) {
-                                Text("Exit")
+                            } else {
+                                Button(onClick = {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val game = blackjackState?.play(GameType.MANUAL, Action.HIT, playerName)
+                                        withContext(scope) { gameOfBlackjack = game }
+                                    }
+                                }) { Text("Hit me!") }
+                                Button(onClick = {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val game = blackjackState?.play(GameType.MANUAL, Action.END, playerName)
+                                        withContext(scope) { gameOfBlackjack = game }
+                                    }
+                                }) { Text("I stay!") }
                             }
                         }
                     }
@@ -106,7 +122,7 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
 
 @Composable
 private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = ARRANGE_5DP_SPACING) {
         Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_50DP_SPACING) {
             Text("Dealer - ${gameOfBlackjack.status.dealerScore}")
         }
@@ -159,15 +175,16 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
             }
         }
 
-        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-            Text("${if (gameOfBlackjack.isAutomaticGame()) "Spillets" else "Rundens"} resultat:")
-            Text(
-                text = gameOfBlackjack.displayWinner(),
-                color = when (gameOfBlackjack.status.fetchResultOfGame()) {
-                    GameStatus.DEALER_WINS -> Color.DarkGray
-                    GameStatus.PLAYER_WINS -> Color.Blue
-                }
-            )
+        if (gameOfBlackjack.status.isGameCompleted) {
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+                Text(
+                    text = gameOfBlackjack.displayWinner(),
+                    color = when (gameOfBlackjack.status.fetchResultOfGame()) {
+                        GameStatus.DEALER_WINS -> Color.DarkGray
+                        GameStatus.PLAYER_WINS -> Color.Blue
+                    }
+                )
+            }
         }
     }
 }
