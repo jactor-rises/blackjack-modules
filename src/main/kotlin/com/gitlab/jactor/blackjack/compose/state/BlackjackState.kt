@@ -1,6 +1,7 @@
 package com.gitlab.jactor.blackjack.compose.state
 
 import com.gitlab.jactor.blackjack.compose.ApplicationConfiguration
+import com.gitlab.jactor.blackjack.compose.dto.Action
 import com.gitlab.jactor.blackjack.compose.model.ActionInternal
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameType
@@ -13,9 +14,21 @@ class BlackjackState(private val fromContext: CoroutineContext) {
     private val blackjackService = ApplicationConfiguration.fetchBean(BlackjackService::class.java)
 
     suspend fun play(type: GameType, playerName: PlayerName): GameOfBlackjack {
-        return when(type) {
-            GameType.AUTOMATIC -> withContext(fromContext) { blackjackService.playAutomatic(playerName) }
-            GameType.MANUAL -> withContext(fromContext) { blackjackService.playManual(playerName, ActionInternal.START) }
+        return play(type = type, action = null, playerName = playerName)
+    }
+
+    suspend fun play(type: GameType, action: Action?, playerName: PlayerName): GameOfBlackjack {
+        if (action == null) {
+            return when (type) {
+                GameType.AUTOMATIC -> withContext(fromContext) { blackjackService.playAutomatic(playerName) }
+                GameType.MANUAL -> withContext(fromContext) { blackjackService.playManual(playerName, ActionInternal.START) }
+            }
+        }
+
+        return when (action) {
+            Action.END -> withContext(fromContext) { blackjackService.playManual(playerName, ActionInternal.END) }
+            Action.HIT -> withContext(fromContext) { blackjackService.playManual(playerName, ActionInternal.HIT) }
+            Action.START -> withContext(fromContext) { blackjackService.playManual(playerName, ActionInternal.START) }
         }
     }
 }
