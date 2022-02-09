@@ -7,28 +7,20 @@ import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameType
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.service.BlackjackService
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
 
-class BlackjackState(private val fromContext: CoroutineContext) {
+class BlackjackState {
     private val blackjackService = ApplicationConfiguration.fetchBean(BlackjackService::class.java)
 
-    suspend fun play(type: GameType, playerName: PlayerName): GameOfBlackjack {
-        return play(type = type, action = null, playerName = playerName)
-    }
-
-    suspend fun play(type: GameType, action: Action?, playerName: PlayerName): GameOfBlackjack {
-        if (action == null) {
-            return when (type) {
-                GameType.AUTOMATIC -> withContext(fromContext) { blackjackService.playAutomatic(playerName) }
-                GameType.MANUAL -> withContext(fromContext) { blackjackService.playManual(playerName, ActionInternal.START) }
-            }
+    fun play(gameType: GameType, action: Action?, playerName: PlayerName): GameOfBlackjack {
+        if (gameType == GameType.AUTOMATIC) {
+            return blackjackService.playAutomatic(playerName)
         }
 
         return when (action) {
-            Action.END -> withContext(fromContext) { blackjackService.playManual(playerName, ActionInternal.END) }
-            Action.HIT -> withContext(fromContext) { blackjackService.playManual(playerName, ActionInternal.HIT) }
-            Action.START -> withContext(fromContext) { blackjackService.playManual(playerName, ActionInternal.START) }
+            Action.END -> blackjackService.playManual(playerName, ActionInternal.END)
+            Action.HIT -> blackjackService.playManual(playerName, ActionInternal.HIT)
+            Action.START -> blackjackService.playManual(playerName, ActionInternal.START)
+            else -> throw IllegalArgumentException("Action kan ikke være null ved manuelle spill!")
         }
     }
 }

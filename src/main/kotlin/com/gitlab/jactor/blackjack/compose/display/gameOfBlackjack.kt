@@ -49,7 +49,7 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
     var blackjackState: BlackjackState? by remember { mutableStateOf(null) }
 
     CoroutineScope(Dispatchers.Default).launch {
-        val defaultBlackjackState = BlackjackState(Dispatchers.IO)
+        val defaultBlackjackState = BlackjackState()
         withContext(scope) { blackjackState = defaultBlackjackState }
     }
 
@@ -66,7 +66,7 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
                         Button(
                             onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    val game = blackjackState?.play(GameType.AUTOMATIC, playerName)
+                                    val game = blackjackState?.play(GameType.AUTOMATIC, null, playerName)
                                     withContext(scope) { gameOfBlackjack = game }
                                 }
                             }
@@ -77,7 +77,7 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
                         Button(
                             onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    val game = blackjackState?.play(GameType.MANUAL, playerName)
+                                    val game = blackjackState?.play(GameType.MANUAL, Action.START, playerName)
                                     withContext(scope) { gameOfBlackjack = game }
                                 }
                             }
@@ -97,6 +97,19 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
                                     }
                                 ) {
                                     Text("Exit game!")
+                                }
+
+                                val gameType = gameOfBlackjack?.gameType ?: GameType.AUTOMATIC
+
+                                Button(
+                                    onClick = {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            val game = blackjackState?.play(gameType, Action.START, playerName)
+                                            withContext(scope) { gameOfBlackjack = game }
+                                        }
+                                    }
+                                ) {
+                                    Text("Retry game!")
                                 }
                             } else {
                                 Button(onClick = {

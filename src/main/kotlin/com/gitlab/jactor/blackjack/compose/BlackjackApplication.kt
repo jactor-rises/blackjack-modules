@@ -29,7 +29,7 @@ fun main() = application {
         Window(
             onCloseRequest = { exitApplication() },
             title = "Blackjack",
-            state = rememberWindowState(width = 900.dp, height = 900.dp)
+            state = rememberWindowState(width = 800.dp, height = 500.dp)
         ) {
             composeBlackjack(playerName!!, Dispatchers.Main)
         }
