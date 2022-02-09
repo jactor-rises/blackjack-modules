@@ -41,7 +41,7 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         println(
             """
                 /=================================
-                | ${fetchState()}
+                | ${displayStateOfGame()}
                 +---------------------------------
                 | $dealerString | $dealerScore | ${dealerHandAsString()}
                 | $playerString | $playerScore | ${playerHandAsString()}
@@ -49,6 +49,11 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         )
 
         return this
+    }
+
+    private fun displayStateOfGame() = when (fetchState()) {
+        State.DEALER_WINS -> "Magnus vant ${if (isGameCompleted()) "spillet" else "runden"}"
+        State.PLAYER_WINS -> "Spilleren vant ${if (isGameCompleted()) "spillet" else "runden"}"
     }
 
     fun toDto(action: Action?) = GameOfBlackjackDto(
