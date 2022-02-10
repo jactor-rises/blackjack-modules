@@ -11,7 +11,9 @@ import com.gitlab.jactor.blackjack.compose.service.BlackjackService
 class BlackjackState {
     private val blackjackService = ApplicationConfiguration.fetchBean(BlackjackService::class.java)
 
-    fun play(gameType: GameType, action: Action?, playerName: PlayerName): GameOfBlackjack {
+    fun playAutomatic(playerName: PlayerName) = play(GameType.AUTOMATIC, null, playerName)
+    fun playManual(action: Action, playerName: PlayerName) = play(GameType.MANUAL, action, playerName)
+    private fun play(gameType: GameType, action: Action?, playerName: PlayerName): GameOfBlackjack {
         if (gameType == GameType.AUTOMATIC) {
             return blackjackService.playAutomatic(playerName)
         }
