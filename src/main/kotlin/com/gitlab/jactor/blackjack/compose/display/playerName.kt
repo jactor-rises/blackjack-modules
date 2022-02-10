@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.Constants
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
@@ -27,7 +28,7 @@ import com.gitlab.jactor.blackjack.compose.model.PlayerName
 @Preview
 @Composable
 internal fun composePlayerName(): PlayerName? {
-    var newName by remember { mutableStateOf("") }
+    var nameState by remember { mutableStateOf(TextFieldValue()) }
     var playerName: PlayerName? by remember { mutableStateOf(null) }
 
     MaterialTheme {
@@ -36,24 +37,24 @@ internal fun composePlayerName(): PlayerName? {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            TextField(
-                value = "",
+            OutlinedTextField(
+                value = nameState,
                 modifier = Modifier.padding(end = 16.dp).weight(1f),
                 label = { Text(Constants.WHAT_NAME) },
-                placeholder = { Text(newName) },
+                leadingIcon = { Icon(Icons.Outlined.Person, "Name") },
+                placeholder = { Text(Constants.DEFAULT_PLAYER_NAME) },
                 onValueChange = { newValue ->
-                    if (newValue == "\n") {
-                        playerName = PlayerName(fetchPlayerName(newName))
+                    if (newValue.text.endsWith('\n')) {
+                        playerName = PlayerName(nameState.text.trim())
                     } else {
-                        newName = newValueFrom(newName, newValue)
+                        nameState = newValue
                     }
-                },
-                leadingIcon = { Icon(Icons.Filled.Person, "Name") },
+                }
             )
 
             Button(
                 onClick = {
-                    playerName = PlayerName(fetchPlayerName(newName))
+                    playerName = PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME })
                 }
             ) {
                 Icon(Icons.Outlined.Send, "OK")
@@ -62,14 +63,4 @@ internal fun composePlayerName(): PlayerName? {
     }
 
     return playerName
-}
-
-private fun fetchPlayerName(newName: String) = newName.ifBlank { "Player One" }
-
-private fun newValueFrom(newName: String?, newValue: String): String {
-    return if (newName != null) {
-        "$newName$newValue"
-    } else {
-        newValue
-    }
 }
