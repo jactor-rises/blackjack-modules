@@ -66,7 +66,7 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
                         Button(
                             onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    val game = blackjackState?.play(GameType.AUTOMATIC, null, playerName)
+                                    val game = blackjackState?.playAutomatic(playerName)
                                     withContext(scope) { gameOfBlackjack = game }
                                 }
                             }
@@ -77,7 +77,7 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
                         Button(
                             onClick = {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    val game = blackjackState?.play(GameType.MANUAL, Action.START, playerName)
+                                    val game = blackjackState?.playManual(Action.START, playerName)
                                     withContext(scope) { gameOfBlackjack = game }
                                 }
                             }
@@ -99,12 +99,16 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
                                     Text("Exit game!")
                                 }
 
-                                val gameType = gameOfBlackjack?.gameType ?: GameType.AUTOMATIC
-
                                 Button(
                                     onClick = {
                                         CoroutineScope(Dispatchers.IO).launch {
-                                            val game = blackjackState?.play(gameType, Action.START, playerName)
+
+                                            val game = when (gameOfBlackjack?.gameType) {
+                                                GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)
+                                                GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)
+                                                else -> null
+                                            }
+
                                             withContext(scope) { gameOfBlackjack = game }
                                         }
                                     }
@@ -114,13 +118,13 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
                             } else {
                                 Button(onClick = {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        val game = blackjackState?.play(GameType.MANUAL, Action.HIT, playerName)
+                                        val game = blackjackState?.playManual(Action.HIT, playerName)
                                         withContext(scope) { gameOfBlackjack = game }
                                     }
                                 }) { Text("Hit me!") }
                                 Button(onClick = {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        val game = blackjackState?.play(GameType.MANUAL, Action.END, playerName)
+                                        val game = blackjackState?.playManual(Action.END, playerName)
                                         withContext(scope) { gameOfBlackjack = game }
                                     }
                                 }) { Text("I stay!") }
