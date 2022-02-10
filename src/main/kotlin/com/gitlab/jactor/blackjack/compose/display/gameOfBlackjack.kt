@@ -63,27 +63,21 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
             Row {
                 Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
                     Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                        Button(
-                            onClick = {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    val game = blackjackState?.playAutomatic(playerName)
-                                    withContext(scope) { gameOfBlackjack = game }
-                                }
-                            }
-                        ) {
-                            Text("Play automatic game of blackjack")
-                        }
+                        PlayButton(
+                            enabled = blackjackState != null,
+                            text = "Play automatic game of blackjack",
+                            scope = scope,
+                            onClick = { blackjackState?.playAutomatic(playerName)!! },
+                            gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
+                        )
 
-                        Button(
-                            onClick = {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    val game = blackjackState?.playManual(Action.START, playerName)
-                                    withContext(scope) { gameOfBlackjack = game }
-                                }
-                            }
-                        ) {
-                            Text("Play manual game of blackjack")
-                        }
+                        PlayButton(
+                            enabled = blackjackState != null,
+                            text = "Play manual game of blackjack",
+                            scope = scope,
+                            onClick = { blackjackState?.playManual(Action.START, playerName)!! },
+                            gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
+                        )
                     }
 
                     gameOfBlackjack?.let {
@@ -91,43 +85,41 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
 
                         Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                             if (it.status.isGameCompleted) {
-                                Button(
-                                    onClick = {
-                                        exitProcess(0)
-                                    }
-                                ) {
+                                Button(onClick = { exitProcess(0) }) {
                                     Text("Exit game!")
                                 }
 
-                                Button(
+                                PlayButton(
+                                    text = "Retry game!",
+                                    scope = scope,
                                     onClick = {
-                                        CoroutineScope(Dispatchers.IO).launch {
-
-                                            val game = when (gameOfBlackjack?.gameType) {
-                                                GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)
-                                                GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)
-                                                else -> null
-                                            }
-
-                                            withContext(scope) { gameOfBlackjack = game }
+                                        when (gameOfBlackjack?.gameType!!) {
+                                            GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)!!
+                                            GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)!!
                                         }
-                                    }
-                                ) {
-                                    Text("Retry game!")
-                                }
+                                    }, gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
+                                )
                             } else {
-                                Button(onClick = {
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        val game = blackjackState?.playManual(Action.HIT, playerName)
-                                        withContext(scope) { gameOfBlackjack = game }
-                                    }
-                                }) { Text("Hit me!") }
-                                Button(onClick = {
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        val game = blackjackState?.playManual(Action.END, playerName)
-                                        withContext(scope) { gameOfBlackjack = game }
-                                    }
-                                }) { Text("I stay!") }
+                                PlayButton(
+                                    text = "Hit me!",
+                                    scope = scope,
+                                    onClick = {
+                                        blackjackState?.playManual(
+                                            Action.HIT,
+                                            playerName
+                                        )!!
+                                    }, gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
+                                )
+                                PlayButton(
+                                    text = "I stay!",
+                                    scope = scope,
+                                    onClick = {
+                                        blackjackState?.playManual(
+                                            Action.END,
+                                            playerName
+                                        )!!
+                                    }, gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
+                                )
                             }
                         }
                     }
@@ -136,6 +128,26 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
         }
     }
 }
+
+@Composable
+private fun PlayButton(
+    enabled: Boolean = true,
+    text: String,
+    scope: MainCoroutineDispatcher,
+    onClick: () -> GameOfBlackjack,
+    gameConsumer: (GameOfBlackjack?) -> Unit
+) {
+
+    Button(enabled = enabled, onClick = {
+        CoroutineScope(Dispatchers.IO).launch {
+            val game = onClick.invoke()
+            withContext(scope) { gameConsumer.invoke(game) }
+        }
+    }) {
+        Text(text)
+    }
+}
+
 
 @Composable
 private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
