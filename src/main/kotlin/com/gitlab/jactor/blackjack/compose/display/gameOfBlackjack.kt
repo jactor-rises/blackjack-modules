@@ -63,21 +63,9 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
             Row {
                 Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
                     Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                        PlayButton(
-                            enabled = blackjackState != null,
-                            text = "Play automatic game of blackjack",
-                            scope = scope,
-                            onClick = { blackjackState?.playAutomatic(playerName)!! },
-                            gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
-                        )
-
-                        PlayButton(
-                            enabled = blackjackState != null,
-                            text = "Play manual game of blackjack",
-                            scope = scope,
-                            onClick = { blackjackState?.playManual(Action.START, playerName)!! },
-                            gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
-                        )
+                        composePlayAutomaticAndManualButtons(blackjackState, scope, playerName) { played: GameOfBlackjack? ->
+                            gameOfBlackjack = played
+                        }
                     }
 
                     gameOfBlackjack?.let {
@@ -85,41 +73,13 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
 
                         Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                             if (it.status.isGameCompleted) {
-                                Button(onClick = { exitProcess(0) }) {
-                                    Text("Exit game!")
+                                displayExitAndRetryButtons(scope, gameOfBlackjack, blackjackState, playerName) { played: GameOfBlackjack? ->
+                                    gameOfBlackjack = played
                                 }
-
-                                PlayButton(
-                                    text = "Retry game!",
-                                    scope = scope,
-                                    onClick = {
-                                        when (gameOfBlackjack?.gameType!!) {
-                                            GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)!!
-                                            GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)!!
-                                        }
-                                    }, gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
-                                )
                             } else {
-                                PlayButton(
-                                    text = "Hit me!",
-                                    scope = scope,
-                                    onClick = {
-                                        blackjackState?.playManual(
-                                            Action.HIT,
-                                            playerName
-                                        )!!
-                                    }, gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
-                                )
-                                PlayButton(
-                                    text = "I stay!",
-                                    scope = scope,
-                                    onClick = {
-                                        blackjackState?.playManual(
-                                            Action.END,
-                                            playerName
-                                        )!!
-                                    }, gameConsumer = { played: GameOfBlackjack? -> gameOfBlackjack = played }
-                                )
+                                composeHitMeAndStayButtons(scope, blackjackState, playerName) { played: GameOfBlackjack? ->
+                                    gameOfBlackjack = played
+                                }
                             }
                         }
                     }
@@ -127,6 +87,83 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
             }
         }
     }
+}
+
+@Composable
+private fun composePlayAutomaticAndManualButtons(
+    blackjackState: BlackjackState?,
+    scope: MainCoroutineDispatcher,
+    playerName: PlayerName,
+    gameConsumer: (GameOfBlackjack?) -> Unit
+) {
+    PlayButton(
+        enabled = blackjackState != null,
+        text = "Play automatic game of blackjack",
+        scope = scope,
+        onClick = { blackjackState?.playAutomatic(playerName)!! },
+        gameConsumer = gameConsumer
+    )
+
+    PlayButton(
+        enabled = blackjackState != null,
+        text = "Play manual game of blackjack",
+        scope = scope,
+        onClick = { blackjackState?.playManual(Action.START, playerName)!! },
+        gameConsumer = gameConsumer
+    )
+}
+
+@Composable
+private fun displayExitAndRetryButtons(
+    scope: MainCoroutineDispatcher,
+    gameOfBlackjack: GameOfBlackjack?,
+    blackjackState: BlackjackState?,
+    playerName: PlayerName,
+    gameConsumer: (GameOfBlackjack?) -> Unit
+) {
+    Button(onClick = { exitProcess(0) }) {
+        Text("Exit game!")
+    }
+
+    PlayButton(
+        text = "Retry game!",
+        scope = scope,
+        onClick = {
+            when (gameOfBlackjack?.gameType!!) {
+                GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)!!
+                GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)!!
+            }
+        }, gameConsumer = gameConsumer
+    )
+}
+
+@Composable
+private fun composeHitMeAndStayButtons(
+    scope: MainCoroutineDispatcher,
+    blackjackState: BlackjackState?,
+    playerName: PlayerName,
+    gameConsumer: (GameOfBlackjack?) -> Unit
+) {
+    PlayButton(
+        text = "Hit me!",
+        scope = scope,
+        onClick = {
+            blackjackState?.playManual(
+                Action.HIT,
+                playerName
+            )!!
+        }, gameConsumer = gameConsumer
+    )
+    PlayButton(
+        text = "I stay!",
+        scope = scope,
+        onClick = {
+            blackjackState?.playManual(
+                Action.END,
+                playerName
+            )!!
+        }, gameConsumer = gameConsumer
+    )
 }
 
 @Composable
