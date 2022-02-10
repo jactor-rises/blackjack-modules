@@ -17,10 +17,8 @@ data class GameOfBlackjack(
         gameType = GameType.valueOf(gameOfBlackjackDto.gameType ?: throw IllegalStateException("A game must have a GameType"))
     )
 
-    fun displayWinner() = "Vinneren er " + when (status.fetchResultOfGame()) {
+    fun displayWinner(playerName: PlayerName) = "Vinneren er " + when (status.fetchResultOfGame()) {
         GameStatus.DEALER_WINS -> "Magnus"
-        GameStatus.PLAYER_WINS -> nickOfPlayer
+        GameStatus.PLAYER_WINS -> playerName.capitalized
     }
-
-    fun isAutomaticGame() = gameType == GameType.AUTOMATIC
 }

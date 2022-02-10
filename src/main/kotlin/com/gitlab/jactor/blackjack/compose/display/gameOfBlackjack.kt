@@ -3,7 +3,6 @@ package com.gitlab.jactor.blackjack.compose.display
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -54,43 +53,38 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
     }
 
     MaterialTheme {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            var gameOfBlackjack: GameOfBlackjack? by remember { mutableStateOf(null) }
+        var gameOfBlackjack: GameOfBlackjack? by remember { mutableStateOf(null) }
 
-            Row {
-                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
-                    Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                        Text("Hi ${playerName.name}! Magnus challenge you to a game of Blackjack.")
+        Row {
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
+                Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+                    Text("Hi ${playerName.capitalized}! Magnus challenge you to a game of Blackjack.")
+                }
+
+                Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+                    composePlayAutomaticAndManualButtons(blackjackState, scope, playerName) { played: GameOfBlackjack? ->
+                        gameOfBlackjack = played
                     }
+                }
+
+                gameOfBlackjack?.let {
+                    composeGameOfBlackjack(it, playerName)
 
                     Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                        composePlayAutomaticAndManualButtons(blackjackState, scope, playerName) { played: GameOfBlackjack? ->
-                            gameOfBlackjack = played
-                        }
-                    }
-
-                    gameOfBlackjack?.let {
-                        composeGameOfBlackjack(it)
-
-                        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                            if (it.status.isGameCompleted) {
-                                displayExitAndRetryButtons(scope, gameOfBlackjack, blackjackState, playerName) { played: GameOfBlackjack? ->
-                                    gameOfBlackjack = played
-                                }
-                            } else {
-                                composeHitMeAndStayButtons(scope, blackjackState, playerName) { played: GameOfBlackjack? ->
-                                    gameOfBlackjack = played
-                                }
+                        if (it.status.isGameCompleted) {
+                            displayExitAndRetryButtons(scope, gameOfBlackjack, blackjackState, playerName) { played: GameOfBlackjack? ->
+                                gameOfBlackjack = played
+                            }
+                        } else {
+                            composeHitMeAndStayButtons(scope, blackjackState, playerName) { played: GameOfBlackjack? ->
+                                gameOfBlackjack = played
                             }
                         }
                     }
-                }
-            }
-        }
-    }
+                } // end gcompose game of blackjack with buttons
+            } // end column
+        } // end row
+    } // end material theme
 }
 
 @Composable
@@ -191,7 +185,7 @@ private fun PlayButton(
 
 
 @Composable
-private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
+private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack, playerName: PlayerName) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = ARRANGE_5DP_SPACING) {
         Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_50DP_SPACING) {
             Text("Dealer - ${gameOfBlackjack.status.dealerScore}")
@@ -248,7 +242,7 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack) {
         if (gameOfBlackjack.status.isGameCompleted) {
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                 Text(
-                    text = gameOfBlackjack.displayWinner(),
+                    text = gameOfBlackjack.displayWinner(playerName),
                     color = when (gameOfBlackjack.status.fetchResultOfGame()) {
                         GameStatus.DEALER_WINS -> Color.DarkGray
                         GameStatus.PLAYER_WINS -> Color.Blue
