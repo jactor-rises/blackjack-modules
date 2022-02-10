@@ -63,6 +63,10 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
             Row {
                 Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
                     Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+                        Text("Hi ${playerName.name}! Magnus challenge you to a game of Blackjack.")
+                    }
+
+                    Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                         composePlayAutomaticAndManualButtons(blackjackState, scope, playerName) { played: GameOfBlackjack? ->
                             gameOfBlackjack = played
                         }
