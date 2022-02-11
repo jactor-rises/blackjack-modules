@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -56,7 +57,7 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
         var gameOfBlackjack: GameOfBlackjack? by remember { mutableStateOf(null) }
 
         Row {
-            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = ARRANGE_5DP_SPACING) {
+            Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5DP_SPACING) {
                 Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                     Text("Hi ${playerName.capitalized}! Magnus challenge you to a game of Blackjack.")
                 }
@@ -81,7 +82,7 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), s
                             }
                         }
                     }
-                } // end gcompose game of blackjack with buttons
+                } // end compose game of blackjack with buttons
             } // end column
         } // end row
     } // end material theme
@@ -182,7 +183,6 @@ private fun PlayButton(
         Text(text)
     }
 }
-
 
 @Composable
 private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack, playerName: PlayerName) {
