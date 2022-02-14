@@ -3,14 +3,17 @@ package com.gitlab.jactor.blackjack.compose.display
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +27,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.ApplicationConfiguration
 import com.gitlab.jactor.blackjack.compose.dto.Action
@@ -33,11 +37,9 @@ import com.gitlab.jactor.blackjack.compose.model.GameStatus
 import com.gitlab.jactor.blackjack.compose.model.GameType
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
-import kotlinx.coroutines.CoroutineScope
+import com.gitlab.jactor.blackjack.compose.state.Lce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.system.exitProcess
 
 private val ARRANGE_5DP_SPACING = Arrangement.spacedBy(5.dp)
@@ -48,135 +50,89 @@ private val ARRANGE_50DP_SPACING = Arrangement.spacedBy(50.dp)
 @Preview
 internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), runScope: MainCoroutineDispatcher = Dispatchers.Main) {
     var blackjackState: BlackjackState? by remember { mutableStateOf(null) }
-    ApplicationConfiguration.loadBlackjackState(runScope) { loadedState: BlackjackState -> blackjackState = loadedState }
+    var gameState: Lce<GameOfBlackjack> by remember { mutableStateOf(Lce.Loading as Lce<GameOfBlackjack>) }
+
+    ApplicationConfiguration.loadBlackjackState(
+        runScope = runScope,
+        blackjackStateConsumer = { loadedState: BlackjackState -> blackjackState = loadedState },
+        gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
+    )
 
     MaterialTheme {
-        var gameOfBlackjack: GameOfBlackjack? by remember { mutableStateOf(null) }
-
         Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5DP_SPACING) {
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                 Text("Hi ${playerName.capitalized}! Magnus challenge you to a game of Blackjack.")
             }
 
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                composePlayAutomaticAndManualButtons(blackjackState, runScope, playerName) { played: GameOfBlackjack? ->
-                    gameOfBlackjack = played
-                }
+                composePlayAutomaticAndManualButtons(blackjackState, playerName)
             }
 
-            gameOfBlackjack?.let {
-                composeGameOfBlackjack(it, playerName)
+            when (gameState) {
+                is Lce.Loading -> LoadingUI(loadingContent = Lce.Loading.loadingContet)
+                is Lce.Error -> ErrorUI(gameState)
+                is Lce.Content -> {
+                    @Suppress("UNCHECKED_CAST") val gameOfBlackjack = (gameState as Lce.Content<GameOfBlackjack>).data
+                    composeGameOfBlackjack(gameOfBlackjack, playerName)
 
-                Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                    if (it.status.isGameCompleted) {
-                        displayExitAndRetryButtons(runScope, gameOfBlackjack, blackjackState, playerName) { played: GameOfBlackjack? ->
-                            gameOfBlackjack = played
-                        }
-                    } else {
-                        composeHitMeAndStayButtons(runScope, blackjackState, playerName) { played: GameOfBlackjack? ->
-                            gameOfBlackjack = played
+                    Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+                        if (gameOfBlackjack.status.isGameCompleted) {
+                            Button(onClick = { exitProcess(0) }) { Text("Exit game!") }
+                            PlayButton(text = "Retry game!") {
+                                when (gameOfBlackjack.gameType) {
+                                    GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)!!
+                                    GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)!!
+                                }
+                            }
+                        } else {
+                            PlayButton(text = "Hit me!", onClick = { blackjackState?.playManual(Action.HIT, playerName) })
+                            PlayButton(text = "I stay!", onClick = { blackjackState?.playManual(Action.END, playerName) })
                         }
                     }
-                }
-            } // end compose game of blackjack with buttons
-        } // end column
-    } // end material theme
+                } // end compose game of blackjack with buttons
+            } // end column
+        } // end material theme
+    }
 }
 
 @Composable
-private fun composePlayAutomaticAndManualButtons(
-    blackjackState: BlackjackState?,
-    scope: MainCoroutineDispatcher,
-    playerName: PlayerName,
-    gameConsumer: (GameOfBlackjack?) -> Unit
-) {
-    PlayButton(
-        enabled = blackjackState != null,
-        text = "Play automatic game of blackjack",
-        scope = scope,
-        onClick = { blackjackState?.playAutomatic(playerName)!! },
-        gameConsumer = gameConsumer
-    )
-
+private fun composePlayAutomaticAndManualButtons(blackjackState: BlackjackState?, playerName: PlayerName) {
+    PlayButton(enabled = blackjackState != null, text = "Play automatic game of blackjack", onClick = { blackjackState?.playAutomatic(playerName) })
     PlayButton(
         enabled = blackjackState != null,
         text = "Play manual game of blackjack",
-        scope = scope,
-        onClick = { blackjackState?.playManual(Action.START, playerName)!! },
-        gameConsumer = gameConsumer
+        onClick = { blackjackState?.playManual(Action.START, playerName) }
     )
 }
 
 @Composable
-private fun displayExitAndRetryButtons(
-    scope: MainCoroutineDispatcher,
-    gameOfBlackjack: GameOfBlackjack?,
-    blackjackState: BlackjackState?,
-    playerName: PlayerName,
-    gameConsumer: (GameOfBlackjack?) -> Unit
-) {
-    Button(onClick = { exitProcess(0) }) {
-        Text("Exit game!")
-    }
-
-    PlayButton(
-        text = "Retry game!",
-        scope = scope,
-        onClick = {
-            when (gameOfBlackjack?.gameType!!) {
-                GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)!!
-                GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)!!
-            }
-        }, gameConsumer = gameConsumer
-    )
-}
-
-@Composable
-private fun composeHitMeAndStayButtons(
-    scope: MainCoroutineDispatcher,
-    blackjackState: BlackjackState?,
-    playerName: PlayerName,
-    gameConsumer: (GameOfBlackjack?) -> Unit
-) {
-    PlayButton(
-        text = "Hit me!",
-        scope = scope,
-        onClick = {
-            blackjackState?.playManual(
-                Action.HIT,
-                playerName
-            )!!
-        }, gameConsumer = gameConsumer
-    )
-    PlayButton(
-        text = "I stay!",
-        scope = scope,
-        onClick = {
-            blackjackState?.playManual(
-                Action.END,
-                playerName
-            )!!
-        }, gameConsumer = gameConsumer
-    )
-}
-
-@Composable
-private fun PlayButton(
-    enabled: Boolean = true,
-    text: String,
-    scope: MainCoroutineDispatcher,
-    onClick: () -> GameOfBlackjack,
-    gameConsumer: (GameOfBlackjack?) -> Unit
-) {
-
-    Button(enabled = enabled, onClick = {
-        CoroutineScope(Dispatchers.IO).launch {
-            val game = onClick.invoke()
-            withContext(scope) { gameConsumer.invoke(game) }
-        }
-    }) {
+private fun PlayButton(enabled: Boolean = true, text: String, onClick: () -> Unit) {
+    Button(enabled = enabled, onClick = { onClick.invoke() }) {
         Text(text)
     }
+}
+
+@Composable
+fun LoadingUI(loadingContent: Boolean) {
+    if (loadingContent) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+
+                modifier = Modifier
+                    .align(alignment = Alignment.Center)
+                    .defaultMinSize(minWidth = 96.dp, minHeight = 96.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ErrorUI(gameState: Lce<GameOfBlackjack>) {
+    val fail = (gameState as Lce.Error)
+    val cause = fail.error::class.simpleName
+    val message = fail.error.message
+
+    Text(text = "Something fishy happened! $cause: $message", textAlign = TextAlign.Center, color = Color.Red)
 }
 
 @Composable

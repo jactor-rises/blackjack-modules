@@ -1,8 +1,10 @@
 package com.gitlab.jactor.blackjack.compose
 
 import com.gitlab.jactor.blackjack.compose.consumer.BlackjackConsumer
+import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.service.BlackjackService
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
+import com.gitlab.jactor.blackjack.compose.state.Lce
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,10 +33,19 @@ open class ApplicationConfiguration {
         fun loadBlackjackState(
             runScope: MainCoroutineDispatcher,
             defaultScope: CoroutineDispatcher = Dispatchers.Default,
-            blackjackStateConsumer: (BlackjackState) -> Unit
+            blackjackStateConsumer: (BlackjackState) -> Unit,
+            gameStateConsumer: (Lce<GameOfBlackjack>) -> Unit
         ) {
             CoroutineScope(defaultScope).launch {
-                withContext(runScope) { blackjackStateConsumer.invoke(BlackjackState(fetchBean(BlackjackService::class.java))) }
+                withContext(runScope) {
+                    blackjackStateConsumer.invoke(
+                        BlackjackState(
+                            runScope = runScope,
+                            blackjackService = fetchBean(BlackjackService::class.java),
+                            gameConsumer = gameStateConsumer
+                        )
+                    )
+                }
             }
         }
     }
