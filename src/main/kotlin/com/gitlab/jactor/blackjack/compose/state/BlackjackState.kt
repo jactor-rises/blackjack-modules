@@ -1,6 +1,5 @@
 package com.gitlab.jactor.blackjack.compose.state
 
-import com.gitlab.jactor.blackjack.compose.ApplicationConfiguration
 import com.gitlab.jactor.blackjack.compose.dto.Action
 import com.gitlab.jactor.blackjack.compose.model.ActionInternal
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
@@ -8,8 +7,7 @@ import com.gitlab.jactor.blackjack.compose.model.GameType
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.service.BlackjackService
 
-class BlackjackState {
-    private val blackjackService = ApplicationConfiguration.fetchBean(BlackjackService::class.java)
+class BlackjackState(private val blackjackService: BlackjackService) {
 
     fun playAutomatic(playerName: PlayerName) = play(GameType.AUTOMATIC, null, playerName)
     fun playManual(action: Action, playerName: PlayerName) = play(GameType.MANUAL, action, playerName)
