@@ -67,32 +67,14 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), r
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                 composePlayAutomaticAndManualButtons(blackjackState, playerName)
             }
+        }
 
-            when (gameState) {
-                is Lce.Loading -> LoadingUI(loadingContent = Lce.Loading.loadingContet)
-                is Lce.Error -> ErrorUI(gameState)
-                is Lce.Content -> {
-                    @Suppress("UNCHECKED_CAST") val gameOfBlackjack = (gameState as Lce.Content<GameOfBlackjack>).data
-                    composeGameOfBlackjack(gameOfBlackjack, playerName)
-
-                    Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                        if (gameOfBlackjack.status.isGameCompleted) {
-                            Button(onClick = { exitProcess(0) }) { Text("Exit game!") }
-                            PlayButton(text = "Retry game!") {
-                                when (gameOfBlackjack.gameType) {
-                                    GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)!!
-                                    GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)!!
-                                }
-                            }
-                        } else {
-                            PlayButton(text = "Hit me!", onClick = { blackjackState?.playManual(Action.HIT, playerName) })
-                            PlayButton(text = "I stay!", onClick = { blackjackState?.playManual(Action.END, playerName) })
-                        }
-                    }
-                } // end compose game of blackjack with buttons
-            } // end column
-        } // end material theme
-    }
+        when (gameState) {
+            is Lce.Loading -> LoadingUI(loadingContent = Lce.Loading.loadingContet)
+            is Lce.Error -> ErrorUI(gameState)
+            is Lce.Content -> GameOfBlackjackUI((gameState as Lce.Content<GameOfBlackjack>).data, playerName, blackjackState)
+        }
+    } // end material theme
 }
 
 @Composable
@@ -133,6 +115,34 @@ private fun ErrorUI(gameState: Lce<GameOfBlackjack>) {
     val message = fail.error.message
 
     Text(text = "Something fishy happened! $cause: $message", textAlign = TextAlign.Center, color = Color.Red)
+}
+
+@Composable
+private fun GameOfBlackjackUI(
+    gameOfBlackjack: GameOfBlackjack,
+    playerName: PlayerName,
+    blackjackState: BlackjackState?
+) {
+    MaterialTheme {
+        Column(modifier = Modifier.fillMaxSize().padding(100.dp), verticalArrangement = ARRANGE_5DP_SPACING) {
+            composeGameOfBlackjack(gameOfBlackjack, playerName)
+
+            Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+                if (gameOfBlackjack.status.isGameCompleted) {
+                    Button(onClick = { exitProcess(0) }) { Text("Exit game!") }
+                    PlayButton(text = "Retry game!") {
+                        when (gameOfBlackjack.gameType) {
+                            GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)!!
+                            GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)!!
+                        }
+                    }
+                } else {
+                    PlayButton(text = "Hit me!", onClick = { blackjackState?.playManual(Action.HIT, playerName) })
+                    PlayButton(text = "I stay!", onClick = { blackjackState?.playManual(Action.END, playerName) })
+                }
+            }
+        }
+    }
 }
 
 @Composable
