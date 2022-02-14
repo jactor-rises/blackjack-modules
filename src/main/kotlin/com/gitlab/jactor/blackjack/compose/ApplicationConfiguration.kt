@@ -2,6 +2,13 @@ package com.gitlab.jactor.blackjack.compose
 
 import com.gitlab.jactor.blackjack.compose.consumer.BlackjackConsumer
 import com.gitlab.jactor.blackjack.compose.service.BlackjackService
+import com.gitlab.jactor.blackjack.compose.state.BlackjackState
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
@@ -17,8 +24,19 @@ import java.net.URI
 open class ApplicationConfiguration {
     companion object {
         private val annotationConfigApplicationContext = AnnotationConfigApplicationContext(ApplicationConfiguration::class.java)
+        val isNotActive: Boolean get() = !annotationConfigApplicationContext.isActive
 
         fun <T> fetchBean(clazz: Class<T>): T = annotationConfigApplicationContext.getBean(clazz)
+
+        fun loadBlackjackState(
+            runScope: MainCoroutineDispatcher,
+            defaultScope: CoroutineDispatcher = Dispatchers.Default,
+            blackjackStateConsumer: (BlackjackState) -> Unit
+        ) {
+            CoroutineScope(defaultScope).launch {
+                withContext(runScope) { blackjackStateConsumer.invoke(BlackjackState(fetchBean(BlackjackService::class.java))) }
+            }
+        }
     }
 
     @Value("\${blackjack.game.url}")

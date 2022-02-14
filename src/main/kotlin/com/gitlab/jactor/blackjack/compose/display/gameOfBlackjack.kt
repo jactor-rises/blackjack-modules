@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.gitlab.jactor.blackjack.compose.ApplicationConfiguration
 import com.gitlab.jactor.blackjack.compose.dto.Action
 import com.gitlab.jactor.blackjack.compose.model.Card
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
@@ -45,46 +46,40 @@ private val ARRANGE_50DP_SPACING = Arrangement.spacedBy(50.dp)
 
 @Composable
 @Preview
-internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), scope: MainCoroutineDispatcher = Dispatchers.Main) {
+internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), runScope: MainCoroutineDispatcher = Dispatchers.Main) {
     var blackjackState: BlackjackState? by remember { mutableStateOf(null) }
-
-    CoroutineScope(Dispatchers.Default).launch {
-        val defaultBlackjackState = BlackjackState()
-        withContext(scope) { blackjackState = defaultBlackjackState }
-    }
+    ApplicationConfiguration.loadBlackjackState(runScope) { loadedState: BlackjackState -> blackjackState = loadedState }
 
     MaterialTheme {
         var gameOfBlackjack: GameOfBlackjack? by remember { mutableStateOf(null) }
 
-        Row {
-            Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5DP_SPACING) {
-                Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                    Text("Hi ${playerName.capitalized}! Magnus challenge you to a game of Blackjack.")
+        Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5DP_SPACING) {
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+                Text("Hi ${playerName.capitalized}! Magnus challenge you to a game of Blackjack.")
+            }
+
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+                composePlayAutomaticAndManualButtons(blackjackState, runScope, playerName) { played: GameOfBlackjack? ->
+                    gameOfBlackjack = played
                 }
+            }
+
+            gameOfBlackjack?.let {
+                composeGameOfBlackjack(it, playerName)
 
                 Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                    composePlayAutomaticAndManualButtons(blackjackState, scope, playerName) { played: GameOfBlackjack? ->
-                        gameOfBlackjack = played
-                    }
-                }
-
-                gameOfBlackjack?.let {
-                    composeGameOfBlackjack(it, playerName)
-
-                    Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
-                        if (it.status.isGameCompleted) {
-                            displayExitAndRetryButtons(scope, gameOfBlackjack, blackjackState, playerName) { played: GameOfBlackjack? ->
-                                gameOfBlackjack = played
-                            }
-                        } else {
-                            composeHitMeAndStayButtons(scope, blackjackState, playerName) { played: GameOfBlackjack? ->
-                                gameOfBlackjack = played
-                            }
+                    if (it.status.isGameCompleted) {
+                        displayExitAndRetryButtons(runScope, gameOfBlackjack, blackjackState, playerName) { played: GameOfBlackjack? ->
+                            gameOfBlackjack = played
+                        }
+                    } else {
+                        composeHitMeAndStayButtons(runScope, blackjackState, playerName) { played: GameOfBlackjack? ->
+                            gameOfBlackjack = played
                         }
                     }
-                } // end compose game of blackjack with buttons
-            } // end column
-        } // end row
+                }
+            } // end compose game of blackjack with buttons
+        } // end column
     } // end material theme
 }
 
