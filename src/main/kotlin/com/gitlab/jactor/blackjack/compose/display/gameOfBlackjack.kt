@@ -50,7 +50,7 @@ private val ARRANGE_50DP_SPACING = Arrangement.spacedBy(50.dp)
 @Preview
 internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), runScope: MainCoroutineDispatcher = Dispatchers.Main) {
     var blackjackState: BlackjackState? by remember { mutableStateOf(null) }
-    var gameState: Lce<GameOfBlackjack> by remember { mutableStateOf(Lce.Loading as Lce<GameOfBlackjack>) }
+    var gameState: Lce<GameOfBlackjack>? by remember { mutableStateOf(null) }
 
     ApplicationConfiguration.loadBlackjackState(
         runScope = runScope,
@@ -70,8 +70,8 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), r
         }
 
         when (gameState) {
-            is Lce.Loading -> LoadingUI(loadingContent = Lce.Loading.loadingContet)
-            is Lce.Error -> ErrorUI(gameState)
+            is Lce.Loading -> LoadingUI()
+            is Lce.Error -> ErrorUI(gameState!!)
             is Lce.Content -> GameOfBlackjackUI((gameState as Lce.Content<GameOfBlackjack>).data, playerName, blackjackState)
         }
     } // end material theme
@@ -95,16 +95,14 @@ private fun PlayButton(enabled: Boolean = true, text: String, onClick: () -> Uni
 }
 
 @Composable
-fun LoadingUI(loadingContent: Boolean) {
-    if (loadingContent) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(
+fun LoadingUI() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CircularProgressIndicator(
 
-                modifier = Modifier
-                    .align(alignment = Alignment.Center)
-                    .defaultMinSize(minWidth = 96.dp, minHeight = 96.dp)
-            )
-        }
+            modifier = Modifier
+                .align(alignment = Alignment.Center)
+                .defaultMinSize(minWidth = 96.dp, minHeight = 96.dp)
+        )
     }
 }
 

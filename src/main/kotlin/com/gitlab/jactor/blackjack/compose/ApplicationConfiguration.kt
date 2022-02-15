@@ -42,7 +42,7 @@ open class ApplicationConfiguration {
                         BlackjackState(
                             runScope = runScope,
                             blackjackService = fetchBean(BlackjackService::class.java),
-                            gameConsumer = gameStateConsumer
+                            gameStateConsumer = gameStateConsumer
                         )
                     )
                 }
@@ -50,19 +50,19 @@ open class ApplicationConfiguration {
         }
     }
 
-    @Value("\${blackjack.game.url}")
-    private val gameUrl: String = ""
+    @Bean
+    open fun gameUrl(@Value("\${blackjack.game.url}") gameUrl: String) = GameUrl(gameUrl)
 
     @Bean
-    open fun blackjackConsumer(): BlackjackConsumer {
+    open fun blackjackConsumer(gameUrl: GameUrl): BlackjackConsumer {
         val restTemplate = restTemplate()
-        restTemplate.uriTemplateHandler = uriTemplateHandler()
+        restTemplate.uriTemplateHandler = uriTemplateHandler(gameUrl)
 
         return BlackjackConsumer(restTemplate)
     }
 
     @Bean
-    open fun uriTemplateHandler() = object : UriTemplateHandler {
+    open fun uriTemplateHandler(gameUrl: GameUrl) = object : UriTemplateHandler {
         override fun expand(uriTemplate: String, uriVariables: MutableMap<String, *>): URI {
             if (uriVariables.isNotEmpty()) {
                 TODO(reason = "#1) Uri variables are not supported")
@@ -92,4 +92,8 @@ open class ApplicationConfiguration {
     @Bean
     @Scope("prototype")
     open fun restTemplate() = RestTemplate()
+
+    data class GameUrl(internal val url: String) {
+        fun removeSuffix(suffix: CharSequence) = url.removeSuffix(suffix)
+    }
 }

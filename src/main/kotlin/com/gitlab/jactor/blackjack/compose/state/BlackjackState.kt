@@ -11,7 +11,7 @@ import kotlinx.coroutines.MainCoroutineDispatcher
 
 class BlackjackState(
     runScope: MainCoroutineDispatcher,
-    private val gameConsumer: (Lce<GameOfBlackjack>) -> Unit,
+    private val gameStateConsumer: (Lce<GameOfBlackjack>) -> Unit,
     private val blackjackService: BlackjackService
 ) : Lce<GameOfBlackjack>(runScope = runScope, ioScope = Dispatchers.IO) {
 
@@ -20,14 +20,14 @@ class BlackjackState(
 
     private fun play(gameType: GameType, action: Action?, playerName: PlayerName) {
         if (gameType == GameType.AUTOMATIC) {
-            invoke(contentConsumer = gameConsumer, invoke = { blackjackService.playAutomatic(playerName) })
+            invoke(lceConsumer = gameStateConsumer, run = { blackjackService.playAutomatic(playerName) })
         }
 
         if (gameType == GameType.MANUAL) {
             when (action) {
-                Action.END -> invoke(contentConsumer = gameConsumer, invoke = { blackjackService.playManual(playerName, ActionInternal.END) })
-                Action.HIT -> invoke(contentConsumer = gameConsumer, invoke = { blackjackService.playManual(playerName, ActionInternal.HIT) })
-                Action.START -> invoke(contentConsumer = gameConsumer, invoke = { blackjackService.playManual(playerName, ActionInternal.START) })
+                Action.END -> invoke(lceConsumer = gameStateConsumer, run = { blackjackService.playManual(playerName, ActionInternal.END) })
+                Action.HIT -> invoke(lceConsumer = gameStateConsumer, run = { blackjackService.playManual(playerName, ActionInternal.HIT) })
+                Action.START -> invoke(lceConsumer = gameStateConsumer, run = { blackjackService.playManual(playerName, ActionInternal.START) })
                 else -> throw IllegalStateException("A manual game needs an action!")
             }
         }
