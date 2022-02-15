@@ -36,6 +36,13 @@ internal class ApplicationConfigurationTest {
         assertThat(blackjackState).isNotNull
     }
 
+    @Test
+    fun `should load properties for game of blackjack`() {
+        val gameUrl = ApplicationConfiguration.fetchBean(ApplicationConfiguration.GameUrl::class.java)
+
+        assertThat(gameUrl.url).isEqualTo("http://localhost:1337/blackjack/")
+    }
+
     private fun sleep500ms() {
         Thread.sleep(500)
     }
