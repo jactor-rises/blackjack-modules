@@ -69,7 +69,7 @@ internal fun BlackjackUI(playerName: PlayerName = PlayerName("Tor Egil"), runSco
 
             when (gameState) {
                 is Lce.Loading -> LoadingUI()
-                is Lce.Error -> ErrorUI(gameState!!)
+                is Lce.Error -> ErrorUI(gameState as Lce.Error)
                 is Lce.Content -> GameOfBlackjackUI((gameState as Lce.Content<GameOfBlackjack>).data, playerName, blackjackState)
             }
         } // end column
@@ -77,10 +77,9 @@ internal fun BlackjackUI(playerName: PlayerName = PlayerName("Tor Egil"), runSco
 }
 
 @Composable
-fun LoadingUI() {
+private fun LoadingUI() {
     Box(modifier = Modifier.fillMaxSize()) {
         CircularProgressIndicator(
-
             modifier = Modifier
                 .align(alignment = Alignment.Center)
                 .defaultMinSize(minWidth = 96.dp, minHeight = 96.dp)
@@ -89,10 +88,14 @@ fun LoadingUI() {
 }
 
 @Composable
-private fun ErrorUI(gameState: Lce<GameOfBlackjack>) {
-    val fail = (gameState as Lce.Error)
+private fun ErrorUI(fail: Lce.Error) {
     val cause = fail.error::class.simpleName
-    val message = fail.error.message
+    val message = fail.error.message?.split("nested exception")?.joinToString(separator = "\nnested exception")
 
-    Text(text = "Something fishy happened! $cause: $message", textAlign = TextAlign.Center, color = Color.Red)
+    MaterialTheme {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Something fishy happened!  ¯\\_(ツ)_/¯", textAlign = TextAlign.Left, color = Color.Red)
+            Text(text = "$cause: $message", textAlign = TextAlign.Center, color = Color.Red)
+        }
+    }
 }

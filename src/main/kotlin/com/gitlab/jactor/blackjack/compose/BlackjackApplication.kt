@@ -21,7 +21,7 @@ fun main() = application {
         Window(
             onCloseRequest = { exitApplication() },
             title = WHAT_NAME,
-            state = rememberWindowState(width = 400.dp, height = 175.dp)
+            state = rememberWindowState(width = 400.dp, height = 145.dp)
         ) {
             playerName = PlayerNameUI()
         }
