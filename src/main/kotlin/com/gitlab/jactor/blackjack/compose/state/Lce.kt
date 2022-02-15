@@ -11,27 +11,31 @@ abstract class Lce<out T>(
     private val runScope: MainCoroutineDispatcher = Dispatchers.Main,
     private val ioScope: CoroutineDispatcher = Dispatchers.IO,
 ) {
-    object Loading : Lce<Nothing>() {
-        var loadingContet = false
-    }
-
+    object Loading : Lce<Nothing>()
     data class Error(val error: Throwable) : Lce<Nothing>()
-    data class Content<T>(val data: T) : Lce<T>() {
-        init {
-            Loading.loadingContet = false
-        }
-    }
+    data class Content<T>(val data: T) : Lce<T>()
 
+    protected fun <T> invoke(run: () -> T, lceConsumer: (Lce<T>) -> Unit) {
+        lceConsumer.invoke(Loading as Lce<T>)
 
-    protected fun <T> invoke(invoke: () -> T, contentConsumer: (Lce<T>) -> Unit) {
         CoroutineScope(ioScope).launch {
-            Loading.loadingContet = true
-            val content = invoke.invoke()
+            val content = runForContent(run, lceConsumer)
 
-            withContext(runScope) {
-                contentConsumer.invoke(Content(content))
-                Loading.loadingContet = false
+            if (content != null) {
+                withContext(runScope) {
+                    lceConsumer.invoke(Content(content))
+                }
             }
         }
+    }
+
+    private suspend fun <T> runForContent(run: () -> T, lceConsumer: (Lce<T>) -> Unit): T? = try {
+        run.invoke()
+    } catch (throwable: Throwable) {
+        withContext(runScope) {
+            lceConsumer.invoke(Error(throwable))
+        }
+
+        null
     }
 }

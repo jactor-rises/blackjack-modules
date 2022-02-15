@@ -42,7 +42,7 @@ open class ApplicationConfiguration {
                         BlackjackState(
                             runScope = runScope,
                             blackjackService = fetchBean(BlackjackService::class.java),
-                            gameConsumer = gameStateConsumer
+                            gameStateConsumer = gameStateConsumer
                         )
                     )
                 }
