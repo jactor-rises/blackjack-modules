@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 
 abstract class Lce<out T>(
     private val runScope: MainCoroutineDispatcher = Dispatchers.Main,
-    private val ioScope: CoroutineDispatcher = Dispatchers.IO,
+    private val ioScope: CoroutineDispatcher = Dispatchers.IO
 ) {
     object Loading : Lce<Nothing>()
     data class Error(val error: Throwable) : Lce<Nothing>()

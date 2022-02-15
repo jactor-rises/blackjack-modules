@@ -10,17 +10,22 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestTemplate
 
-class BlackjackConsumer(private val restTemplate: RestTemplate) {
-    fun play(nick: String, type: GameType, actionInternal: ActionInternal? = null): GameOfBlackjack {
-        val response = restTemplate.exchange(
-            "/play/$nick",
-            HttpMethod.POST,
-            HttpEntity(ActionDto(type = type.asDto(), value = actionInternal?.toDto())),
-            GameOfBlackjackDto::class.java
-        )
+interface BlackjackConsumer {
+    fun play(nick: String, type: GameType, actionInternal: ActionInternal? = null): GameOfBlackjack
 
-        return GameOfBlackjack(response.body ?: throw illegalState(nick, response.statusCode))
+    class DefaultBlackjackConsumer(private val restTemplate: RestTemplate) : BlackjackConsumer {
+
+        override fun play(nick: String, type: GameType, actionInternal: ActionInternal?): GameOfBlackjack {
+            val response = restTemplate.exchange(
+                "/play/$nick",
+                HttpMethod.POST,
+                HttpEntity(ActionDto(type = type.asDto(), value = actionInternal?.toDto())),
+                GameOfBlackjackDto::class.java
+            )
+
+            return GameOfBlackjack(response.body ?: throw illegalState(nick, response.statusCode))
+        }
+
+        private fun illegalState(nick: String, status: HttpStatus) = IllegalStateException("Kunne ikke spille blackjack med $nick, status: $status")
     }
-
-    private fun illegalState(nick: String, status: HttpStatus) = IllegalStateException("Kunne ikke spille blackjack med $nick, status: $status")
 }
