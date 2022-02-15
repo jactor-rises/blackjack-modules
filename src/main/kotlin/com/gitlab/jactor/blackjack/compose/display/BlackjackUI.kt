@@ -48,7 +48,7 @@ private val ARRANGE_50DP_SPACING = Arrangement.spacedBy(50.dp)
 
 @Composable
 @Preview
-internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), runScope: MainCoroutineDispatcher = Dispatchers.Main) {
+internal fun BlackjackUI(playerName: PlayerName = PlayerName("Tor Egil"), runScope: MainCoroutineDispatcher = Dispatchers.Main) {
     var blackjackState: BlackjackState? by remember { mutableStateOf(null) }
     var gameState: Lce<GameOfBlackjack>? by remember { mutableStateOf(null) }
 
@@ -67,13 +67,13 @@ internal fun composeBlackjack(playerName: PlayerName = PlayerName("Tor Egil"), r
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
                 composePlayAutomaticAndManualButtons(blackjackState, playerName)
             }
-        }
 
-        when (gameState) {
-            is Lce.Loading -> LoadingUI()
-            is Lce.Error -> ErrorUI(gameState!!)
-            is Lce.Content -> GameOfBlackjackUI((gameState as Lce.Content<GameOfBlackjack>).data, playerName, blackjackState)
-        }
+            when (gameState) {
+                is Lce.Loading -> LoadingUI()
+                is Lce.Error -> ErrorUI(gameState!!)
+                is Lce.Content -> GameOfBlackjackUI((gameState as Lce.Content<GameOfBlackjack>).data, playerName, blackjackState)
+            }
+        } // end column
     } // end material theme
 }
 
@@ -122,7 +122,7 @@ private fun GameOfBlackjackUI(
     blackjackState: BlackjackState?
 ) {
     MaterialTheme {
-        Column(modifier = Modifier.fillMaxSize().padding(100.dp), verticalArrangement = ARRANGE_5DP_SPACING) {
+        Column(modifier = Modifier.fillMaxSize().padding(10.dp), verticalArrangement = ARRANGE_5DP_SPACING) {
             composeGameOfBlackjack(gameOfBlackjack, playerName)
 
             Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
