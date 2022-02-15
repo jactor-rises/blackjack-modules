@@ -25,7 +25,10 @@ import java.net.URI
 @PropertySource(value = ["classpath:blackjack.properties"])
 open class ApplicationConfiguration {
     companion object {
-        private val annotationConfigApplicationContext = AnnotationConfigApplicationContext(ApplicationConfiguration::class.java)
+        private val annotationConfigApplicationContext: AnnotationConfigApplicationContext by lazy {
+            AnnotationConfigApplicationContext(ApplicationConfiguration::class.java)
+        }
+
         val isNotActive: Boolean get() = !annotationConfigApplicationContext.isActive
 
         fun <T> fetchBean(clazz: Class<T>): T = annotationConfigApplicationContext.getBean(clazz)
