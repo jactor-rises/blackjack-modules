@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 
 class BlackjackState(
-    runScope: MainCoroutineDispatcher,
+    runScope: MainCoroutineDispatcher = Dispatchers.Main,
     private val gameStateConsumer: (Lce<GameOfBlackjack>) -> Unit,
     private val blackjackService: BlackjackService
 ) : Lce<GameOfBlackjack>(runScope = runScope, ioScope = Dispatchers.IO) {

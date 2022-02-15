@@ -1,6 +1,7 @@
 package com.gitlab.jactor.blackjack.compose.model
 
 import com.gitlab.jactor.blackjack.compose.dto.GameOfBlackjackDto
+import com.gitlab.jactor.blackjack.compose.state.GameOfBlackjackException
 
 data class GameOfBlackjack(
     val dealerHand: List<Card>,
@@ -15,7 +16,11 @@ data class GameOfBlackjack(
         playerHand = gameOfBlackjackDto.playerHand.map { Card(it) },
         status = Status(gameOfBlackjackDto.status),
         gameType = GameType.valueOf(gameOfBlackjackDto.gameType ?: throw IllegalStateException("A game must have a GameType"))
-    )
+    ) {
+        if (gameOfBlackjackDto.error != null) {
+            throw GameOfBlackjackException(gameOfBlackjackDto.error!!)
+        }
+    }
 
     fun displayWinner(playerName: PlayerName) = "Vinneren er " + when (status.fetchResultOfGame()) {
         GameStatus.DEALER_WINS -> "Magnus"

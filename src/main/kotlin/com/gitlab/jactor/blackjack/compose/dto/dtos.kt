@@ -5,7 +5,7 @@ data class GameOfBlackjackDto(
     var playerHand: List<CardDto> = emptyList(),
     var dealerHand: List<CardDto> = emptyList(),
     var status: StatusDto? = null,
-    var error: String? = null,
+    var error: ErrorDto? = null,
     var gameType: GameTypeDto? = null
 )
 
@@ -26,7 +26,13 @@ data class ActionDto(
     var value: Action? = null
 )
 
+class ErrorDto(
+    var message: String = "",
+    var provider: String = ""
+)
+
 @Suppress("unused") // used in lambda
 enum class GameTypeDto { AUTOMATIC, MANUAL }
+
 @Suppress("unused") // used in lambda
 enum class Action { START, HIT, END }

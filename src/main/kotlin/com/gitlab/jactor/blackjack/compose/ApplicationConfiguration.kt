@@ -61,7 +61,7 @@ open class ApplicationConfiguration {
         val restTemplate = restTemplate()
         restTemplate.uriTemplateHandler = uriTemplateHandler(gameUrl)
 
-        return BlackjackConsumer(restTemplate)
+        return BlackjackConsumer.DefaultBlackjackConsumer(restTemplate)
     }
 
     @Bean
