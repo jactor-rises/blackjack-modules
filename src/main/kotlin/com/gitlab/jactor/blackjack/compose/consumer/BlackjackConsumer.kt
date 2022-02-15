@@ -11,14 +11,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestTemplate
 
 class BlackjackConsumer(private val restTemplate: RestTemplate) {
-    fun playAutomatic(nick: String) = play(nick = nick, type = GameType.AUTOMATIC, actionInternal = null)
-    fun playManual(nick: String, actionInternal: ActionInternal) = play(nick = nick, type = GameType.MANUAL, actionInternal = actionInternal)
-
-    private fun play(nick: String, type: GameType, actionInternal: ActionInternal?): GameOfBlackjack {
+    fun play(nick: String, type: GameType, actionInternal: ActionInternal? = null): GameOfBlackjack {
         val response = restTemplate.exchange(
             "/play/$nick",
             HttpMethod.POST,
-            HttpEntity( ActionDto(type = type.asDto(), value = actionInternal?.toDto())),
+            HttpEntity(ActionDto(type = type.asDto(), value = actionInternal?.toDto())),
             GameOfBlackjackDto::class.java
         )
 

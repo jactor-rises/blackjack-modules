@@ -1,4 +1,4 @@
-package com.gitlab.jactor.blackjack.compose.display
+package com.gitlab.jactor.blackjack.compose.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +27,7 @@ import com.gitlab.jactor.blackjack.compose.model.PlayerName
 
 @Preview
 @Composable
-internal fun composePlayerName(): PlayerName? {
+internal fun PlayerNameUI(): PlayerName? {
     var nameState by remember { mutableStateOf(TextFieldValue()) }
     var playerName: PlayerName? by remember { mutableStateOf(null) }
 
@@ -45,7 +45,7 @@ internal fun composePlayerName(): PlayerName? {
                 placeholder = { Text(Constants.DEFAULT_PLAYER_NAME) },
                 onValueChange = { newValue ->
                     if (newValue.text.endsWith('\n')) {
-                        playerName = PlayerName(nameState.text.trim())
+                        playerName = PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME })
                     } else {
                         nameState = newValue
                     }
