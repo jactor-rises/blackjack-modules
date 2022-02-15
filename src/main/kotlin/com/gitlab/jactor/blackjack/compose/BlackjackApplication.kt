@@ -9,9 +9,9 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.gitlab.jactor.blackjack.compose.Constants.WHAT_NAME
-import com.gitlab.jactor.blackjack.compose.display.BlackjackUI
-import com.gitlab.jactor.blackjack.compose.display.PlayerNameUI
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
+import com.gitlab.jactor.blackjack.compose.ui.BlackjackUI
+import com.gitlab.jactor.blackjack.compose.ui.PlayerNameUI
 import kotlinx.coroutines.Dispatchers
 
 fun main() = application {
