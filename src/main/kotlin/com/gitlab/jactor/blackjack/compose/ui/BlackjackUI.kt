@@ -25,17 +25,22 @@ import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.ApplicationConfiguration
 import com.gitlab.jactor.blackjack.compose.dto.Action
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
+import com.gitlab.jactor.blackjack.compose.model.GameOption
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
 import com.gitlab.jactor.blackjack.compose.state.Lce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 
-internal val ARRANGE_5DP_SPACING = Arrangement.spacedBy(5.dp)
+internal val ARRANGE_5_DP_SPACING = Arrangement.spacedBy(5.dp)
 
 @Composable
 @Preview
-internal fun BlackjackUI(playerName: PlayerName = PlayerName("Tor Egil"), runScope: MainCoroutineDispatcher = Dispatchers.Main) {
+internal fun BlackjackUI(
+    playerName: PlayerName = PlayerName("Tor Egil"),
+    runScope: MainCoroutineDispatcher = Dispatchers.Main,
+    newGameOption: (GameOption) -> Unit
+) {
     var blackjackState: BlackjackState? by remember { mutableStateOf(null) }
     var gameState: Lce<GameOfBlackjack>? by remember { mutableStateOf(null) }
 
@@ -46,12 +51,12 @@ internal fun BlackjackUI(playerName: PlayerName = PlayerName("Tor Egil"), runSco
     )
 
     MaterialTheme {
-        Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5DP_SPACING) {
-            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+        Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5_DP_SPACING) {
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 Text("Hi ${playerName.capitalized}! Magnus challenge you to a game of Blackjack.")
             }
 
-            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 Button(
                     enabled = blackjackState != null,
                     onClick = { blackjackState?.playAutomatic(playerName) }
@@ -69,8 +74,13 @@ internal fun BlackjackUI(playerName: PlayerName = PlayerName("Tor Egil"), runSco
 
             when (gameState) {
                 is Lce.Loading -> LoadingUI()
-                is Lce.Error -> ErrorUI(gameState as Lce.Error)
-                is Lce.Content -> GameOfBlackjackUI((gameState as Lce.Content<GameOfBlackjack>).data, playerName, blackjackState)
+                is Lce.Error -> ErrorUI(failure = gameState as Lce.Error, gameOption = newGameOption)
+                is Lce.Content -> GameOfBlackjackUI(
+                    gameOfBlackjack = (gameState as Lce.Content<GameOfBlackjack>).data,
+                    playerName = playerName,
+                    blackjackState = blackjackState,
+                    newGameOption = newGameOption
+                )
             }
         } // end column
     } // end material theme
@@ -88,14 +98,18 @@ private fun LoadingUI() {
 }
 
 @Composable
-private fun ErrorUI(fail: Lce.Error) {
-    val cause = fail.error::class.simpleName
-    val message = fail.error.message?.split("nested exception")?.joinToString(separator = "\nnested exception")
+private fun ErrorUI(failure: Lce.Error, gameOption: (GameOption) -> Unit) {
+    val cause = failure.error::class.simpleName
+    val message = failure.error.message?.split("nested exception")?.joinToString(separator = "\nnested exception")
 
     MaterialTheme {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = "Something fishy happened!  ¯\\_(ツ)_/¯", textAlign = TextAlign.Left, color = Color.Red)
             Text(text = "$cause: $message", textAlign = TextAlign.Center, color = Color.Red)
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
+                Button(onClick = { gameOption.invoke(GameOption.QUIT) }) { Text("Exit game!") }
+                Button(onClick = { gameOption.invoke(GameOption.PLAYER_NAME) }) { Text("Retry game with new player!") }
+            }
         }
     }
 }

@@ -23,11 +23,11 @@ import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.dto.Action
 import com.gitlab.jactor.blackjack.compose.model.Card
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
+import com.gitlab.jactor.blackjack.compose.model.GameOption
 import com.gitlab.jactor.blackjack.compose.model.GameStatus
 import com.gitlab.jactor.blackjack.compose.model.GameType
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
-import kotlin.system.exitProcess
 
 private val ARRANGE_15DP_SPACING = Arrangement.spacedBy(15.dp)
 
@@ -35,15 +35,16 @@ private val ARRANGE_15DP_SPACING = Arrangement.spacedBy(15.dp)
 fun GameOfBlackjackUI(
     gameOfBlackjack: GameOfBlackjack,
     playerName: PlayerName,
-    blackjackState: BlackjackState?
+    blackjackState: BlackjackState?,
+    newGameOption: (GameOption) -> Unit
 ) {
     MaterialTheme {
-        Column(modifier = Modifier.fillMaxSize().padding(10.dp), verticalArrangement = ARRANGE_5DP_SPACING) {
+        Column(modifier = Modifier.fillMaxSize().padding(10.dp), verticalArrangement = ARRANGE_5_DP_SPACING) {
             composeGameOfBlackjack(gameOfBlackjack, playerName)
 
-            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 if (gameOfBlackjack.status.isGameCompleted) {
-                    Button(onClick = { exitProcess(0) }) { Text("Exit game!") }
+                    Button(onClick = { newGameOption.invoke(GameOption.QUIT) }) { Text("Exit game!") }
                     Button(onClick = {
                         when (gameOfBlackjack.gameType) {
                             GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)!!
@@ -63,7 +64,7 @@ fun GameOfBlackjackUI(
 
 @Composable
 private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack, playerName: PlayerName) {
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = ARRANGE_5DP_SPACING) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = ARRANGE_5_DP_SPACING) {
         Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text("Dealer - ${gameOfBlackjack.status.dealerScore}")
         }
@@ -90,7 +91,7 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack, playerName:
             }
         }
 
-        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
             Text(text = "Player - ${gameOfBlackjack.status.playerScore}")
         }
 
@@ -117,7 +118,7 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack, playerName:
         }
 
         if (gameOfBlackjack.status.isGameCompleted) {
-            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5DP_SPACING) {
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 Text(
                     text = gameOfBlackjack.displayWinner(playerName),
                     color = when (gameOfBlackjack.status.fetchResultOfGame()) {

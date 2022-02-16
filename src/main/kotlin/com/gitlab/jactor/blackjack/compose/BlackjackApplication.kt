@@ -9,21 +9,24 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.gitlab.jactor.blackjack.compose.Constants.WHAT_NAME
+import com.gitlab.jactor.blackjack.compose.model.GameOption
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.ui.BlackjackUI
 import com.gitlab.jactor.blackjack.compose.ui.PlayerNameUI
 import kotlinx.coroutines.Dispatchers
 
 fun main() = application {
-    var playerName: PlayerName? by remember { mutableStateOf(null) }
+    var playerName: PlayerName by remember { mutableStateOf(PlayerName(Constants.DEFAULT_PLAYER_NAME)) }
+    var gameOption: GameOption by remember { mutableStateOf(GameOption.PLAYER_NAME) }
+    val newGameOption = { newGameOption: GameOption -> gameOption = newGameOption }
 
-    if (playerName == null) {
+    if (gameOption == GameOption.PLAYER_NAME) {
         Window(
             onCloseRequest = { exitApplication() },
             title = WHAT_NAME,
             state = rememberWindowState(width = 400.dp, height = 145.dp)
         ) {
-            playerName = PlayerNameUI()
+            PlayerNameUI(newGameOption = newGameOption) { newPlayerName: PlayerName -> playerName = newPlayerName }
         }
     } else {
         Window(
@@ -31,7 +34,11 @@ fun main() = application {
             title = "Blackjack",
             state = rememberWindowState(width = 800.dp, height = 550.dp)
         ) {
-            BlackjackUI(playerName!!, Dispatchers.Main)
+            BlackjackUI(playerName = playerName, runScope = Dispatchers.Main, newGameOption = newGameOption)
         }
+    }
+
+    if (gameOption == GameOption.QUIT) {
+        exitApplication()
     }
 }

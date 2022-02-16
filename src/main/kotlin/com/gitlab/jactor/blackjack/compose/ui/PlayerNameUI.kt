@@ -23,13 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.Constants
+import com.gitlab.jactor.blackjack.compose.model.GameOption
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 
 @Preview
 @Composable
-internal fun PlayerNameUI(): PlayerName? {
+internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit, newPlayerName: (PlayerName) -> Unit) {
     var nameState by remember { mutableStateOf(TextFieldValue()) }
-    var playerName: PlayerName? by remember { mutableStateOf(null) }
 
     MaterialTheme {
         Row(
@@ -45,7 +45,8 @@ internal fun PlayerNameUI(): PlayerName? {
                 placeholder = { Text(Constants.DEFAULT_PLAYER_NAME) },
                 onValueChange = { newValue ->
                     if (newValue.text.endsWith('\n')) {
-                        playerName = PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME })
+                        newPlayerName.invoke(PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME }))
+                        newGameOption.invoke(GameOption.CONTINUE)
                     } else {
                         nameState = newValue
                     }
@@ -54,13 +55,12 @@ internal fun PlayerNameUI(): PlayerName? {
 
             Button(
                 onClick = {
-                    playerName = PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME })
+                    newPlayerName.invoke(PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME }))
+                    newGameOption.invoke(GameOption.CONTINUE)
                 }
             ) {
                 Icon(Icons.Outlined.Send, "OK")
             }
         }
     }
-
-    return playerName
 }
