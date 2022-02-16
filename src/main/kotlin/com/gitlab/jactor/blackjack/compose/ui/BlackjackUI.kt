@@ -26,47 +26,42 @@ import com.gitlab.jactor.blackjack.compose.ApplicationConfiguration
 import com.gitlab.jactor.blackjack.compose.dto.Action
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameOption
-import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
 import com.gitlab.jactor.blackjack.compose.state.Lce
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainCoroutineDispatcher
 
 internal val ARRANGE_5_DP_SPACING = Arrangement.spacedBy(5.dp)
 
 @Composable
 @Preview
 internal fun BlackjackUI(
-    playerName: PlayerName = PlayerName("Tor Egil"),
-    runScope: MainCoroutineDispatcher = Dispatchers.Main,
-    newGameOption: (GameOption) -> Unit
+    newGameOption: (GameOption) -> Unit,
+    blackjackState: BlackjackState
 ) {
-    var blackjackState: BlackjackState? by remember { mutableStateOf(null) }
-    var gameState: Lce<GameOfBlackjack>? by remember { mutableStateOf(null) }
+    var gameState: Lce<GameOfBlackjack> by remember { mutableStateOf(BlackjackState.NotStartet) }
+    var isActiveApplicationConfiguration: Boolean by remember { mutableStateOf(false) }
 
-    ApplicationConfiguration.loadBlackjackState(
-        runScope = runScope,
-        blackjackStateConsumer = { loadedState: BlackjackState -> blackjackState = loadedState },
-        gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
-    )
+    blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
+    ApplicationConfiguration.isActive(runScope = blackjackState.runScope) { isActive: Boolean -> isActiveApplicationConfiguration = isActive }
+
+    ApplicationConfiguration.setBlackjackService(blackjackState = blackjackState)
 
     MaterialTheme {
         Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5_DP_SPACING) {
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
-                Text("Hi ${playerName.capitalized}! Magnus challenge you to a game of Blackjack.")
+                Text("Hi ${blackjackState.playerName.capitalized}! Magnus challenge you to a game of Blackjack.")
             }
 
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 Button(
-                    enabled = blackjackState != null,
-                    onClick = { blackjackState?.playAutomatic(playerName) }
+                    enabled = isActiveApplicationConfiguration,
+                    onClick = { blackjackState.playAutomatic() }
                 ) {
                     Text("Play automatic game of blackjack")
                 }
 
                 Button(
-                    enabled = blackjackState != null,
-                    onClick = { blackjackState?.playManual(Action.START, playerName) }
+                    enabled = isActiveApplicationConfiguration,
+                    onClick = { blackjackState.playManual(Action.START) }
                 ) {
                     Text("Play manual game of blackjack")
                 }
@@ -77,7 +72,6 @@ internal fun BlackjackUI(
                 is Lce.Error -> ErrorUI(failure = gameState as Lce.Error, gameOption = newGameOption)
                 is Lce.Content -> GameOfBlackjackUI(
                     gameOfBlackjack = (gameState as Lce.Content<GameOfBlackjack>).data,
-                    playerName = playerName,
                     blackjackState = blackjackState,
                     newGameOption = newGameOption
                 )

@@ -1,10 +1,8 @@
 package com.gitlab.jactor.blackjack.compose
 
 import com.gitlab.jactor.blackjack.compose.consumer.BlackjackConsumer
-import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.service.BlackjackService
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
-import com.gitlab.jactor.blackjack.compose.state.Lce
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,29 +23,30 @@ import java.net.URI
 @PropertySource(value = ["classpath:blackjack.properties"])
 open class ApplicationConfiguration {
     companion object {
-        private val annotationConfigApplicationContext: AnnotationConfigApplicationContext by lazy {
+        internal val annotationConfigApplicationContext: AnnotationConfigApplicationContext by lazy {
             AnnotationConfigApplicationContext(ApplicationConfiguration::class.java)
         }
 
-        val isNotActive: Boolean get() = !annotationConfigApplicationContext.isActive
+        fun isActive(
+            defaultScope: CoroutineDispatcher = Dispatchers.Default,
+            runScope: MainCoroutineDispatcher,
+            setActive: (Boolean) -> Unit
+        ): Boolean {
+            CoroutineScope(defaultScope).launch {
+                withContext(runScope) {
+                    setActive.invoke(annotationConfigApplicationContext.isActive)
+                }
+            }
+
+            return false
+        }
 
         fun <T> fetchBean(clazz: Class<T>): T = annotationConfigApplicationContext.getBean(clazz)
 
-        fun loadBlackjackState(
-            runScope: MainCoroutineDispatcher,
-            defaultScope: CoroutineDispatcher = Dispatchers.Default,
-            blackjackStateConsumer: (BlackjackState) -> Unit,
-            gameStateConsumer: (Lce<GameOfBlackjack>) -> Unit
-        ) {
+        fun setBlackjackService(defaultScope: CoroutineDispatcher = Dispatchers.Default, blackjackState: BlackjackState) {
             CoroutineScope(defaultScope).launch {
-                withContext(runScope) {
-                    blackjackStateConsumer.invoke(
-                        BlackjackState(
-                            runScope = runScope,
-                            blackjackService = fetchBean(BlackjackService::class.java),
-                            gameStateConsumer = gameStateConsumer
-                        )
-                    )
+                withContext(blackjackState.runScope) {
+                    blackjackState.blackjackService = fetchBean(BlackjackService::class.java)
                 }
             }
         }
