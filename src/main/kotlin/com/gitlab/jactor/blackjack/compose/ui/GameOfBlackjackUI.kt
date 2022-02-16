@@ -26,7 +26,6 @@ import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameOption
 import com.gitlab.jactor.blackjack.compose.model.GameStatus
 import com.gitlab.jactor.blackjack.compose.model.GameType
-import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
 
 private val ARRANGE_15DP_SPACING = Arrangement.spacedBy(15.dp)
@@ -34,8 +33,7 @@ private val ARRANGE_15DP_SPACING = Arrangement.spacedBy(15.dp)
 @Composable
 fun GameOfBlackjackUI(
     gameOfBlackjack: GameOfBlackjack,
-    playerName: PlayerName,
-    blackjackState: BlackjackState?,
+    blackjackState: BlackjackState,
     newGameOption: (GameOption) -> Unit
 ) {
     MaterialTheme {
@@ -55,7 +53,7 @@ fun GameOfBlackjackUI(
             if (gameOfBlackjack.status.isGameCompleted) {
                 Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                     Text(
-                        text = gameOfBlackjack.displayWinner(playerName),
+                        text = gameOfBlackjack.displayWinner(blackjackState.playerName),
                         color = withColor(gameOfBlackjack)
                     )
                 }
@@ -66,15 +64,15 @@ fun GameOfBlackjackUI(
                     Button(onClick = { newGameOption.invoke(GameOption.QUIT) }) { Text("Exit game!") }
                     Button(onClick = {
                         when (gameOfBlackjack.gameType) {
-                            GameType.AUTOMATIC -> blackjackState?.playAutomatic(playerName)!!
-                            GameType.MANUAL -> blackjackState?.playManual(Action.START, playerName)!!
+                            GameType.AUTOMATIC -> blackjackState.playAutomatic()
+                            GameType.MANUAL -> blackjackState.playManual(Action.START)
                         }
                     }) {
                         Text("Retry game!")
                     }
                 } else {
-                    Button(onClick = { blackjackState?.playManual(Action.HIT, playerName) }) { Text("Hit me!") }
-                    Button(onClick = { blackjackState?.playManual(Action.END, playerName) }) { Text("I stay!") }
+                    Button(onClick = { blackjackState.playManual(Action.HIT) }) { Text("Hit me!") }
+                    Button(onClick = { blackjackState.playManual(Action.END) }) { Text("I stay!") }
                 }
             }
         }

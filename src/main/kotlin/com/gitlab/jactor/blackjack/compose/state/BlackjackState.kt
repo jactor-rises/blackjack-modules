@@ -10,15 +10,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 
 class BlackjackState(
-    runScope: MainCoroutineDispatcher = Dispatchers.Main,
-    private val gameStateConsumer: (Lce<GameOfBlackjack>) -> Unit,
-    private val blackjackService: BlackjackService
-) : Lce<GameOfBlackjack>(runScope = runScope, ioScope = Dispatchers.IO) {
+    val runScope: MainCoroutineDispatcher = Dispatchers.Main,
+    val playerName: PlayerName
+) : Lce<GameOfBlackjack>(runScope = runScope, coroutineScope = Dispatchers.IO) {
+    object NotStartet : Lce<GameOfBlackjack>()
+    lateinit var gameStateConsumer: (Lce<GameOfBlackjack>) -> Unit
+    lateinit var blackjackService: BlackjackService
 
-    fun playAutomatic(playerName: PlayerName) = play(GameType.AUTOMATIC, null, playerName)
-    fun playManual(action: Action, playerName: PlayerName) = play(GameType.MANUAL, action, playerName)
+    fun playAutomatic() = play(GameType.AUTOMATIC, null)
+    fun playManual(action: Action) = play(GameType.MANUAL, action)
 
-    private fun play(gameType: GameType, action: Action?, playerName: PlayerName) {
+    private fun play(gameType: GameType, action: Action?) {
         if (gameType == GameType.AUTOMATIC) {
             invoke(lceConsumer = gameStateConsumer, run = { blackjackService.playAutomatic(playerName) })
         }

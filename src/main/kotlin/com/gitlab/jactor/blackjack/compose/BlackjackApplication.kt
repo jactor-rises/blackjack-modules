@@ -11,6 +11,7 @@ import androidx.compose.ui.window.rememberWindowState
 import com.gitlab.jactor.blackjack.compose.Constants.WHAT_NAME
 import com.gitlab.jactor.blackjack.compose.model.GameOption
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
+import com.gitlab.jactor.blackjack.compose.state.BlackjackState
 import com.gitlab.jactor.blackjack.compose.ui.BlackjackUI
 import com.gitlab.jactor.blackjack.compose.ui.PlayerNameUI
 import kotlinx.coroutines.Dispatchers
@@ -29,12 +30,14 @@ fun main() = application {
             PlayerNameUI(newGameOption = newGameOption) { newPlayerName: PlayerName -> playerName = newPlayerName }
         }
     } else {
+        val blackjackState = BlackjackState(playerName = playerName, runScope = Dispatchers.Main)
+
         Window(
             onCloseRequest = { exitApplication() },
             title = "Blackjack",
             state = rememberWindowState(width = 800.dp, height = 600.dp)
         ) {
-            BlackjackUI(playerName = playerName, runScope = Dispatchers.Main, newGameOption = newGameOption)
+            BlackjackUI(blackjackState = blackjackState, newGameOption = newGameOption)
         }
     }
 

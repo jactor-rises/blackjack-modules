@@ -23,18 +23,18 @@ internal class BlackjackStateTest {
     @Test
     fun `should state a successful gameplay with content of GameOfBlackjack`() = runBlocking {
         var gameState: Lce<GameOfBlackjack>? = null
-        val blackjackState = BlackjackState(
-            gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState },
-            blackjackService = BlackjackService.DefaultBlackjackService(
-                blackjackConsumer = object : BlackjackConsumer {
-                    override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
-                        GameOfBlackjackDto(gameType = GameTypeDto.MANUAL)
-                    )
-                }
-            )
+        val blackjackState = BlackjackState(playerName = PlayerName("junit"))
+        blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
+        blackjackState.blackjackService = BlackjackService.DefaultBlackjackService(
+            blackjackConsumer = object : BlackjackConsumer {
+                override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
+                    GameOfBlackjackDto(gameType = GameTypeDto.MANUAL)
+                )
+            }
         )
 
-        blackjackState.playManual(Action.START, PlayerName("jactor"))
+
+        blackjackState.playManual(Action.START)
 
         delay(timeMillis = 500) // to allow Coroutine to run in different scope...
 
@@ -53,18 +53,17 @@ internal class BlackjackStateTest {
     @Test
     fun `should state a successful gameplay as an error when the result from game application contains an error`() = runBlocking {
         var gameState: Lce<GameOfBlackjack>? = null
-        val blackjackState = BlackjackState(
-            gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState },
-            blackjackService = BlackjackService.DefaultBlackjackService(
-                blackjackConsumer = object : BlackjackConsumer {
-                    override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
-                        GameOfBlackjackDto(gameType = GameTypeDto.MANUAL, error = ErrorDto(message = "noko krasja", provider = "Blodstrupmoen"))
-                    )
-                }
-            )
+        val blackjackState = BlackjackState(playerName = PlayerName("junit"))
+        blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
+        blackjackState.blackjackService = BlackjackService.DefaultBlackjackService(
+            blackjackConsumer = object : BlackjackConsumer {
+                override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
+                    GameOfBlackjackDto(gameType = GameTypeDto.MANUAL, error = ErrorDto(message = "noko krasja", provider = "Blodstrupmoen"))
+                )
+            }
         )
 
-        blackjackState.playManual(Action.START, PlayerName("jactor"))
+        blackjackState.playManual(Action.START)
 
         delay(timeMillis = 500) // to allow Coroutine to run in different scope...
 
