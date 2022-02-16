@@ -41,3 +41,5 @@ enum class ActionInternal {
 
     fun toDto() = Action.values().first { it.name == this.name }
 }
+
+enum class GameOption { PLAYER_NAME, QUIT, CONTINUE }
