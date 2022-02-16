@@ -45,7 +45,7 @@ internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit, newPlayerName: (P
                 placeholder = { Text(Constants.DEFAULT_PLAYER_NAME) },
                 onValueChange = { newValue ->
                     if (newValue.text.endsWith('\n')) {
-                        newPlayerName.invoke(PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME }))
+                        newPlayerName.invoke(PlayerName(nameState.text.trim().ifEmpty { Constants.DEFAULT_PLAYER_NAME }))
                         newGameOption.invoke(GameOption.CONTINUE)
                     } else {
                         nameState = newValue
@@ -55,7 +55,7 @@ internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit, newPlayerName: (P
 
             Button(
                 onClick = {
-                    newPlayerName.invoke(PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME }))
+                    newPlayerName.invoke(PlayerName(nameState.text.trim().ifEmpty { Constants.DEFAULT_PLAYER_NAME }))
                     newGameOption.invoke(GameOption.CONTINUE)
                 }
             ) {
