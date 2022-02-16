@@ -32,7 +32,7 @@ fun main() = application {
         Window(
             onCloseRequest = { exitApplication() },
             title = "Blackjack",
-            state = rememberWindowState(width = 800.dp, height = 550.dp)
+            state = rememberWindowState(width = 800.dp, height = 600.dp)
         ) {
             BlackjackUI(playerName = playerName, runScope = Dispatchers.Main, newGameOption = newGameOption)
         }

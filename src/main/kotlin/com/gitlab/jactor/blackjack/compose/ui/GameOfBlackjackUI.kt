@@ -40,7 +40,26 @@ fun GameOfBlackjackUI(
 ) {
     MaterialTheme {
         Column(modifier = Modifier.fillMaxSize().padding(10.dp), verticalArrangement = ARRANGE_5_DP_SPACING) {
-            composeGameOfBlackjack(gameOfBlackjack, playerName)
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Text("Dealer - ${gameOfBlackjack.status.dealerScore}")
+            }
+
+            CardsUI(gameOfBlackjack.dealerHand)
+
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
+                Text(text = "Player - ${gameOfBlackjack.status.playerScore}")
+            }
+
+            CardsUI(gameOfBlackjack.playerHand)
+
+            if (gameOfBlackjack.status.isGameCompleted) {
+                Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
+                    Text(
+                        text = gameOfBlackjack.displayWinner(playerName),
+                        color = withColor(gameOfBlackjack)
+                    )
+                }
+            }
 
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 if (gameOfBlackjack.status.isGameCompleted) {
@@ -63,20 +82,16 @@ fun GameOfBlackjackUI(
 }
 
 @Composable
-private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack, playerName: PlayerName) {
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = ARRANGE_5_DP_SPACING) {
-        Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            Text("Dealer - ${gameOfBlackjack.status.dealerScore}")
-        }
-
-        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_15DP_SPACING) {
+private fun CardsUI(cards: List<Card>) {
+    Column(modifier = Modifier.fillMaxWidth().padding(10.dp), verticalArrangement = ARRANGE_5_DP_SPACING) {
+        Row(modifier = Modifier.Companion.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_15DP_SPACING) {
             val imageModifier = Modifier
                 .height(95.dp)
                 .width(70.dp)
                 .align(alignment = Alignment.CenterVertically)
                 .shadow(8.dp)
 
-            gameOfBlackjack.dealerHand.forEach {
+            cards.forEach {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
                         painter = painterResource(it.imageFileName),
@@ -88,52 +103,17 @@ private fun composeGameOfBlackjack(gameOfBlackjack: GameOfBlackjack, playerName:
                     Text(text = it.suit.name.lowercase(), color = withColor(it.color))
                     Text(text = it.face.name.lowercase(), color = withColor(it.color))
                 }
-            }
-        }
-
-        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
-            Text(text = "Player - ${gameOfBlackjack.status.playerScore}")
-        }
-
-        Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_15DP_SPACING) {
-            val imageModifier = Modifier
-                .height(95.dp)
-                .width(70.dp)
-                .align(alignment = Alignment.CenterVertically)
-                .shadow(8.dp)
-
-            gameOfBlackjack.playerHand.forEach {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = painterResource(it.imageFileName),
-                        contentDescription = it.text,
-                        modifier = imageModifier,
-                        contentScale = ContentScale.Fit,
-                    )
-
-                    Text(text = it.suit.name.lowercase(), color = withColor(it.color))
-                    Text(text = it.face.name.lowercase(), color = withColor(it.color))
-                }
-            }
-        }
-
-        if (gameOfBlackjack.status.isGameCompleted) {
-            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
-                Text(
-                    text = gameOfBlackjack.displayWinner(playerName),
-                    color = when (gameOfBlackjack.status.fetchResultOfGame()) {
-                        GameStatus.DEALER_WINS -> Color.DarkGray
-                        GameStatus.PLAYER_WINS -> Color.Blue
-                    }
-                )
             }
         }
     }
 }
 
-private fun withColor(color: Card.Color): Color {
-    return when (color) {
-        Card.Color.BLACK -> Color.Black
-        Card.Color.RED -> Color.Red
-    }
+private fun withColor(gameOfBlackjack: GameOfBlackjack) = when (gameOfBlackjack.status.fetchResultOfGame()) {
+    GameStatus.DEALER_WINS -> Color.DarkGray
+    GameStatus.PLAYER_WINS -> Color.Blue
+}
+
+private fun withColor(color: Card.Color) = when (color) {
+    Card.Color.BLACK -> Color.Black
+    Card.Color.RED -> Color.Red
 }
