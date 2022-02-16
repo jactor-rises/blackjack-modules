@@ -2,13 +2,6 @@ package com.gitlab.jactor.blackjack.compose
 
 import com.gitlab.jactor.blackjack.compose.consumer.BlackjackConsumer
 import com.gitlab.jactor.blackjack.compose.service.BlackjackService
-import com.gitlab.jactor.blackjack.compose.state.BlackjackState
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainCoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
@@ -27,29 +20,7 @@ open class ApplicationConfiguration {
             AnnotationConfigApplicationContext(ApplicationConfiguration::class.java)
         }
 
-        fun isActive(
-            defaultScope: CoroutineDispatcher = Dispatchers.Default,
-            runScope: MainCoroutineDispatcher,
-            setActive: (Boolean) -> Unit
-        ): Boolean {
-            CoroutineScope(defaultScope).launch {
-                withContext(runScope) {
-                    setActive.invoke(annotationConfigApplicationContext.isActive)
-                }
-            }
-
-            return false
-        }
-
         fun <T> fetchBean(clazz: Class<T>): T = annotationConfigApplicationContext.getBean(clazz)
-
-        fun setBlackjackService(defaultScope: CoroutineDispatcher = Dispatchers.Default, blackjackState: BlackjackState) {
-            CoroutineScope(defaultScope).launch {
-                withContext(blackjackState.runScope) {
-                    blackjackState.blackjackService = fetchBean(BlackjackService::class.java)
-                }
-            }
-        }
     }
 
     @Bean

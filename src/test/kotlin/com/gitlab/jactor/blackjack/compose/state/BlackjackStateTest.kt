@@ -25,29 +25,24 @@ internal class BlackjackStateTest {
         var gameState: Lce<GameOfBlackjack>? = null
         val blackjackState = BlackjackState(playerName = PlayerName("junit"))
         blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
-        blackjackState.blackjackService = BlackjackService.DefaultBlackjackService(
-            blackjackConsumer = object : BlackjackConsumer {
-                override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
-                    GameOfBlackjackDto(gameType = GameTypeDto.MANUAL)
-                )
-            }
-        )
+        blackjackState.setBlackjackService(BlackjackService.DefaultBlackjackService(blackjackConsumer = object : BlackjackConsumer {
+            override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
+                GameOfBlackjackDto(gameType = GameTypeDto.MANUAL)
+            )
+        }))
 
 
         blackjackState.playManual(Action.START)
 
         delay(timeMillis = 500) // to allow Coroutine to run in different scope...
 
-        assertAll(
-            { assertThat(gameState).`as`("gameState").isInstanceOf(Lce.Content::class.java) },
-            {
-                assertThat(gameState as Lce.Content).`as`("content").extracting("data").isEqualTo(
-                    GameOfBlackjack(
-                        GameOfBlackjackDto(gameType = GameTypeDto.MANUAL)
-                    )
+        assertAll({ assertThat(gameState).`as`("gameState").isInstanceOf(Lce.Content::class.java) }, {
+            assertThat(gameState as Lce.Content).`as`("content").extracting("data").isEqualTo(
+                GameOfBlackjack(
+                    GameOfBlackjackDto(gameType = GameTypeDto.MANUAL)
                 )
-            }
-        )
+            )
+        })
     }
 
     @Test
@@ -55,20 +50,17 @@ internal class BlackjackStateTest {
         var gameState: Lce<GameOfBlackjack>? = null
         val blackjackState = BlackjackState(playerName = PlayerName("junit"))
         blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
-        blackjackState.blackjackService = BlackjackService.DefaultBlackjackService(
-            blackjackConsumer = object : BlackjackConsumer {
-                override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
-                    GameOfBlackjackDto(gameType = GameTypeDto.MANUAL, error = ErrorDto(message = "noko krasja", provider = "Blodstrupmoen"))
-                )
-            }
-        )
+        blackjackState.setBlackjackService(BlackjackService.DefaultBlackjackService(blackjackConsumer = object : BlackjackConsumer {
+            override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
+                GameOfBlackjackDto(gameType = GameTypeDto.MANUAL, error = ErrorDto(message = "noko krasja", provider = "Blodstrupmoen"))
+            )
+        }))
 
         blackjackState.playManual(Action.START)
 
         delay(timeMillis = 500) // to allow Coroutine to run in different scope...
 
-        assertAll(
-            { assertThat(gameState).`as`("gameState").isInstanceOf(Lce.Error::class.java) },
+        assertAll({ assertThat(gameState).`as`("gameState").isInstanceOf(Lce.Error::class.java) },
             { assertThat(gameState as Lce.Error).`as`("error").extracting(Lce.Error::error).isInstanceOf(GameOfBlackjackException::class.java) },
             {
                 assertThat(gameState as Lce.Error).`as`("error.message").extracting(Lce.Error::error).extracting(Throwable::message)

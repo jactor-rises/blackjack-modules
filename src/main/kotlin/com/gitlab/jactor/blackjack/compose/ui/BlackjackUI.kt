@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.gitlab.jactor.blackjack.compose.ApplicationConfiguration
 import com.gitlab.jactor.blackjack.compose.dto.Action
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameOption
@@ -38,12 +37,7 @@ internal fun BlackjackUI(
     blackjackState: BlackjackState
 ) {
     var gameState: Lce<GameOfBlackjack> by remember { mutableStateOf(BlackjackState.NotStartet) }
-    var isActiveApplicationConfiguration: Boolean by remember { mutableStateOf(false) }
-
     blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
-    ApplicationConfiguration.isActive(runScope = blackjackState.runScope) { isActive: Boolean -> isActiveApplicationConfiguration = isActive }
-
-    ApplicationConfiguration.setBlackjackService(blackjackState = blackjackState)
 
     MaterialTheme {
         Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5_DP_SPACING) {
@@ -53,14 +47,12 @@ internal fun BlackjackUI(
 
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 Button(
-                    enabled = isActiveApplicationConfiguration,
                     onClick = { blackjackState.playAutomatic() }
                 ) {
                     Text("Play automatic game of blackjack")
                 }
 
                 Button(
-                    enabled = isActiveApplicationConfiguration,
                     onClick = { blackjackState.playManual(Action.START) }
                 ) {
                     Text("Play manual game of blackjack")
