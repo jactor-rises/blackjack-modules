@@ -23,9 +23,11 @@ interface BlackjackConsumer {
                 GameOfBlackjackDto::class.java
             )
 
-            return GameOfBlackjack(response.body ?: throw illegalState(nick, response.statusCode))
+            return GameOfBlackjack(response.body ?: throw initIllegalState(nick, response.statusCode))
         }
 
-        private fun illegalState(nick: String, status: HttpStatus) = IllegalStateException("Kunne ikke spille blackjack med $nick, status: $status")
+        private fun initIllegalState(nick: String, status: HttpStatus) = IllegalStateException(
+            "Kunne ikke spille blackjack med $nick, status: $status"
+        )
     }
 }
