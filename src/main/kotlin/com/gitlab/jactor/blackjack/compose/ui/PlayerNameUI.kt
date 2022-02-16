@@ -20,6 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.Constants
@@ -29,6 +32,7 @@ import com.gitlab.jactor.blackjack.compose.model.PlayerName
 @Preview
 @Composable
 internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit, newPlayerName: (PlayerName) -> Unit) {
+    val focusRequester = remember { FocusRequester() }
     var nameState by remember { mutableStateOf(TextFieldValue()) }
 
     MaterialTheme {
@@ -38,14 +42,18 @@ internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit, newPlayerName: (P
             horizontalArrangement = Arrangement.Center
         ) {
             OutlinedTextField(
-                value = nameState,
-                modifier = Modifier.padding(end = 16.dp).weight(1f),
+                modifier = Modifier
+                    .focusRequester(focusRequester = focusRequester)
+                    .onGloballyPositioned { focusRequester.requestFocus() }
+                    .padding(end = 16.dp)
+                    .weight(1f),
                 label = { Text(Constants.WHAT_NAME) },
                 leadingIcon = { Icon(Icons.Outlined.Person, "Name") },
                 placeholder = { Text(Constants.DEFAULT_PLAYER_NAME) },
+                value = nameState,
                 onValueChange = { newValue ->
                     if (newValue.text.endsWith('\n')) {
-                        newPlayerName.invoke(PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME }))
+                        newPlayerName.invoke(PlayerName(nameState.text.trim().ifEmpty { Constants.DEFAULT_PLAYER_NAME }))
                         newGameOption.invoke(GameOption.CONTINUE)
                     } else {
                         nameState = newValue
@@ -55,7 +63,7 @@ internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit, newPlayerName: (P
 
             Button(
                 onClick = {
-                    newPlayerName.invoke(PlayerName(nameState.text.ifBlank { Constants.DEFAULT_PLAYER_NAME }))
+                    newPlayerName.invoke(PlayerName(nameState.text.trim().ifEmpty { Constants.DEFAULT_PLAYER_NAME }))
                     newGameOption.invoke(GameOption.CONTINUE)
                 }
             ) {
