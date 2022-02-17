@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.dto.Action
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameOption
+import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.state.BlackjackState
 import com.gitlab.jactor.blackjack.compose.state.Lce
 
@@ -37,8 +38,8 @@ internal val ARRANGE_5_DP_SPACING = Arrangement.spacedBy(5.dp)
 @Composable
 @Preview
 internal fun BlackjackUI(
-    newGameOption: (GameOption) -> Unit,
-    blackjackState: BlackjackState
+    newGameOption: (GameOption) -> Unit = {},
+    blackjackState: BlackjackState = BlackjackState(playerName = PlayerName(name = "jactor"))
 ) {
     var gameState: Lce<GameOfBlackjack> by remember { mutableStateOf(BlackjackState.NotStartet) }
     blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
