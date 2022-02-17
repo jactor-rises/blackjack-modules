@@ -31,7 +31,7 @@ import com.gitlab.jactor.blackjack.compose.model.PlayerName
 
 @Preview
 @Composable
-internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit, newPlayerName: (PlayerName) -> Unit) {
+internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit = {}, newPlayerName: (PlayerName) -> Unit = {}) {
     val focusRequester = remember { FocusRequester() }
     var nameState by remember { mutableStateOf(TextFieldValue()) }
 
