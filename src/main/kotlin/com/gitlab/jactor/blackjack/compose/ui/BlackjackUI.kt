@@ -88,9 +88,6 @@ private fun LoadingUI() {
 }
 
 @Composable
-
-
-
 private fun ErrorUI(failure: Lce.Error, gameOption: (GameOption) -> Unit) {
     val cause = failure.error::class.simpleName
     val message = failure.error.message?.split("nested exception")?.joinToString(separator = "\nnested exception")
