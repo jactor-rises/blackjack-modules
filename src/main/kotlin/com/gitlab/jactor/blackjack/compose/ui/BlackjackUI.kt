@@ -7,11 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -84,14 +88,22 @@ private fun LoadingUI() {
 }
 
 @Composable
+
+
+
 private fun ErrorUI(failure: Lce.Error, gameOption: (GameOption) -> Unit) {
     val cause = failure.error::class.simpleName
     val message = failure.error.message?.split("nested exception")?.joinToString(separator = "\nnested exception")
 
     MaterialTheme {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Something fishy happened!  ¯\\_(ツ)_/¯", textAlign = TextAlign.Left, color = Color.Red)
+         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
+                Icon(Icons.TwoTone.Warning, "")
+                Text(text = "Something fishy happened!  ¯\\_(ツ)_/¯", textAlign = TextAlign.Left, color = Color.Red)
+            }
+
             Text(text = "$cause: $message", textAlign = TextAlign.Center, color = Color.Red)
+
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 Button(onClick = { gameOption.invoke(GameOption.QUIT) }) { Text("Exit game!") }
                 Button(onClick = { gameOption.invoke(GameOption.PLAYER_NAME) }) { Text("Retry game with new player!") }
