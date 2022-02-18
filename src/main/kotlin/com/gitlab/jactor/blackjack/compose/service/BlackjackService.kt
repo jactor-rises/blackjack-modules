@@ -12,9 +12,10 @@ interface BlackjackService {
 
     class DefaultBlackjackService(private val blackjackConsumer: BlackjackConsumer) : BlackjackService {
         override fun playAutomatic(playerName: PlayerName) = blackjackConsumer.play(nick = playerName.nick, type = GameType.AUTOMATIC)
+            .with(playerName)
 
         override fun playManual(playerName: PlayerName, actionInternal: ActionInternal) = blackjackConsumer.play(
             nick = playerName.nick, type = GameType.MANUAL, actionInternal = actionInternal
-        )
+        ).with(playerName)
     }
 }

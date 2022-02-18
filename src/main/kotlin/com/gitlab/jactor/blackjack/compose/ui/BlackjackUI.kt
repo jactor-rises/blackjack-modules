@@ -37,17 +37,14 @@ internal val ARRANGE_5_DP_SPACING = Arrangement.spacedBy(5.dp)
 
 @Composable
 @Preview
-internal fun BlackjackUI(
-    newGameOption: (GameOption) -> Unit = {},
-    blackjackState: BlackjackState = BlackjackState(playerName = PlayerName(name = "jactor"))
-) {
+internal fun BlackjackUI(newGameOption: (GameOption) -> Unit = {}, blackjackState: BlackjackState = BlackjackState { PlayerName("jactor") }) {
     var gameState: Lce<GameOfBlackjack> by remember { mutableStateOf(BlackjackState.NotStartet) }
     blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
 
     MaterialTheme {
         Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5_DP_SPACING) {
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
-                Text("Hi ${blackjackState.playerName.capitalized}! Magnus challenge you to a game of Blackjack.")
+                Text("Hi ${blackjackState.currentPlayerName.invoke().capitalized}! Magnus challenge you to a game of Blackjack.")
             }
 
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
@@ -94,7 +91,7 @@ private fun ErrorUI(failure: Lce.Error, gameOption: (GameOption) -> Unit) {
     val message = failure.error.message?.split("nested exception")?.joinToString(separator = "\nnested exception")
 
     MaterialTheme {
-         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 Icon(Icons.TwoTone.Warning, "")
                 Text(text = "Something fishy happened!  ¯\\_(ツ)_/¯", textAlign = TextAlign.Left, color = Color.Red)

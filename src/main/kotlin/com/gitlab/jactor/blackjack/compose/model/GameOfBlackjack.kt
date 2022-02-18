@@ -10,6 +10,9 @@ data class GameOfBlackjack(
     val status: Status,
     val gameType: GameType
 ) {
+    val playerName: PlayerName get() = name ?: throw IllegalStateException("Player name has not been added!")
+    private var name: PlayerName? = null
+
     constructor(gameOfBlackjackDto: GameOfBlackjackDto) : this(
         dealerHand = gameOfBlackjackDto.dealerHand.map { Card(it) },
         nickOfPlayer = gameOfBlackjackDto.nickOfPlayer,
@@ -22,8 +25,17 @@ data class GameOfBlackjack(
         }
     }
 
-    fun displayWinner(playerName: PlayerName) = "Vinneren er " + when (status.fetchResultOfGame()) {
+    fun displayWinner() = "Vinneren er " + when (status.fetchResultOfGame()) {
         GameStatus.DEALER_WINS -> "Magnus"
         GameStatus.PLAYER_WINS -> playerName.capitalized
+    }
+
+    fun with(playerName: PlayerName): GameOfBlackjack {
+        if (playerName.nick != nickOfPlayer) {
+            throw IllegalStateException("The nick of added player do not match the game nick ($nickOfPlayer)!")
+        }
+
+        this.name = playerName
+        return this
     }
 }
