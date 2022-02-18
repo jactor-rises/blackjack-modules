@@ -30,7 +30,7 @@ fun main() = application {
             PlayerNameUI(newGameOption = newGameOption) { newPlayerName: PlayerName -> playerName = newPlayerName }
         }
     } else {
-        val blackjackState = BlackjackState(playerName = playerName, runScope = Dispatchers.Main)
+        val blackjackState = BlackjackState(currentPlayerName = { playerName }, runScope = Dispatchers.Main)
 
         Window(
             onCloseRequest = { exitApplication() },

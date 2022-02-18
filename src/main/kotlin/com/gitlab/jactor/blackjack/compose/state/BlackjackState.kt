@@ -12,7 +12,7 @@ import kotlinx.coroutines.MainCoroutineDispatcher
 
 class BlackjackState(
     val runScope: MainCoroutineDispatcher = Dispatchers.Main,
-    val playerName: PlayerName
+    val currentPlayerName: () -> PlayerName
 ) : Lce<GameOfBlackjack>(runScope = runScope, coroutineScope = Dispatchers.IO) {
     object NotStartet : Lce<GameOfBlackjack>()
 
@@ -23,17 +23,20 @@ class BlackjackState(
     fun playManual(action: Action) = play(GameType.MANUAL, action)
 
     private fun play(gameType: GameType, action: Action?) {
-        if (gameType == GameType.AUTOMATIC) {
-            invoke(lceConsumer = gameStateConsumer, run = { fetchBlackjackService().playAutomatic(playerName) })
-        }
-
-        if (gameType == GameType.MANUAL) {
-            when (action) {
-                Action.END -> invoke(lceConsumer = gameStateConsumer, run = { fetchBlackjackService().playManual(playerName, ActionInternal.END) })
-                Action.HIT -> invoke(lceConsumer = gameStateConsumer, run = { fetchBlackjackService().playManual(playerName, ActionInternal.HIT) })
+        when (gameType) {
+            GameType.AUTOMATIC -> invoke(lceConsumer = gameStateConsumer, run = { fetchBlackjackService().playAutomatic(currentPlayerName.invoke()) })
+            GameType.MANUAL -> when (action) {
+                Action.END -> invoke(
+                    lceConsumer = gameStateConsumer,
+                    run = { fetchBlackjackService().playManual(currentPlayerName.invoke(), ActionInternal.END) }
+                )
+                Action.HIT -> invoke(
+                    lceConsumer = gameStateConsumer,
+                    run = { fetchBlackjackService().playManual(currentPlayerName.invoke(), ActionInternal.HIT) }
+                )
                 Action.START -> invoke(
                     lceConsumer = gameStateConsumer,
-                    run = { fetchBlackjackService().playManual(playerName, ActionInternal.START) }
+                    run = { fetchBlackjackService().playManual(currentPlayerName.invoke(), ActionInternal.START) }
                 )
 
                 else -> throw IllegalStateException("A manual game needs an action!")

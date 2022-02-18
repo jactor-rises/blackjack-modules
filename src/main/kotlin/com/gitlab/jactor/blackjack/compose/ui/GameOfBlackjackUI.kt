@@ -53,7 +53,7 @@ fun GameOfBlackjackUI(
             if (gameOfBlackjack.status.isGameCompleted) {
                 Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                     Text(
-                        text = gameOfBlackjack.displayWinner(blackjackState.playerName),
+                        text = gameOfBlackjack.displayWinner(),
                         color = withColor(gameOfBlackjack)
                     )
                 }
