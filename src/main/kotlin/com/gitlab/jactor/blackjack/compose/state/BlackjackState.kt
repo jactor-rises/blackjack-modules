@@ -7,51 +7,50 @@ import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameType
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
 import com.gitlab.jactor.blackjack.compose.service.BlackjackService
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainCoroutineDispatcher
 
 class BlackjackState(
+    coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
     val runScope: MainCoroutineDispatcher = Dispatchers.Main,
     val currentPlayerName: () -> PlayerName
-) : Lce<GameOfBlackjack>(runScope = runScope, coroutineScope = Dispatchers.IO) {
+) : Lce<GameOfBlackjack>(runScope = runScope, coroutineDispatcher = coroutineDispatcher) {
     object NotStartet : Lce<GameOfBlackjack>()
 
     lateinit var gameStateConsumer: (Lce<GameOfBlackjack>) -> Unit
-    private var blackjackService: BlackjackService? = null
+    private lateinit var blackjackService: BlackjackService
 
     fun playAutomatic() = play(GameType.AUTOMATIC, null)
     fun playManual(action: Action) = play(GameType.MANUAL, action)
 
     private fun play(gameType: GameType, action: Action?) {
+        initializeBlackjackService()
+
         when (gameType) {
-            GameType.AUTOMATIC -> invoke(lceConsumer = gameStateConsumer, run = { fetchBlackjackService().playAutomatic(currentPlayerName.invoke()) })
+            GameType.AUTOMATIC -> invoke(lceConsumer = gameStateConsumer, run = { blackjackService.playAutomatic(currentPlayerName.invoke()) })
             GameType.MANUAL -> when (action) {
                 Action.END -> invoke(
                     lceConsumer = gameStateConsumer,
-                    run = { fetchBlackjackService().playManual(currentPlayerName.invoke(), ActionInternal.END) }
-                )
+                    run = { blackjackService.playManual(currentPlayerName.invoke(), ActionInternal.END) })
                 Action.HIT -> invoke(
                     lceConsumer = gameStateConsumer,
-                    run = { fetchBlackjackService().playManual(currentPlayerName.invoke(), ActionInternal.HIT) }
+                    run = { blackjackService.playManual(currentPlayerName.invoke(), ActionInternal.HIT) }
                 )
                 Action.START -> invoke(
                     lceConsumer = gameStateConsumer,
-                    run = { fetchBlackjackService().playManual(currentPlayerName.invoke(), ActionInternal.START) }
+                    run = { blackjackService.playManual(currentPlayerName.invoke(), ActionInternal.START) }
                 )
 
-                else -> throw IllegalStateException("A manual game needs an action!")
+                null -> throw IllegalStateException("A manual game needs an action!")
             }
         }
     }
 
-    private fun fetchBlackjackService(): BlackjackService {
-        if (blackjackService != null) {
-            return blackjackService!!
+    private fun initializeBlackjackService() {
+        if (!(this::blackjackService.isInitialized)) {
+            setBlackjackService(ApplicationConfiguration.fetchBean(BlackjackService::class.java))
         }
-
-        blackjackService = ApplicationConfiguration.fetchBean(BlackjackService::class.java)
-
-        return blackjackService!!
     }
 
     internal fun setBlackjackService(blackjackService: BlackjackService) {

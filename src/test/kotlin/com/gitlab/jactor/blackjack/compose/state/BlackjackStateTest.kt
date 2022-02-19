@@ -72,4 +72,46 @@ internal class BlackjackStateTest {
             }
         )
     }
+
+    @Test
+    fun `should add player name when playing an automatic game of blackjack`(): Unit = runBlocking {
+        var gameState: Lce<GameOfBlackjack>? = null
+        val blackjackState = BlackjackState { PlayerName("Tor Egil") }
+
+        blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
+        blackjackState.setBlackjackService(BlackjackService.DefaultBlackjackService(blackjackConsumer = object : BlackjackConsumer {
+            override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
+                GameOfBlackjackDto(nickOfPlayer = "tor-egil", gameType = GameTypeDto.AUTOMATIC)
+            )
+        }))
+
+        do {
+            blackjackState.playAutomatic()
+            delay(timeMillis = 100) // to allow Coroutine to run in different scope...
+        } while (!(gameState is Lce.Content))
+
+        val playerName = (gameState as Lce.Content).data.playerName
+        assertThat(playerName).isEqualTo(PlayerName("Tor Egil"))
+    }
+
+    @Test
+    fun `should add player name when playing a manual game of blackjack`(): Unit = runBlocking {
+        var gameState: Lce<GameOfBlackjack>? = null
+        val blackjackState = BlackjackState { PlayerName("Tor Egil") }
+
+        blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
+        blackjackState.setBlackjackService(BlackjackService.DefaultBlackjackService(blackjackConsumer = object : BlackjackConsumer {
+            override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
+                GameOfBlackjackDto(nickOfPlayer = "tor-egil", gameType = GameTypeDto.MANUAL)
+            )
+        }))
+
+        do {
+            blackjackState.playManual(Action.START)
+            delay(timeMillis = 100) // to allow Coroutine to run in different scope...
+        } while (!(gameState is Lce.Content))
+
+        val playerName = (gameState as Lce.Content).data.playerName
+        assertThat(playerName).isEqualTo(PlayerName("Tor Egil"))
+    }
 }

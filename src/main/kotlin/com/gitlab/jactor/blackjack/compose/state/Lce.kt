@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 
 abstract class Lce<out T>(
     private val runScope: MainCoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineDispatcher = Dispatchers.IO
+    private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     object Loading : Lce<Nothing>()
     data class Error(val error: Throwable) : Lce<Nothing>()
@@ -18,7 +18,7 @@ abstract class Lce<out T>(
     protected fun <T> invoke(run: () -> T, lceConsumer: (Lce<T>) -> Unit) {
         lceConsumer.invoke(Loading as Lce<T>)
 
-        CoroutineScope(coroutineScope).launch {
+        CoroutineScope(coroutineDispatcher).launch {
             val content = runForContent(run, lceConsumer)
 
             if (content != null) {
