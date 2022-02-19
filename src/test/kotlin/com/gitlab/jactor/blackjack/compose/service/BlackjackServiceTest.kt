@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 @DisplayName("A com.gitlab.jactor.blackjack.compose.service.BlackjackService")
 internal class BlackjackServiceTest {
 
-    val blackjackService = BlackjackService.DefaultBlackjackService(
+    private val blackjackService = BlackjackService.DefaultBlackjackService(
         object : BlackjackConsumer {
             override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
                 GameOfBlackjackDto(nickOfPlayer = nick, gameType = type.asDto())

@@ -35,6 +35,5 @@ internal class GameOfBlackjackTest {
             ).with(PlayerName("jactor"))
         }
             .withMessage("The nick of added player do not match the game nick (turbo)!")
-
     }
 }
