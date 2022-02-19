@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gitlab.jactor.blackjack.compose.dto.Action
+import com.gitlab.jactor.blackjack.compose.model.ExceptionUtil
 import com.gitlab.jactor.blackjack.compose.model.GameOfBlackjack
 import com.gitlab.jactor.blackjack.compose.model.GameOption
 import com.gitlab.jactor.blackjack.compose.model.PlayerName
@@ -88,16 +89,18 @@ private fun LoadingUI() {
 @Composable
 private fun ErrorUI(failure: Lce.Error, gameOption: (GameOption) -> Unit) {
     val cause = failure.error::class.simpleName
-    val message = failure.error.message?.split("nested exception")?.joinToString(separator = "\nnested exception")
+    val messages = ExceptionUtil.initErrorMessagesFrom(failure.error)
 
     MaterialTheme {
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
+                Text(text = "$cause!", textAlign = TextAlign.Left, color = Color.Red)
                 Icon(Icons.TwoTone.Warning, "")
-                Text(text = "Something fishy happened!  ¯\\_(ツ)_/¯", textAlign = TextAlign.Left, color = Color.Red)
             }
 
-            Text(text = "$cause: $message", textAlign = TextAlign.Center, color = Color.Red)
+            messages.forEach { message ->
+                Text(text = message, textAlign = TextAlign.Center, color = Color.Red)
+            }
 
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 Button(onClick = { gameOption.invoke(GameOption.QUIT) }) { Text("Exit game!") }
