@@ -6,4 +6,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "app-blackjack"
+include("blackjack", "app")
