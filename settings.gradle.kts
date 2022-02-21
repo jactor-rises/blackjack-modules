@@ -6,4 +6,6 @@ pluginManagement {
     }
 }
 
-include("blackjack", "app")
+rootProject.name = "blackjack-modules"
+include("blackjack")
+include("compose")

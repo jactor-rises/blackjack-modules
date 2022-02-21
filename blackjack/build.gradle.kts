@@ -11,13 +11,14 @@ plugins {
     kotlin("plugin.spring") version "1.6.20-M1"
 }
 
-description = "jactor::blackjack"
+description = "blackjack:backend"
 group = "com.github.jactor.blackjack"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -59,6 +60,7 @@ tasks.test {
             showStackTraces = true
             showStandardStreams = true
         }
+
         info.events = lifecycle.events
         info.exceptionFormat = lifecycle.exceptionFormat
     }
