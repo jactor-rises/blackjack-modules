@@ -3,14 +3,15 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm")
     id("org.jetbrains.compose") version "1.0.1-rc2"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
 
-description = "jactor::blackjack-application"
+description = "blackjack:compose-application"
 group = "com.gitlab.jactor.blackjack.compose"
 version = "0.0.0-SNAPSHOT"
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     google()
@@ -34,19 +35,23 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-
 tasks.test {
     useJUnitPlatform()
 
     testLogging {
         lifecycle {
-            events = mutableSetOf(org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED, org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED, org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED)
+            events = mutableSetOf(
+                org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
+                org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
+                org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
+            )
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
             showExceptions = true
             showCauses = true
             showStackTraces = true
             showStandardStreams = true
         }
+
         info.events = lifecycle.events
         info.exceptionFormat = lifecycle.exceptionFormat
     }
