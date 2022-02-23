@@ -55,7 +55,6 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "16"
-    kotlinOptions.allWarningsAsErrors = true
 }
 
 compose.desktop {
