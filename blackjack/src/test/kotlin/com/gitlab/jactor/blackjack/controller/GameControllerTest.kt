@@ -58,7 +58,6 @@ internal class GameControllerTest(@Autowired private val testRestTemplate: TestR
             { assertThat(gameOfBlackjackDto?.nickOfPlayer).`as`("kallenavn").isEqualTo(kallenavn) },
             { assertThat(gameOfBlackjackDto?.dealerHand).`as`("Magnus sine kort").hasSizeGreaterThanOrEqualTo(2) },
             { assertThat(gameOfBlackjackDto?.playerHand).`as`("$kallenavn sine kort").hasSizeGreaterThanOrEqualTo(2) },
-            { assertThat(gameOfBlackjackDto?.status?.playerScore).`as`("poeng til $kallenavn").isGreaterThanOrEqualTo(17) },
             { assertThat(gameOfBlackjackDto?.status?.result).`as`("vinner").isNotNull() }
         )
     }
