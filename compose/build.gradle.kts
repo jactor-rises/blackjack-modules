@@ -3,9 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm")
     id("org.jetbrains.compose") version "1.0.1-rc2"
-    id("com.github.ben-manes.versions") version "0.42.0"
 }
 
 description = "blackjack:compose-application"
@@ -15,10 +13,6 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     google()
-
-    mavenCentral()
-    mavenLocal()
-
     maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
     maven(url = "https://jitpack.io")
 }
@@ -30,7 +24,6 @@ dependencies {
     implementation("org.springframework:spring-core:5.3.15")
     implementation("org.springframework:spring-web:5.3.15")
 
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.3")
     testImplementation(kotlin("test"))
 }

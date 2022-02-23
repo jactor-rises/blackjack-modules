@@ -1,13 +1,10 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.springframework.boot") version "2.6.3"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("com.github.ben-manes.versions") version "0.42.0"
 
-    kotlin("jvm")
     kotlin("plugin.spring") version "1.6.10"
 }
 
@@ -15,11 +12,6 @@ description = "blackjack:backend"
 group = "com.github.jactor.blackjack"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
 
 dependencies {
     // spring-boot
@@ -38,7 +30,6 @@ dependencies {
 
     // test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
 }
 
 tasks.withType<KotlinCompile> {
@@ -55,7 +46,7 @@ tasks.test {
     testLogging {
         lifecycle {
             events = mutableSetOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
-            exceptionFormat = TestExceptionFormat.FULL
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
             showExceptions = true
             showCauses = true
             showStackTraces = true
