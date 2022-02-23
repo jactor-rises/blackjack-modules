@@ -101,14 +101,14 @@ class TestListenerImpl : TestListener {
                 "| Test summary: ${result.testCount} tests, ${result.successfulTestCount} succeeded, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped"
             )
 
-            failedTests.takeIf { it.isNotEmpty() }?.prefixedSummary("\tFailed Tests")
-            skippedTests.takeIf { it.isNotEmpty() }?.prefixedSummary("\tSkipped Tests:")
+            failedTests.takeIf { it.isNotEmpty() }?.prefixedSummary("|\tFailed Tests")
+            skippedTests.takeIf { it.isNotEmpty() }?.prefixedSummary("|\tSkipped Tests:")
         }
     }
 
     private infix fun List<TestDescriptor>.prefixedSummary(subject: String) {
         logger.lifecycle(subject)
-        forEach { test -> logger.lifecycle("\t\t${test.className}: ${test.displayName()}") }
+        forEach { test -> logger.lifecycle("|\t\t${test.className}: ${test.displayName()}") }
     }
 
     private fun TestDescriptor.displayName() = parent?.name ?: name
