@@ -1,5 +1,8 @@
 # blackjack-modules
+
 A Kotlin compose front-end application using a spring-boot backend application
+
+[![continuous integration for blackjack](https://github.com/jactor-rises/blackjack-modules/actions/workflows/blackjack-ci.yaml/badge.svg)](https://github.com/jactor-rises/blackjack-modules/actions/workflows/blackjack-ci.yaml)
 
 ### The backend application containing the "blackjack game engine"
 
