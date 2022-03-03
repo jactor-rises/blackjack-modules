@@ -1,4 +1,4 @@
-name: continuous integration for blackjack
+name: continuous integration for compose
 on:
   push:
     paths:
