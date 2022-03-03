@@ -5,12 +5,14 @@ object Library {
 
         // Dependencies
         const val fasterXmlJacksonModule = "2.13.1"
+        const val mockitoKotlin = "4.0.0"
         const val springDocOpenApi = "1.6.6"
         const val springFramework = "5.3.15"
 
         // plugins
-        const val springBoot = "2.6.3"
+        const val benManesVersionsPlugin = "0.42.0"
         const val kotlinCompose = "1.0.1-rc2"
+        const val springBoot = "2.6.3"
         const val springDependencyManagement = "1.0.11.RELEASE"
         const val springPlugin = "1.6.10"
     }

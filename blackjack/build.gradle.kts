@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    id("com.github.ben-manes.versions") version Library.Version.benManesVersionsPlugin
     id("org.springframework.boot") version Library.Version.springBoot
     id("io.spring.dependency-management") version Library.Version.springDependencyManagement
 
@@ -29,6 +30,7 @@ dependencies {
 
     // test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:${Library.Version.mockitoKotlin}")
 }
 
 tasks.withType<KotlinCompile> {
