@@ -10,11 +10,6 @@ repositories {
     mavenLocal()
 }
 
-dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
-}
-
 tasks {
     compileKotlin {
         kotlinOptions {

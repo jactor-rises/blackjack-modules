@@ -24,7 +24,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // dependencies
-
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.springdoc:springdoc-openapi-ui:${Library.Version.springDocOpenApi}")
 

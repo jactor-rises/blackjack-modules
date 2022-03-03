@@ -14,6 +14,6 @@ object Library {
         const val kotlinCompose = "1.0.1-rc2"
         const val springBoot = "2.6.4"
         const val springDependencyManagement = "1.0.11.RELEASE"
-        const val springPlugin = "1.6.10"
+        const val springPlugin = "1.6.20-RC"
     }
 }
