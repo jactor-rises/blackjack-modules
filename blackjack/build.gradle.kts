@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.6.3"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.springframework.boot") version Library.Version.springBoot
+    id("io.spring.dependency-management") version Library.Version.springDependencyManagement
 
-    kotlin("plugin.spring") version "1.6.10"
+    kotlin("plugin.spring") version Library.Version.springPlugin
 }
 
 description = "blackjack:backend"
@@ -25,7 +25,7 @@ dependencies {
     // dependencies
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
+    implementation("org.springdoc:springdoc-openapi-ui:${Library.Version.springDocOpenApi}")
 
     // test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
