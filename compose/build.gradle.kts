@@ -3,7 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.compose") version "1.0.1-rc2"
+    id("org.jetbrains.compose") version Library.Version.kotlinCompose
 }
 
 description = "blackjack:compose-application"
@@ -19,12 +19,12 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
-    implementation("org.springframework:spring-context:5.3.15")
-    implementation("org.springframework:spring-core:5.3.15")
-    implementation("org.springframework:spring-web:5.3.15")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Library.Version.fasterXmlJacksonModule}")
+    implementation("org.springframework:spring-context:${Library.Version.springFramework}")
+    implementation("org.springframework:spring-core:${Library.Version.springFramework}")
+    implementation("org.springframework:spring-web:${Library.Version.springFramework}")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.3")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${Library.Version.springBoot}")
     testImplementation(kotlin("test"))
 }
 
