@@ -42,7 +42,7 @@ jobs:
 
   bump-dev-version:
     needs: build
-    if: github.ref == 'refs/heads/feature/compose-ci'
+    if: github.ref == 'refs/heads/main'
     name: Bump dev version
     runs-on: ubuntu-latest
 
