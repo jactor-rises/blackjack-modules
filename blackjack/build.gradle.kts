@@ -9,7 +9,7 @@ plugins {
 
 description = "blackjack:backend"
 group = "com.github.jactor.blackjack"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.x-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 dependencies {
