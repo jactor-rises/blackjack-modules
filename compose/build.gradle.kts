@@ -7,7 +7,7 @@ plugins {
 }
 
 description = "blackjack:compose-application"
-group = "com.gitlab.jactor.blackjack.compose"
+group = "com.github.jactor.blackjack.compose"
 version = "0.0.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
