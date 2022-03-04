@@ -1,6 +1,6 @@
 package com.github.jactor.blackjack.compose.model
 
-import com.github.jactor.blackjack.compose.dto.CardDto
+import com.github.jactor.blackjack.dto.CardDto
 
 data class Card(val face: Face, val suit: Suit) {
     val text: String get() = "${suit}(${face})"

@@ -1,10 +1,10 @@
 package com.github.jactor.blackjack.compose.state
 
 import com.github.jactor.blackjack.compose.ApplicationConfiguration
-import com.github.jactor.blackjack.compose.dto.Action
+import com.github.jactor.blackjack.dto.Action
 import com.github.jactor.blackjack.compose.model.ActionInternal
 import com.github.jactor.blackjack.compose.model.GameOfBlackjack
-import com.github.jactor.blackjack.compose.model.GameType
+import com.github.jactor.blackjack.compose.model.GameTypeInternal
 import com.github.jactor.blackjack.compose.model.PlayerName
 import com.github.jactor.blackjack.compose.service.BlackjackService
 import kotlinx.coroutines.CoroutineDispatcher
@@ -21,15 +21,15 @@ class BlackjackState(
     lateinit var gameStateConsumer: (Lce<GameOfBlackjack>) -> Unit
     private lateinit var blackjackService: BlackjackService
 
-    fun playAutomatic() = play(GameType.AUTOMATIC, null)
-    fun playManual(action: Action) = play(GameType.MANUAL, action)
+    fun playAutomatic() = play(GameTypeInternal.AUTOMATIC, null)
+    fun playManual(action: Action) = play(GameTypeInternal.MANUAL, action)
 
-    private fun play(gameType: GameType, action: Action?) {
+    private fun play(gameTypeInternal: GameTypeInternal, action: Action?) {
         initializeBlackjackService()
 
-        when (gameType) {
-            GameType.AUTOMATIC -> invoke(lceConsumer = gameStateConsumer, run = { blackjackService.playAutomatic(currentPlayerName.invoke()) })
-            GameType.MANUAL -> when (action) {
+        when (gameTypeInternal) {
+            GameTypeInternal.AUTOMATIC -> invoke(lceConsumer = gameStateConsumer, run = { blackjackService.playAutomatic(currentPlayerName.invoke()) })
+            GameTypeInternal.MANUAL -> when (action) {
                 Action.END -> invoke(
                     lceConsumer = gameStateConsumer,
                     run = { blackjackService.playManual(currentPlayerName.invoke(), ActionInternal.END) })

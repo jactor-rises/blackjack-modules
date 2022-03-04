@@ -9,3 +9,4 @@ pluginManagement {
 rootProject.name = "blackjack-modules"
 include("blackjack")
 include("compose")
+include("dto")

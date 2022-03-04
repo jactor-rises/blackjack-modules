@@ -19,6 +19,10 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+
+    // internal project dependency
+    implementation(project(":dto"))
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Library.Version.fasterXmlJacksonModule}")
     implementation("org.springframework:spring-context:${Library.Version.springFramework}")
     implementation("org.springframework:spring-core:${Library.Version.springFramework}")

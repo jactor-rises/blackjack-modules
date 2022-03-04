@@ -3,7 +3,7 @@ package com.github.jactor.blackjack.compose.service
 import com.github.jactor.blackjack.compose.ApplicationConfiguration
 import com.github.jactor.blackjack.compose.model.ActionInternal
 import com.github.jactor.blackjack.compose.model.GameStatus
-import com.github.jactor.blackjack.compose.model.GameType
+import com.github.jactor.blackjack.compose.model.GameTypeInternal
 import com.github.jactor.blackjack.compose.model.PlayerName
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assumptions.assumeThat
@@ -54,7 +54,7 @@ internal class BlackjackServiceIntegrationTest {
                 }
             },
             { assertThat(gameOfBlackjack.status.isGameCompleted).`as`("status.isGameCompleted ($gameOfBlackjack)").isTrue() },
-            { assertThat(gameOfBlackjack.gameType).`as`("gameType").isEqualTo(GameType.AUTOMATIC) }
+            { assertThat(gameOfBlackjack.gameType).`as`("gameType").isEqualTo(GameTypeInternal.AUTOMATIC) }
         )
     }
 
@@ -66,7 +66,7 @@ internal class BlackjackServiceIntegrationTest {
             { assertThat(gameOfBlackjack.playerHand).`as`("playerHand ($gameOfBlackjack)").hasSize(2) },
             { assertThat(gameOfBlackjack.status.dealerScore).`as`("status.dealerScore ($gameOfBlackjack)").isLessThanOrEqualTo(21) },
             { assertThat(gameOfBlackjack.status.playerScore).`as`("status.playerScore ($gameOfBlackjack)").isLessThanOrEqualTo(21) },
-            { assertThat(gameOfBlackjack.gameType).`as`("gameType").isEqualTo(GameType.MANUAL) }
+            { assertThat(gameOfBlackjack.gameType).`as`("gameType").isEqualTo(GameTypeInternal.MANUAL) }
         )
     }
 }

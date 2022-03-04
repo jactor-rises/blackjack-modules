@@ -1,7 +1,7 @@
 package com.github.jactor.blackjack.compose.model
 
-import com.github.jactor.blackjack.compose.dto.Action
-import com.github.jactor.blackjack.compose.dto.GameTypeDto
+import com.github.jactor.blackjack.dto.Action
+import com.github.jactor.blackjack.dto.GameType
 
 enum class Face(val value: String) {
     TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"), EIGHT("8"), NINE("9"), TEN("10"),
@@ -12,26 +12,26 @@ enum class GameStatus { PLAYER_WINS, DEALER_WINS }
 
 enum class Suit(val char: Char) { HEARTS('H'), DIAMONDS('D'), SPADES('S'), CLUBS('C'); }
 
-enum class GameType {
+enum class GameTypeInternal {
     AUTOMATIC, MANUAL;
 
-    fun asDto(): GameTypeDto {
-        return GameTypeDto.values().first { it.name == this.name }
+    fun asDto(): GameType {
+        return GameType.values().first { it.name == this.name }
     }
 
-    private fun isSameAs(gameTypeDto: GameTypeDto): Boolean {
-        return this.name == gameTypeDto.name
+    private fun isSameAs(gameType: GameType): Boolean {
+        return this.name == gameType.name
     }
 
     companion object {
-        fun valueOf(gameTypeDto: GameTypeDto): GameType {
+        fun valueOf(gameType: GameType): GameTypeInternal {
             values().forEach {
-                if (it.isSameAs(gameTypeDto)) {
+                if (it.isSameAs(gameType)) {
                     return it
                 }
             }
 
-            throw IllegalStateException("Unknown game type: $gameTypeDto")
+            throw IllegalStateException("Unknown game type: $gameType")
         }
     }
 }

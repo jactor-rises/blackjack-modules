@@ -16,4 +16,9 @@ object Library {
         const val springDependencyManagement = "1.0.11.RELEASE"
         const val springPlugin = "1.6.20-RC"
     }
+
+    object Dependencies {
+        const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:${Version.mockitoKotlin}"
+        const val springDocOpenApi = "org.springdoc:springdoc-openapi-ui:${Version.springDocOpenApi}"
+    }
 }

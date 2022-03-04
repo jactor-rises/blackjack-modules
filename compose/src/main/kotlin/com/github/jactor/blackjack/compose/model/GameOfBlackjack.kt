@@ -1,6 +1,6 @@
 package com.github.jactor.blackjack.compose.model
 
-import com.github.jactor.blackjack.compose.dto.GameOfBlackjackDto
+import com.github.jactor.blackjack.dto.GameOfBlackjackDto
 import com.github.jactor.blackjack.compose.state.GameOfBlackjackException
 
 data class GameOfBlackjack(
@@ -8,7 +8,7 @@ data class GameOfBlackjack(
     val nickOfPlayer: String,
     val playerHand: List<Card>,
     val status: Status,
-    val gameType: GameType
+    val gameType: GameTypeInternal
 ) {
     val playerName: PlayerName get() = name ?: throw IllegalStateException("Player name has not been added!")
     private var name: PlayerName? = null
@@ -18,7 +18,7 @@ data class GameOfBlackjack(
         nickOfPlayer = gameOfBlackjackDto.nickOfPlayer,
         playerHand = gameOfBlackjackDto.playerHand.map { Card(it) },
         status = Status(gameOfBlackjackDto.status),
-        gameType = GameType.valueOf(gameOfBlackjackDto.gameType ?: throw IllegalStateException("A game must have a GameType"))
+        gameType = GameTypeInternal.valueOf(gameOfBlackjackDto.gameType)
     ) {
         if (gameOfBlackjackDto.error != null) {
             throw GameOfBlackjackException(gameOfBlackjackDto.error!!)
