@@ -38,16 +38,7 @@ fun GameOfBlackjackUI(
 ) {
     MaterialTheme {
         Column(modifier = Modifier.fillMaxSize().padding(10.dp), verticalArrangement = ARRANGE_5_DP_SPACING) {
-            Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                Text("Dealer - ${gameOfBlackjack.status.dealerScore}")
-            }
-
             CardsUI(gameOfBlackjack.dealerHand)
-
-            Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
-                Text(text = "Player - ${gameOfBlackjack.status.playerScore}")
-            }
-
             CardsUI(gameOfBlackjack.playerHand)
 
             if (gameOfBlackjack.status.isGameCompleted) {
@@ -72,7 +63,7 @@ fun GameOfBlackjackUI(
                     }
                 } else {
                     Button(onClick = { blackjackState.playManual(Action.HIT) }) { Text("Hit me!") }
-                    Button(onClick = { blackjackState.playManual(Action.END) }) { Text("I stay!") }
+                    Button(enabled = gameOfBlackjack.status.isPlayerWinning, onClick = { blackjackState.playManual(Action.END) }) { Text("I stay!") }
                 }
             }
         }
