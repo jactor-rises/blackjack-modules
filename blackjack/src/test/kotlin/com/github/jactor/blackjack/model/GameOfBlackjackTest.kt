@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource
 internal class GameOfBlackjackTest {
 
     @Test
-    fun `should have the hand of the player as well as for 'Magnus' when the game is created`() {
+    fun `should have the hand of the player as well as for 'Banken' when the game is created`() {
         val gameOfBlackjack = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith(Card(CLUBS, ACE), Card(DIAMONDS, KING), Card(HEARTS, QUEEN), Card(DIAMONDS, SEVEN))
@@ -27,7 +27,7 @@ internal class GameOfBlackjackTest {
                     listOf(Card(CLUBS, ACE), Card(DIAMONDS, KING))
                 )
             }, {
-                assertThat(gameOfBlackjack.dealerHand).`as`("Dealer (aka. Magnus) hand").isEqualTo(
+                assertThat(gameOfBlackjack.dealerHand).`as`("Dealer (aka. Banken) hand").isEqualTo(
                     listOf(Card(HEARTS, QUEEN), Card(DIAMONDS, SEVEN))
                 )
             }
@@ -133,7 +133,7 @@ internal class GameOfBlackjackTest {
     }
 
     @Test
-    fun `should have dealer (Magnus) as winner`() {
+    fun `should have dealer (Banken) as winner`() {
         val gameOfBlackjack = GameOfBlackjack(
             nick = "Tor Egil",
             deckOfCards = aDeckOfCardsStartingWith("D5,DK,DA,D8,SA".split(","))
@@ -207,7 +207,7 @@ internal class GameOfBlackjackTest {
 
     @Test
     fun `should award win to player when dealer is busted`() {
-        // Magnus   | 22 | DJ,H5,D7
+        // Banken   | 22 | DJ,H5,D7
         // Tor Egil | 19 | CJ,C9
 
         val statusDto = GameOfBlackjack(
@@ -225,7 +225,7 @@ internal class GameOfBlackjackTest {
     @Test
     fun `should have an automatic game completed`() {
         // jactor  | 17 | S6,DA
-        // Magnus  | 20 | HQ,S10
+        // Banken  | 20 | HQ,S10
 
         val statusDto = GameOfBlackjack(
             nick = "jactor",

@@ -45,7 +45,7 @@ internal fun BlackjackUI(newGameOption: (GameOption) -> Unit = {}, blackjackStat
     MaterialTheme {
         Column(modifier = Modifier.fillMaxSize().padding(15.dp), verticalArrangement = ARRANGE_5_DP_SPACING) {
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
-                Text("Hi ${blackjackState.currentPlayerName.invoke().capitalized}! Magnus challenge you to a game of Blackjack.")
+                Text("Hi ${blackjackState.currentPlayerName.invoke().capitalized}! Banken challenge you to a game of Blackjack.")
             }
 
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {

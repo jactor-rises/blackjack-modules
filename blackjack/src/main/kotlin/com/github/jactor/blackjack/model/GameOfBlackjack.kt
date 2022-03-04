@@ -35,7 +35,7 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
     }
 
     fun logResult(): GameOfBlackjack {
-        val dealerString = if (nick.length < 7) "Magnus".padEnd(7) else "Magnus".padEnd(nick.length)
+        val dealerString = if (nick.length < 7) "Banken".padEnd(7) else "Banken".padEnd(nick.length)
         val playerString = if (nick.length < 7) nick.padEnd(7) else nick.padEnd(nick.length)
 
         println(
@@ -52,9 +52,11 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
     }
 
     private fun displayStateOfGame() = when (fetchState()) {
-        State.DEALER_WINS -> "Magnus vant ${if (isGameCompleted()) "spillet" else "runden"}"
-        State.PLAYER_WINS -> "Spilleren vant ${if (isGameCompleted()) "spillet" else "runden"}"
+        State.DEALER_WINS -> "Banken ${displayGameState()}"
+        State.PLAYER_WINS -> "Spilleren ${displayGameState()}"
     }
+
+    private fun displayGameState() = if (isGameCompleted()) "vant spillet!" else "leder omgangen"
 
     fun toDto(action: Action?) = GameOfBlackjackDto(
         nickOfPlayer = nick,

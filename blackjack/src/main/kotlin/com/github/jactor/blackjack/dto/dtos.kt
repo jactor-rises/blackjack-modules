@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 data class GameOfBlackjackDto(
     @Schema(description = "Kallenavnet til spilleren") var nickOfPlayer: String = "",
     @Schema(description = "Spillerens kort") var playerHand: List<CardDto> = emptyList(),
-    @Schema(description = "Delers (aka. Magnus') kort") var dealerHand: List<CardDto> = emptyList(),
+    @Schema(description = "Delers (aka. Banken') kort") var dealerHand: List<CardDto> = emptyList(),
     @Schema(description = "Status på spillet") var status: StatusDto? = null,
     @Schema(description = "En feil oppstod under spilling") val error: ErrorDto? = null,
     @Schema(description = "Er dette et automatisk eller manuelt spill") val gameType: GameType = GameType.AUTOMATIC
@@ -22,7 +22,7 @@ data class CardDto(
 data class StatusDto(
     @Schema(description = "Resultatet av omgangen") var result: GameStatus,
     @Schema(description = "Spillerens poengsum") var playerScore: Int,
-    @Schema(description = "Delerens (aka. Magnus') poengsum") var dealerScore: Int,
+    @Schema(description = "Delerens (aka. Banken') poengsum") var dealerScore: Int,
     @Schema(description = "Om spillet er ferdig") var isGameCompleted: Boolean
 )
 

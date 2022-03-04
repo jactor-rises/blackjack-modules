@@ -56,7 +56,7 @@ internal class GameControllerTest(@Autowired private val testRestTemplate: TestR
         assertAll(
             { assertThat(response.statusCode).`as`("status code").isEqualTo(HttpStatus.OK) },
             { assertThat(gameOfBlackjackDto?.nickOfPlayer).`as`("kallenavn").isEqualTo(kallenavn) },
-            { assertThat(gameOfBlackjackDto?.dealerHand).`as`("Magnus sine kort").hasSizeGreaterThanOrEqualTo(2) },
+            { assertThat(gameOfBlackjackDto?.dealerHand).`as`("Banken sine kort").hasSizeGreaterThanOrEqualTo(2) },
             { assertThat(gameOfBlackjackDto?.playerHand).`as`("$kallenavn sine kort").hasSizeGreaterThanOrEqualTo(2) },
             { assertThat(gameOfBlackjackDto?.status?.result).`as`("vinner").isNotNull() }
         )
