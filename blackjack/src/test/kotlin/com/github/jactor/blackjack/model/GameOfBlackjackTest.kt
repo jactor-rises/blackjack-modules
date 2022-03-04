@@ -239,4 +239,21 @@ internal class GameOfBlackjackTest {
             { assertThat(statusDto.isGameCompleted).`as`("isGameCompleted").isTrue() }
         )
     }
+
+    @Test
+    fun `should complete game when action is END`() {
+        // jactor  | 7 | S3,D4
+        // Banken  | 4 | S2,C2
+
+        val gameOfBlackjack = GameOfBlackjack(
+            nick = "jactor",
+            deckOfCards = aDeckOfCardsStartingWith("S3,D4,S2,C2".split(",")),
+            isManualGame = true
+        )
+
+        assertAll(
+            { assertThat(gameOfBlackjack.isGameCompleted()).`as`("Started game with low values").isEqualTo(false) },
+            { assertThat(gameOfBlackjack.play(Action.END).isGameCompleted()).`as`("Ended game").isEqualTo(true) }
+        )
+    }
 }

@@ -19,22 +19,30 @@ class GameService(private val deckOfCardsConsumer: DeckOfCardsConsumer) {
             gameForNick[nick] = gameOfBlackjack
         }
 
-        return gameOfBlackjack
+        return play(gameOfBlackjack, Action.START)
     }
 
-    fun running(nick: String, action: Action?): GameOfBlackjack {
-        val gameOfBlackjack = gameForNick[nick]?.play(action = action) ?: throw UnknownPlayerException(nick)
-
-        if (gameOfBlackjack.isGameCompleted()) {
-            gameForNick.remove(nick)
-        }
-
-        return gameOfBlackjack
+    fun takeCard(nick: String): GameOfBlackjack {
+        val gameOfBlackjack = gameForNick[nick] ?: throw UnknownPlayerException(nick)
+        return play(gameOfBlackjack, Action.HIT)
     }
 
     fun stop(nick: String): GameOfBlackjack {
         val gameOfBlackjack = gameForNick[nick] ?: throw UnknownPlayerException(nick)
-        gameForNick.remove(nick)
-        return gameOfBlackjack.completeGame()
+        return play(gameOfBlackjack, Action.END)
+    }
+
+    private fun play(gameOfBlackjack: GameOfBlackjack, action: Action): GameOfBlackjack {
+        val playedGameOfBlackjack = when (action) {
+            Action.START -> gameOfBlackjack
+            Action.HIT -> gameOfBlackjack.play(Action.HIT)
+            Action.END -> gameOfBlackjack.play(Action.END)
+        }
+
+        if (gameOfBlackjack.isGameCompleted()) {
+            gameForNick.remove(gameOfBlackjack.nick)
+        }
+
+        return playedGameOfBlackjack
     }
 }
