@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-@OpenAPIDefinition(info = Info(title = "blackjack", description = "Spill blackjack mot \"Magnus\"", version = "v0"))
+@OpenAPIDefinition(info = Info(title = "blackjack", description = "Spill blackjack mot \"Banken\"", version = "v0"))
 @PropertySource(value = ["classpath:blackjack.properties"])
 class BlackjackSpringConfig {
 

@@ -5,15 +5,21 @@ import com.github.jactor.blackjack.dto.GameStatus
 import com.github.jactor.blackjack.dto.GameType
 import com.github.jactor.blackjack.dto.StatusDto
 
-data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val isManualGame: Boolean = false) {
+data class GameOfBlackjack(
+    val deckOfCards: DeckOfCards,
+    val nick: String,
+    val isManualGame: Boolean = false,
+    private var isGameCompleted: Boolean = false
+) {
     internal val playerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
     internal val dealerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
 
     private val dealerScore: Int get() = sumOf(dealerHand)
     private val playerScore: Int get() = sumOf(playerHand)
 
-    fun completeGame(): GameOfBlackjack {
+    fun completeGame(endGame: Boolean = false): GameOfBlackjack {
         if (playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21) {
+            isGameCompleted = true
             return this
         }
 
@@ -31,11 +37,15 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
             }
         }
 
+        if (endGame) {
+            isGameCompleted = true
+        }
+
         return this
     }
 
     fun logResult(): GameOfBlackjack {
-        val dealerString = if (nick.length < 7) "Magnus".padEnd(7) else "Magnus".padEnd(nick.length)
+        val dealerString = if (nick.length < 7) "Banken".padEnd(7) else "Banken".padEnd(nick.length)
         val playerString = if (nick.length < 7) nick.padEnd(7) else nick.padEnd(nick.length)
 
         println(
@@ -52,11 +62,13 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
     }
 
     private fun displayStateOfGame() = when (fetchState()) {
-        State.DEALER_WINS -> "Magnus vant ${if (isGameCompleted()) "spillet" else "runden"}"
-        State.PLAYER_WINS -> "Spilleren vant ${if (isGameCompleted()) "spillet" else "runden"}"
+        State.DEALER_WINS -> "Banken ${displayGameState()}"
+        State.PLAYER_WINS -> "Spilleren ${displayGameState()}"
     }
 
-    fun toDto(action: Action?) = GameOfBlackjackDto(
+    private fun displayGameState() = if (isGameCompleted()) "vant spillet!" else "leder omgangen"
+
+    fun toDto() = GameOfBlackjackDto(
         nickOfPlayer = nick,
         playerHand = playerHand.map { it.toDto() },
         dealerHand = dealerHand.map { it.toDto() },
@@ -65,11 +77,9 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
             result = GameStatus.valueOf(fetchState().name),
             dealerScore = dealerScore,
             playerScore = playerScore,
-            isGameCompleted = action == Action.END || isGameCompleted()
+            isGameCompleted = isGameCompleted()
         )
     )
-
-    fun toDto() = toDto(action = null)
 
     private fun sumOf(cards: List<Card>): Int {
         if (!isManualGame) {
@@ -132,15 +142,17 @@ data class GameOfBlackjack(val deckOfCards: DeckOfCards, val nick: String, val i
         return State.PLAYER_WINS
     }
 
-    fun play(action: Action?): GameOfBlackjack {
-        if (action == Action.HIT) {
-            playerHand.add(deckOfCards.takeCard())
+    fun play(action: Action): GameOfBlackjack {
+        when (action) {
+            Action.HIT -> playerHand.add(deckOfCards.takeCard())
+            Action.START -> isGameCompleted = false
+            Action.END -> completeGame(endGame = true)
         }
 
         return this
     }
 
-    fun isGameCompleted() = !isManualGame || playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21
+    fun isGameCompleted() = !isManualGame || isGameCompleted || playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21
     fun isNotGameCompleted() = !isGameCompleted()
 
     override fun toString(): String {

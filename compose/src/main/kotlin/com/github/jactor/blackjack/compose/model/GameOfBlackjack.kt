@@ -25,10 +25,10 @@ data class GameOfBlackjack(
         }
     }
 
-    fun displayWinner() = "Vinneren er " + when (status.fetchResultOfGame()) {
-        GameStatus.DEALER_WINS -> "Magnus"
+    fun displayWinner() = "${when (status.fetchResultOfGame()) {
+        GameStatus.DEALER_WINS -> "Banken"
         GameStatus.PLAYER_WINS -> playerName.capitalized
-    }
+    }} er vinneren!"
 
     fun with(playerName: PlayerName): GameOfBlackjack {
         if (playerName.nick != nickOfPlayer) {

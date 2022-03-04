@@ -8,6 +8,8 @@ data class Status(
     var isGameCompleted: Boolean,
     var result: GameStatus?
 ) {
+    val isPlayerWinning: Boolean get() = playerScore >= dealerScore
+
     constructor(status: StatusDto?) : this(
         dealerScore = status?.dealerScore ?: 0,
         playerScore = status?.playerScore ?: 0,

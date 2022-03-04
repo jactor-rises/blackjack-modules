@@ -58,7 +58,7 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
     @Test
     fun `should draw a card for a started game on a player`() {
         // Spiller trekker kortene spar to og ruter 3
-        // "Magnus" får kortene spar 10 og ruter 4
+        // "Banken" får kortene spar 10 og ruter 4
         // Neste kort (spar konge) vil gå til spilleren...
         whenever(deckOfCardsConsumerMock.fetch()).thenReturn(
             aDeckOfCardsStartingWith("S2,D3,S10,D4,SK".split(","))

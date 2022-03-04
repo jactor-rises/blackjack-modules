@@ -25,7 +25,7 @@ internal class GameOfBlackjackTest {
     }
 
     @Test
-    fun `should fail when trying to add a playerName which does not match against the nichOfPlayer`() {
+    fun `should fail when trying to add a playerName which does not match against the nickOfPlayer`() {
         assertThatIllegalStateException().isThrownBy {
             GameOfBlackjack(
                 GameOfBlackjackDto(

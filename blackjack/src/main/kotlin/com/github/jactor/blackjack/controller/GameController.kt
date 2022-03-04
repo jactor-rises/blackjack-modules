@@ -50,8 +50,8 @@ class GameController(private val gameService: GameService) {
             GameType.MANUAL -> {
                 when (Action.valueOf(action)) {
                     Action.START -> ResponseEntity.ok(gameService.startGame(nick).toDto())
-                    Action.HIT -> ResponseEntity.ok(gameService.running(nick, Action.HIT).toDto(Action.HIT))
-                    Action.END -> ResponseEntity.ok(gameService.stop(nick).toDto(Action.END))
+                    Action.HIT -> ResponseEntity.ok(gameService.takeCard(nick).toDto())
+                    Action.END -> ResponseEntity.ok(gameService.stop(nick).toDto())
                 }
             }
         }
