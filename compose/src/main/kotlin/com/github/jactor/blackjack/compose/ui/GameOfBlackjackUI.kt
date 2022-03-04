@@ -20,12 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.github.jactor.blackjack.compose.dto.Action
+import com.github.jactor.blackjack.dto.Action
 import com.github.jactor.blackjack.compose.model.Card
 import com.github.jactor.blackjack.compose.model.GameOfBlackjack
 import com.github.jactor.blackjack.compose.model.GameOption
 import com.github.jactor.blackjack.compose.model.GameStatus
-import com.github.jactor.blackjack.compose.model.GameType
+import com.github.jactor.blackjack.compose.model.GameTypeInternal
 import com.github.jactor.blackjack.compose.state.BlackjackState
 
 private val ARRANGE_15DP_SPACING = Arrangement.spacedBy(15.dp)
@@ -55,8 +55,8 @@ fun GameOfBlackjackUI(
                     Button(onClick = { newGameOption.invoke(GameOption.QUIT) }) { Text("Exit game!") }
                     Button(onClick = {
                         when (gameOfBlackjack.gameType) {
-                            GameType.AUTOMATIC -> blackjackState.playAutomatic()
-                            GameType.MANUAL -> blackjackState.playManual(Action.START)
+                            GameTypeInternal.AUTOMATIC -> blackjackState.playAutomatic()
+                            GameTypeInternal.MANUAL -> blackjackState.playManual(Action.START)
                         }
                     }) {
                         Text("Retry game!")

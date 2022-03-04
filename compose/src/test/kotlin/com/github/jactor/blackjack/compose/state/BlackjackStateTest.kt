@@ -1,13 +1,13 @@
 package com.github.jactor.blackjack.compose.state
 
 import com.github.jactor.blackjack.compose.consumer.BlackjackConsumer
-import com.github.jactor.blackjack.compose.dto.Action
-import com.github.jactor.blackjack.compose.dto.ErrorDto
-import com.github.jactor.blackjack.compose.dto.GameOfBlackjackDto
-import com.github.jactor.blackjack.compose.dto.GameTypeDto
+import com.github.jactor.blackjack.dto.Action
+import com.github.jactor.blackjack.dto.ErrorDto
+import com.github.jactor.blackjack.dto.GameOfBlackjackDto
+import com.github.jactor.blackjack.dto.GameType
 import com.github.jactor.blackjack.compose.model.ActionInternal
 import com.github.jactor.blackjack.compose.model.GameOfBlackjack
-import com.github.jactor.blackjack.compose.model.GameType
+import com.github.jactor.blackjack.compose.model.GameTypeInternal
 import com.github.jactor.blackjack.compose.model.PlayerName
 import com.github.jactor.blackjack.compose.service.BlackjackService
 import kotlinx.coroutines.delay
@@ -26,8 +26,8 @@ internal class BlackjackStateTest {
         val blackjackState = BlackjackState { PlayerName("junit") }
         blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
         blackjackState.setBlackjackService(BlackjackService.DefaultBlackjackService(blackjackConsumer = object : BlackjackConsumer {
-            override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
-                GameOfBlackjackDto(nickOfPlayer = "junit", gameType = GameTypeDto.MANUAL)
+            override fun play(nick: String, type: GameTypeInternal, actionInternal: ActionInternal?) = GameOfBlackjack(
+                GameOfBlackjackDto(nickOfPlayer = "junit", gameType = GameType.MANUAL)
             )
         }))
 
@@ -39,7 +39,7 @@ internal class BlackjackStateTest {
         assertAll({ assertThat(gameState).`as`("gameState").isInstanceOf(Lce.Content::class.java) }, {
             assertThat(gameState as Lce.Content).`as`("content").extracting("data").isEqualTo(
                 GameOfBlackjack(
-                    GameOfBlackjackDto(nickOfPlayer = "junit", gameType = GameTypeDto.MANUAL)
+                    GameOfBlackjackDto(nickOfPlayer = "junit", gameType = GameType.MANUAL)
                 )
             )
         })
@@ -51,10 +51,10 @@ internal class BlackjackStateTest {
         val blackjackState = BlackjackState { PlayerName("junit") }
         blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
         blackjackState.setBlackjackService(BlackjackService.DefaultBlackjackService(blackjackConsumer = object : BlackjackConsumer {
-            override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
+            override fun play(nick: String, type: GameTypeInternal, actionInternal: ActionInternal?) = GameOfBlackjack(
                 GameOfBlackjackDto(
                     nickOfPlayer = "junit",
-                    gameType = GameTypeDto.MANUAL,
+                    gameType = GameType.MANUAL,
                     error = ErrorDto(message = "noko krasja", provider = "Blodstrupmoen")
                 )
             )
@@ -80,15 +80,15 @@ internal class BlackjackStateTest {
 
         blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
         blackjackState.setBlackjackService(BlackjackService.DefaultBlackjackService(blackjackConsumer = object : BlackjackConsumer {
-            override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
-                GameOfBlackjackDto(nickOfPlayer = "tor-egil", gameType = GameTypeDto.AUTOMATIC)
+            override fun play(nick: String, type: GameTypeInternal, actionInternal: ActionInternal?) = GameOfBlackjack(
+                GameOfBlackjackDto(nickOfPlayer = "tor-egil", gameType = GameType.AUTOMATIC)
             )
         }))
 
         do {
             blackjackState.playAutomatic()
             delay(timeMillis = 100) // to allow Coroutine to run in different scope...
-        } while (!(gameState is Lce.Content))
+        } while (gameState !is Lce.Content)
 
         val playerName = (gameState as Lce.Content).data.playerName
         assertThat(playerName).isEqualTo(PlayerName("Tor Egil"))
@@ -101,15 +101,15 @@ internal class BlackjackStateTest {
 
         blackjackState.gameStateConsumer = { newGameState: Lce<GameOfBlackjack> -> gameState = newGameState }
         blackjackState.setBlackjackService(BlackjackService.DefaultBlackjackService(blackjackConsumer = object : BlackjackConsumer {
-            override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
-                GameOfBlackjackDto(nickOfPlayer = "tor-egil", gameType = GameTypeDto.MANUAL)
+            override fun play(nick: String, type: GameTypeInternal, actionInternal: ActionInternal?) = GameOfBlackjack(
+                GameOfBlackjackDto(nickOfPlayer = "tor-egil", gameType = GameType.MANUAL)
             )
         }))
 
         do {
             blackjackState.playManual(Action.START)
             delay(timeMillis = 100) // to allow Coroutine to run in different scope...
-        } while (!(gameState is Lce.Content))
+        } while (gameState !is Lce.Content)
 
         val playerName = (gameState as Lce.Content).data.playerName
         assertThat(playerName).isEqualTo(PlayerName("Tor Egil"))

@@ -1,10 +1,10 @@
 package com.github.jactor.blackjack.compose.service
 
 import com.github.jactor.blackjack.compose.consumer.BlackjackConsumer
-import com.github.jactor.blackjack.compose.dto.GameOfBlackjackDto
+import com.github.jactor.blackjack.dto.GameOfBlackjackDto
 import com.github.jactor.blackjack.compose.model.ActionInternal
 import com.github.jactor.blackjack.compose.model.GameOfBlackjack
-import com.github.jactor.blackjack.compose.model.GameType
+import com.github.jactor.blackjack.compose.model.GameTypeInternal
 import com.github.jactor.blackjack.compose.model.PlayerName
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -15,7 +15,7 @@ internal class BlackjackServiceTest {
 
     private val blackjackService = BlackjackService.DefaultBlackjackService(
         object : BlackjackConsumer {
-            override fun play(nick: String, type: GameType, actionInternal: ActionInternal?) = GameOfBlackjack(
+            override fun play(nick: String, type: GameTypeInternal, actionInternal: ActionInternal?) = GameOfBlackjack(
                 GameOfBlackjackDto(nickOfPlayer = nick, gameType = type.asDto())
             )
         }

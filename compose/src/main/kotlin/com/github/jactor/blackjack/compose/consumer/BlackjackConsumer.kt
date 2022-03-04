@@ -1,21 +1,21 @@
 package com.github.jactor.blackjack.compose.consumer
 
-import com.github.jactor.blackjack.compose.dto.ActionDto
-import com.github.jactor.blackjack.compose.dto.GameOfBlackjackDto
+import com.github.jactor.blackjack.dto.ActionDto
+import com.github.jactor.blackjack.dto.GameOfBlackjackDto
 import com.github.jactor.blackjack.compose.model.ActionInternal
 import com.github.jactor.blackjack.compose.model.GameOfBlackjack
-import com.github.jactor.blackjack.compose.model.GameType
+import com.github.jactor.blackjack.compose.model.GameTypeInternal
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestTemplate
 
 interface BlackjackConsumer {
-    fun play(nick: String, type: GameType, actionInternal: ActionInternal? = null): GameOfBlackjack
+    fun play(nick: String, type: GameTypeInternal, actionInternal: ActionInternal? = null): GameOfBlackjack
 
     class DefaultBlackjackConsumer(private val restTemplate: RestTemplate) : BlackjackConsumer {
 
-        override fun play(nick: String, type: GameType, actionInternal: ActionInternal?): GameOfBlackjack {
+        override fun play(nick: String, type: GameTypeInternal, actionInternal: ActionInternal?): GameOfBlackjack {
             val response = restTemplate.exchange(
                 "/play/$nick",
                 HttpMethod.POST,

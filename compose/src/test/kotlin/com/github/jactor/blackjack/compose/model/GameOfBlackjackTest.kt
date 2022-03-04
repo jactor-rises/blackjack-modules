@@ -1,7 +1,7 @@
 package com.github.jactor.blackjack.compose.model
 
-import com.github.jactor.blackjack.compose.dto.GameOfBlackjackDto
-import com.github.jactor.blackjack.compose.dto.GameTypeDto
+import com.github.jactor.blackjack.dto.GameOfBlackjackDto
+import com.github.jactor.blackjack.dto.GameType
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.jupiter.api.DisplayName
@@ -12,7 +12,7 @@ internal class GameOfBlackjackTest {
 
     @Test
     fun `should add player name to game of blackjack`() {
-        val gameOfBlackjack = GameOfBlackjack(GameOfBlackjackDto(nickOfPlayer = "jactor", gameType = GameTypeDto.AUTOMATIC))
+        val gameOfBlackjack = GameOfBlackjack(GameOfBlackjackDto(nickOfPlayer = "jactor", gameType = GameType.AUTOMATIC))
             .with(PlayerName("jactor"))
 
         assertThat(gameOfBlackjack.playerName).isEqualTo(PlayerName("jactor"))
@@ -20,7 +20,7 @@ internal class GameOfBlackjackTest {
 
     @Test
     fun `should fail when getting playerName when name is not added`() {
-        assertThatIllegalStateException().isThrownBy { GameOfBlackjack(GameOfBlackjackDto(gameType = GameTypeDto.AUTOMATIC)).playerName }
+        assertThatIllegalStateException().isThrownBy { GameOfBlackjack(GameOfBlackjackDto(gameType = GameType.AUTOMATIC)).playerName }
             .withMessage("Player name has not been added!")
     }
 
@@ -30,7 +30,7 @@ internal class GameOfBlackjackTest {
             GameOfBlackjack(
                 GameOfBlackjackDto(
                     nickOfPlayer = "turbo",
-                    gameType = GameTypeDto.AUTOMATIC
+                    gameType = GameType.AUTOMATIC
                 )
             ).with(PlayerName("jactor"))
         }

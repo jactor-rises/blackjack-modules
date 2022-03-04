@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.github.jactor.blackjack.compose.dto.Action
+import com.github.jactor.blackjack.dto.Action
 import com.github.jactor.blackjack.compose.model.ExceptionUtil
 import com.github.jactor.blackjack.compose.model.GameOfBlackjack
 import com.github.jactor.blackjack.compose.model.GameOption
