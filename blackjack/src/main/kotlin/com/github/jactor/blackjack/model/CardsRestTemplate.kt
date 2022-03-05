@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
 
 class CardsRestTemplate(private var restTemplate: RestTemplate = RestTemplate(), var url: String = "") {
+    val urlStartsWithHttp: Boolean get() = url.startsWith("http")
 
     fun getCards(): List<CardDto> = restTemplate.exchange<List<CardDto>>(
         url = url,
