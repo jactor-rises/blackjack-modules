@@ -1,6 +1,7 @@
 package com.github.jactor.blackjack
 
-import com.github.jactor.blackjack.model.CardsUrl
+import com.github.jactor.blackjack.consumer.DeckOfCardsConsumer
+import com.github.jactor.blackjack.model.CardsRestTemplate
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 import org.springframework.beans.factory.annotation.Value
@@ -18,12 +19,17 @@ class BlackjackSpringConfig {
     val cardsUrl: String = ""
 
     @Bean
-    fun restTemplate(): RestTemplate {
-        return RestTemplate()
-    }
+    fun restTemplate(): RestTemplate = RestTemplate()
 
     @Bean
-    fun CardsUrl(): CardsUrl {
-        return CardsUrl(cardsUrl)
+    fun cardsRestTemplate(restTemplate: RestTemplate): CardsRestTemplate = CardsRestTemplate(restTemplate, cardsUrl)
+
+    @Bean
+    fun deckOfCardsConsumer(cardsRestTemplate: CardsRestTemplate): DeckOfCardsConsumer {
+        if (cardsRestTemplate.urlStartsWithHttp) {
+            return DeckOfCardsConsumer.DefaultDeckOfCardsConsumer(cardsRestTemplate)
+        }
+
+        return DeckOfCardsConsumer.ConstructShuffledCards()
     }
 }
