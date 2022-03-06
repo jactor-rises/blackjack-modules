@@ -15,7 +15,7 @@ internal class GameOfBlackjackTest {
     @Test
     fun `should add player name to game of blackjack`() {
         val gameOfBlackjack = GameOfBlackjack(GameOfBlackjackDto(nickOfPlayer = "jactor", gameType = GameType.AUTOMATIC))
-            .with(PlayerName("jactor"))
+            .add(PlayerName("jactor"))
 
         assertThat(gameOfBlackjack.playerName).isEqualTo(PlayerName("jactor"))
     }
@@ -34,7 +34,7 @@ internal class GameOfBlackjackTest {
                     nickOfPlayer = "turbo",
                     gameType = GameType.AUTOMATIC
                 )
-            ).with(PlayerName("jactor"))
+            ).add(PlayerName("jactor"))
         }
             .withMessage("The nick of added player do not match the game nick (turbo)!")
     }
@@ -51,7 +51,7 @@ internal class GameOfBlackjackTest {
                     isGameCompleted = true
                 )
             )
-        ).with(PlayerName("tor egil"))
+        ).add(PlayerName("tor egil"))
 
         assertThat(gameOfBlackjack.displayWinner()).isEqualTo("Tor Egil er vinneren!")
     }
@@ -68,7 +68,7 @@ internal class GameOfBlackjackTest {
                     isGameCompleted = true
                 )
             )
-        ).with(PlayerName("tor egil"))
+        ).add(PlayerName("tor egil"))
 
         assertThat(gameOfBlackjack.displayWinner()).isEqualTo("Tor Egil fikk blackjack!")
     }

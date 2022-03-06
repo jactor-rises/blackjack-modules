@@ -39,7 +39,7 @@ data class GameOfBlackjack(
         GameStatus.PLAYER_WINS -> status.playerScore
     }
 
-    fun with(playerName: PlayerName): GameOfBlackjack {
+    fun add(playerName: PlayerName): GameOfBlackjack {
         if (playerName.nick != nickOfPlayer) {
             throw IllegalStateException("The nick of added player do not match the game nick ($nickOfPlayer)!")
         }
