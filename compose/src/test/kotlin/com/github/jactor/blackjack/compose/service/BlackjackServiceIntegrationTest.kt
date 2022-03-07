@@ -1,10 +1,12 @@
 package com.github.jactor.blackjack.compose.service
 
 import com.github.jactor.blackjack.compose.ApplicationConfiguration
-import com.github.jactor.blackjack.compose.model.ActionInternal
 import com.github.jactor.blackjack.compose.model.GameStatus
 import com.github.jactor.blackjack.compose.model.GameTypeInternal
 import com.github.jactor.blackjack.compose.model.PlayerName
+import com.github.jactor.blackjack.compose.model.StartManualGame
+import com.github.jactor.blackjack.compose.model.Stay
+import com.github.jactor.blackjack.compose.model.TakeCard
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assumptions.assumeThat
 import org.junit.jupiter.api.BeforeEach
@@ -59,13 +61,21 @@ internal class BlackjackServiceIntegrationTest {
     }
 
     @RepeatedTest(25)
-    fun `should play a manual game of blackjack`() {
-        val gameOfBlackjack = blackjackConsumer.playManual(playerName = PlayerName("jactor"), actionInternal = ActionInternal.START)
+    fun `should complete a manual game of blackjack`() {
+        var gameOfBlackjack = blackjackConsumer.playManual(playerName = PlayerName("jactor"), gameAction = StartManualGame())
+
+        while (!gameOfBlackjack.status.isGameCompleted) {
+            if (gameOfBlackjack.status.dealerScore < 17) {
+                gameOfBlackjack = blackjackConsumer.playManual(playerName = PlayerName("jactor"), gameAction = TakeCard(gameOfBlackjack.gameId))
+            } else {
+                gameOfBlackjack = blackjackConsumer.playManual(playerName = PlayerName("jactor"), gameAction = Stay(gameOfBlackjack.gameId))
+            }
+        }
 
         assertAll(
-            { assertThat(gameOfBlackjack.playerHand).`as`("playerHand ($gameOfBlackjack)").hasSize(2) },
-            { assertThat(gameOfBlackjack.status.dealerScore).`as`("status.dealerScore ($gameOfBlackjack)").isLessThanOrEqualTo(21) },
-            { assertThat(gameOfBlackjack.status.playerScore).`as`("status.playerScore ($gameOfBlackjack)").isLessThanOrEqualTo(21) },
+            { assertThat(gameOfBlackjack.playerHand).`as`("playerHand ($gameOfBlackjack)").hasSizeGreaterThanOrEqualTo(2) },
+            { assertThat(gameOfBlackjack.dealerHand).`as`("dealerHand ($gameOfBlackjack)").hasSizeGreaterThanOrEqualTo(2) },
+            { assertThat(gameOfBlackjack.status.isGameCompleted).`as`("isGameCompleted ($gameOfBlackjack)").isTrue() },
             { assertThat(gameOfBlackjack.gameType).`as`("gameType").isEqualTo(GameTypeInternal.MANUAL) }
         )
     }

@@ -8,7 +8,8 @@ data class GameOfBlackjack(
     val nickOfPlayer: String,
     val playerHand: List<Card>,
     val status: Status,
-    val gameType: GameTypeInternal
+    val gameType: GameTypeInternal,
+    val gameId: String
 ) {
     val playerName: PlayerName get() = name ?: throw IllegalStateException("Player name has not been added!")
     private var name: PlayerName? = null
@@ -18,7 +19,8 @@ data class GameOfBlackjack(
         nickOfPlayer = gameOfBlackjackDto.nickOfPlayer,
         playerHand = gameOfBlackjackDto.playerHand.map { Card(it) },
         status = Status(gameOfBlackjackDto.status),
-        gameType = GameTypeInternal.valueOf(gameOfBlackjackDto.gameType)
+        gameType = GameTypeInternal.valueOf(gameOfBlackjackDto.gameType),
+        gameId = gameOfBlackjackDto.gameId
     ) {
         if (gameOfBlackjackDto.error != null) {
             throw GameOfBlackjackException(gameOfBlackjackDto.error!!)
