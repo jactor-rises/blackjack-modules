@@ -4,7 +4,9 @@ import com.github.jactor.blackjack.dto.ActionDto
 import com.github.jactor.blackjack.dto.GameOfBlackjackDto
 import com.github.jactor.blackjack.dto.GameType
 import com.github.jactor.blackjack.dto.WelcomeDto
+import com.github.jactor.blackjack.failure.UnknownGameException
 import com.github.jactor.blackjack.model.Action
+import com.github.jactor.blackjack.model.GameId
 import com.github.jactor.blackjack.service.GameService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -29,7 +31,8 @@ class GameController(private val gameService: GameService) {
                 howTo = """
                     * Gjør en post til endepunkt '/play/{kallenavn}' og med GameType.AUTOMATIC for å utføre et helautmatisk spill (Ace = 11 poeng)
                     * Gjør en post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt Action.START for å starte et spill (Ace er 11 eller 1 poeng)
-                      * Videre spill på samme kallenavn ved post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt Action.START, HIT eller END
+                      * Videre spill på samme kallenavn ved post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt en Action
+                        * Action må inneholde hva som skal utføres (HIT eller END), samt gameId til spillet som det skal utføres på
                     """.trimIndent()
             )
         )
@@ -50,10 +53,18 @@ class GameController(private val gameService: GameService) {
             GameType.MANUAL -> {
                 when (Action.valueOf(action)) {
                     Action.START -> ResponseEntity.ok(gameService.startGame(nick).toDto())
-                    Action.HIT -> ResponseEntity.ok(gameService.takeCard(nick).toDto())
-                    Action.END -> ResponseEntity.ok(gameService.stop(nick).toDto())
+                    Action.HIT -> ResponseEntity.ok(gameService.takeCard(fetchGameId(action.gameId)).toDto())
+                    Action.END -> ResponseEntity.ok(gameService.stop(fetchGameId(action.gameId)).toDto())
                 }
             }
         }
+    }
+
+    private fun fetchGameId(gameId: String?): GameId {
+        if (gameId == null) {
+            throw UnknownGameException()
+        }
+
+        return GameId(gameId)
     }
 }

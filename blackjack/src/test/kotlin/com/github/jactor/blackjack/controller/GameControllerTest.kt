@@ -34,7 +34,8 @@ internal class GameControllerTest(@Autowired private val testRestTemplate: TestR
                     """
                     * Gjør en post til endepunkt '/play/{kallenavn}' og med GameType.AUTOMATIC for å utføre et helautmatisk spill (Ace = 11 poeng)
                     * Gjør en post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt Action.START for å starte et spill (Ace er 11 eller 1 poeng)
-                      * Videre spill på samme kallenavn ved post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt Action.START, HIT eller END
+                      * Videre spill på samme kallenavn ved post til endepunkt '/play/{kallenavn}' og med GameType.MANUAL samt en Action
+                        * Action må inneholde hva som skal utføres (HIT eller END), samt gameId til spillet som det skal utføres på
                     """.trimIndent()
                 )
             }
@@ -102,6 +103,21 @@ internal class GameControllerTest(@Autowired private val testRestTemplate: TestR
             { assertThat(response.body?.status?.dealerScore).`as`("status.dealerScore (${response.body})").isLessThanOrEqualTo(21) },
             { assertThat(response.body?.status?.playerScore).`as`("status.playerScore (${response.body})").isLessThanOrEqualTo(21) },
             { assertThat(response.body?.gameType).`as`("gameType").isEqualTo(GameType.MANUAL) }
+        )
+    }
+
+    @Test
+    fun `should return the game id to use for further actions`() {
+        val response = testRestTemplate.exchange(
+            "/play/jactor",
+            HttpMethod.POST,
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.START)),
+            GameOfBlackjackDto::class.java
+        )
+
+        assertAll(
+            { assertThat(response.statusCode).`as`("statusCode").isEqualTo(HttpStatus.OK) },
+            { assertThat(response.body?.gameId).`as`("gameId").isNotBlank() }
         )
     }
 }

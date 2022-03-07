@@ -40,10 +40,10 @@ class BlackjackResponseEntityExceptionHandler : ResponseEntityExceptionHandler()
 
     @ResponseBody
     @ExceptionHandler
-    fun handleUnknownPlayerException(unknownPlayerException: UnknownPlayerException): ResponseEntity<*>? {
-        val exSimpleName = unknownPlayerException::class.simpleName
-        val origin = fetchInternalStackOrFirstElement(unknownPlayerException.stackTrace)
-        val message = "$exSimpleName: ${unknownPlayerException.message}"
+    fun handleUnknownPlayerException(unknownGameException: UnknownGameException): ResponseEntity<*>? {
+        val exSimpleName = unknownGameException::class.simpleName
+        val origin = fetchInternalStackOrFirstElement(unknownGameException.stackTrace)
+        val message = "$exSimpleName: ${unknownGameException.message}"
 
         return ResponseEntity.badRequest()
             .header(HttpHeaders.WARNING, message)
