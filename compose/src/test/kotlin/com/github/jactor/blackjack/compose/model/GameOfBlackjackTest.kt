@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 
 @DisplayName("A com.github.jactor.blackjack.compose.model.GameOfBlackjack")
 internal class GameOfBlackjackTest {
@@ -27,16 +28,18 @@ internal class GameOfBlackjackTest {
     }
 
     @Test
-    fun `should fail when trying to add a playerName which does not match against the nickOfPlayer`() {
-        assertThatIllegalStateException().isThrownBy {
-            GameOfBlackjack(
-                GameOfBlackjackDto(
-                    nickOfPlayer = "turbo",
-                    gameType = GameType.AUTOMATIC
-                )
-            ).add(PlayerName("jactor"))
-        }
-            .withMessage("The nick of added player do not match the game nick (turbo)!")
+    fun `should not fail when trying to add a playerName which does not match against the nickOfPlayer`() {
+        val gameOfBlackjack = GameOfBlackjack(
+            GameOfBlackjackDto(
+                nickOfPlayer = "turbo",
+                gameType = GameType.AUTOMATIC
+            )
+        ).add(PlayerName(name = "jactor"))
+
+        assertAll(
+            { assertThat(gameOfBlackjack.playerName).`as`("player name").isEqualTo(PlayerName(name = "jactor")) },
+            { assertThat(gameOfBlackjack.nickOfPlayer).`as`("nick of player").isEqualTo("turbo") }
+        )
     }
 
     @Test
