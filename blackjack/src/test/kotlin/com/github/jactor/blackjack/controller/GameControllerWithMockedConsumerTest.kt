@@ -77,7 +77,7 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
         val runResponse = testRestTemplate.exchange(
             "/play/$jactor",
             HttpMethod.POST,
-            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.HIT)),
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.HIT, gameId = startedGameOfBlackjackDto?.gameId)),
             GameOfBlackjackDto::class.java
         )
 
@@ -117,7 +117,7 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
         val endResponse = testRestTemplate.exchange(
             "/play/$jactor",
             HttpMethod.POST,
-            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.END)),
+            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.END, gameId = startedGameOfBlackjackDto?.gameId)),
             GameOfBlackjackDto::class.java
         )
 

@@ -9,7 +9,8 @@ data class GameOfBlackjackDto(
     @Schema(description = "Delers (aka. Banken') kort") var dealerHand: List<CardDto> = emptyList(),
     @Schema(description = "Status på spillet") var status: StatusDto? = null,
     @Schema(description = "En feil oppstod under spilling") val error: ErrorDto? = null,
-    @Schema(description = "Er dette et automatisk eller manuelt spill") val gameType: GameType = GameType.AUTOMATIC
+    @Schema(description = "Er dette et automatisk eller manuelt spill") val gameType: GameType = GameType.AUTOMATIC,
+    @Schema(description = "Identifiserer et pågående spill") var gameId: String = ""
 )
 
 @Schema(description = "Et spillekort")
@@ -48,7 +49,8 @@ data class ErrorDto(
 @Schema(description = "Handlingen til en spiller av blackjack")
 data class ActionDto(
     @Schema(description = "Om det er et automatisk eller et manuelt spill") var type: GameType = GameType.AUTOMATIC,
-    @Schema(description = "Start et nytt spill, trekk et kort eller avslutt et spill") var value: Action? = null
+    @Schema(description = "Start et nytt spill, trekk et kort eller avslutt et spill") var value: Action? = null,
+    @Schema(description = "Identifiserer et pågående spill") var gameId: String? = null
 )
 
 enum class GameType { AUTOMATIC, MANUAL }

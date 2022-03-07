@@ -20,12 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.github.jactor.blackjack.dto.Action
 import com.github.jactor.blackjack.compose.model.Card
 import com.github.jactor.blackjack.compose.model.GameOfBlackjack
 import com.github.jactor.blackjack.compose.model.GameOption
 import com.github.jactor.blackjack.compose.model.GameStatus
 import com.github.jactor.blackjack.compose.model.GameTypeInternal
+import com.github.jactor.blackjack.compose.model.StartManualGame
+import com.github.jactor.blackjack.compose.model.Stay
+import com.github.jactor.blackjack.compose.model.TakeCard
 import com.github.jactor.blackjack.compose.state.BlackjackState
 
 private val ARRANGE_15DP_SPACING = Arrangement.spacedBy(15.dp)
@@ -55,15 +57,17 @@ fun GameOfBlackjackUI(
                     Button(onClick = { newGameOption.invoke(GameOption.QUIT) }) { Text("Exit game!") }
                     Button(onClick = {
                         when (gameOfBlackjack.gameType) {
-                            GameTypeInternal.AUTOMATIC -> blackjackState.playAutomatic()
-                            GameTypeInternal.MANUAL -> blackjackState.playManual(Action.START)
+                            GameTypeInternal.AUTOMATIC -> blackjackState.play()
+                            GameTypeInternal.MANUAL -> blackjackState.play(StartManualGame())
                         }
                     }) {
                         Text("Retry game!")
                     }
                 } else {
-                    Button(onClick = { blackjackState.playManual(Action.HIT) }) { Text("Hit me!") }
-                    Button(enabled = gameOfBlackjack.status.isPlayerWinning, onClick = { blackjackState.playManual(Action.END) }) { Text("I stay!") }
+                    Button(onClick = { blackjackState.play(TakeCard(gameId = gameOfBlackjack.gameId)) }) { Text("Hit me!") }
+                    Button(
+                        enabled = gameOfBlackjack.status.isPlayerWinning,
+                        onClick = { blackjackState.play(Stay(gameId = gameOfBlackjack.gameId)) }) { Text("I stay!") }
                 }
             }
         }

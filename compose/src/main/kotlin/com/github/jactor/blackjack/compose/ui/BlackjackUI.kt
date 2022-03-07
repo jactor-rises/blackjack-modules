@@ -26,11 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.github.jactor.blackjack.dto.Action
 import com.github.jactor.blackjack.compose.model.ExceptionUtil
 import com.github.jactor.blackjack.compose.model.GameOfBlackjack
 import com.github.jactor.blackjack.compose.model.GameOption
 import com.github.jactor.blackjack.compose.model.PlayerName
+import com.github.jactor.blackjack.compose.model.StartManualGame
 import com.github.jactor.blackjack.compose.state.BlackjackState
 import com.github.jactor.blackjack.compose.state.Lce
 
@@ -50,13 +50,13 @@ internal fun BlackjackUI(newGameOption: (GameOption) -> Unit = {}, blackjackStat
 
             Row(modifier = Modifier.align(Alignment.CenterHorizontally), horizontalArrangement = ARRANGE_5_DP_SPACING) {
                 Button(
-                    onClick = { blackjackState.playAutomatic() }
+                    onClick = { blackjackState.play() }
                 ) {
                     Text("Play automatic game of blackjack")
                 }
 
                 Button(
-                    onClick = { blackjackState.playManual(Action.START) }
+                    onClick = { blackjackState.play(StartManualGame()) }
                 ) {
                     Text("Play manual game of blackjack")
                 }

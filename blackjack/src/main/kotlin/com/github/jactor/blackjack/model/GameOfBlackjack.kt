@@ -11,11 +11,17 @@ data class GameOfBlackjack(
     val isManualGame: Boolean = false,
     private var isGameCompleted: Boolean = false
 ) {
+    internal val gameId: GameId get() = if (id != null) id!! else {
+        id = GameId()
+        id!!
+    }
+
     internal val playerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
     internal val dealerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
 
     private val dealerScore: Int get() = sumOf(dealerHand)
     private val playerScore: Int get() = sumOf(playerHand)
+    private var id: GameId? = null
 
     fun completeGame(endGame: Boolean = false): GameOfBlackjack {
         if (playerScore >= Value.BLACKJACK_21 || dealerScore >= Value.BLACKJACK_21) {
@@ -73,6 +79,7 @@ data class GameOfBlackjack(
         playerHand = playerHand.map { it.toDto() },
         dealerHand = dealerHand.map { it.toDto() },
         gameType = if (isManualGame) GameType.MANUAL else GameType.AUTOMATIC,
+        gameId = gameId.id,
         status = StatusDto(
             result = GameStatus.valueOf(fetchState().name),
             dealerScore = dealerScore,
@@ -161,6 +168,7 @@ data class GameOfBlackjack(
 
     private fun playerHandAsString() = playerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
     private fun dealerHandAsString() = dealerHand.toString().removePrefix("[").removeSuffix("]").replace(", ", ",")
+    fun withGameId(): Boolean = id != null
 
     enum class State { PLAYER_WINS, DEALER_WINS }
 }
