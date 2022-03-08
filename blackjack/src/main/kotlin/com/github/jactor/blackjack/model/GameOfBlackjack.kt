@@ -55,14 +55,16 @@ data class GameOfBlackjack(
         if (isGameCompleted()) {
             val dealerString = if (nick.length < 7) "Banken".padEnd(7) else "Banken".padEnd(nick.length)
             val playerString = if (nick.length < 7) nick.padEnd(7) else nick.padEnd(nick.length)
+            val dealerScore = this.dealerScore
+            val playerScore = this.playerScore
 
             println(
                 """
                     /=================================================
-                    | ${displayWinnerOfGame()}
+                    | ${displayWinnerOfGame(dealerScore, playerScore)}
                     +-------------------------------------------------
-                    | $dealerString | $dealerScore | ${dealerHandAsString()}
-                    | $playerString | $playerScore | ${playerHandAsString()}
+                    | $dealerString | ${dealerScore.atLeastTwoCharacters()} | ${dealerHandAsString()}
+                    | $playerString | ${playerScore.atLeastTwoCharacters()} | ${playerHandAsString()}
                 """.trimIndent()
             )
         }
@@ -70,9 +72,7 @@ data class GameOfBlackjack(
         return this
     }
 
-    private fun displayWinnerOfGame(): String {
-        val dealerScore = this.dealerScore
-        val playerScore = this.playerScore
+    private fun displayWinnerOfGame(dealerScore: Int, playerScore: Int): String {
         val state = fetchState()
 
         return when (state) {
@@ -92,10 +92,10 @@ data class GameOfBlackjack(
             return "$winner vant med ${calculateDifference(state, dealerScore, playerScore)} poeng"
         }
 
-       return "$winner vant spillet"
+        return "$winner vant spillet"
     }
 
-    private fun calculateDifference(state: State, dealerScore: Int, playerScore: Int): Int = when(state) {
+    private fun calculateDifference(state: State, dealerScore: Int, playerScore: Int): Int = when (state) {
         State.DEALER_WINS -> dealerScore - playerScore
         State.PLAYER_WINS -> playerScore - dealerScore
     }
@@ -199,4 +199,8 @@ data class GameOfBlackjack(
     fun withGameId(): Boolean = id != null
 
     enum class State { PLAYER_WINS, DEALER_WINS }
+
+    private fun Int.atLeastTwoCharacters(): String {
+        return if (this < 10) "0$this" else this.toString()
+    }
 }
