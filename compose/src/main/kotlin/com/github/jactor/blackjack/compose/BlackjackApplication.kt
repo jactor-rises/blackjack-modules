@@ -27,7 +27,7 @@ fun main() = application {
             height = 145.dp
         )
     } else {
-        val blackjackState = BlackjackState(currentPlayerName = { playerName }, runScope = Dispatchers.Main)
+        val blackjackState: BlackjackState = remember { BlackjackState(currentPlayerName = { playerName }, runScope = Dispatchers.Main) }
 
         GameOfBlackjackWindow(
             blackjackState = blackjackState,
