@@ -11,10 +11,11 @@ data class GameOfBlackjack(
     val isManualGame: Boolean = false,
     private var isGameCompleted: Boolean = false
 ) {
-    internal val gameId: GameId get() = if (id != null) id!! else {
-        id = GameId()
-        id!!
-    }
+    internal val gameId: GameId
+        get() = if (id != null) id!! else {
+            id = GameId()
+            id!!
+        }
 
     internal val playerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
     internal val dealerHand: MutableList<Card> = deckOfCards.take(noOfCards = 2)
@@ -51,28 +52,55 @@ data class GameOfBlackjack(
     }
 
     fun logResult(): GameOfBlackjack {
-        val dealerString = if (nick.length < 7) "Banken".padEnd(7) else "Banken".padEnd(nick.length)
-        val playerString = if (nick.length < 7) nick.padEnd(7) else nick.padEnd(nick.length)
+        if (isGameCompleted()) {
+            val dealerString = if (nick.length < 7) "Banken".padEnd(7) else "Banken".padEnd(nick.length)
+            val playerString = if (nick.length < 7) nick.padEnd(7) else nick.padEnd(nick.length)
 
-        println(
-            """
-                /=================================
-                | ${displayStateOfGame()}
-                +---------------------------------
-                | $dealerString | $dealerScore | ${dealerHandAsString()}
-                | $playerString | $playerScore | ${playerHandAsString()}
-            """.trimIndent()
-        )
+            println(
+                """
+                    /=================================================
+                    | ${displayWinnerOfGame()}
+                    +-------------------------------------------------
+                    | $dealerString | $dealerScore | ${dealerHandAsString()}
+                    | $playerString | $playerScore | ${playerHandAsString()}
+                """.trimIndent()
+            )
+        }
 
         return this
     }
 
-    private fun displayStateOfGame() = when (fetchState()) {
-        State.DEALER_WINS -> "Banken ${displayGameState()}"
-        State.PLAYER_WINS -> "Spilleren ${displayGameState()}"
+    private fun displayWinnerOfGame(): String {
+        val dealerScore = this.dealerScore
+        val playerScore = this.playerScore
+        val state = fetchState()
+
+        return when (state) {
+            State.DEALER_WINS -> "${if (isBlackjack(dealerScore)) "Banken fikk blackjack" else displayWinner(state, dealerScore, playerScore)}!"
+            State.PLAYER_WINS -> "${if (isBlackjack(playerScore)) "$nick fikk blackjack" else displayWinner(state, dealerScore, playerScore)}!"
+        }
     }
 
-    private fun displayGameState() = if (isGameCompleted()) "vant spillet!" else "leder omgangen"
+    private fun displayWinner(state: State, dealerScore: Int, playerScore: Int): String {
+        val winner = if (state == State.DEALER_WINS) "Banken" else nick
+
+        if (dealerScore > 21 || playerScore > 21) {
+            return "$winner vinner da ${if (state == State.DEALER_WINS) nick else "Banken"} kom over 21 poeng"
+        }
+
+        if (playerScore != dealerScore) {
+            return "$winner vant med ${calculateDifference(state, dealerScore, playerScore)} poeng"
+        }
+
+       return "$winner vant spillet"
+    }
+
+    private fun calculateDifference(state: State, dealerScore: Int, playerScore: Int): Int = when(state) {
+        State.DEALER_WINS -> dealerScore - playerScore
+        State.PLAYER_WINS -> playerScore - dealerScore
+    }
+
+    private fun isBlackjack(score: Int) = score == 21
 
     fun toDto() = GameOfBlackjackDto(
         nickOfPlayer = nick,
