@@ -53,7 +53,8 @@ internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit = {}, newPlayerNam
                 value = nameState,
                 onValueChange = { newValue ->
                     if (newValue.text.endsWith('\n')) {
-                        newPlayerName.invoke(PlayerName(nameState.text.trim().ifEmpty { Constants.DEFAULT_PLAYER_NAME }))
+                        val name = nameState.text.trim().ifEmpty { Constants.DEFAULT_PLAYER_NAME }
+                        newPlayerName.invoke(PlayerName(name = name, nick = PlayerName.asLowerCaseAndDashAsSpace(name)))
                         newGameOption.invoke(GameOption.CONTINUE)
                     } else {
                         nameState = newValue
@@ -67,7 +68,7 @@ internal fun PlayerNameUI(newGameOption: (GameOption) -> Unit = {}, newPlayerNam
                     newGameOption.invoke(GameOption.CONTINUE)
                 }
             ) {
-                Icon(Icons.Outlined.Send, "OK")
+                Icon(Icons.Outlined.Send, "Submit PlayerName")
             }
         }
     }

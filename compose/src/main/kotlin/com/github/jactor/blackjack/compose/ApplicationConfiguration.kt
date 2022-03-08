@@ -31,27 +31,28 @@ open class ApplicationConfiguration {
         val restTemplate = restTemplate()
         restTemplate.uriTemplateHandler = uriTemplateHandler(gameUrl)
 
-        return BlackjackConsumer.DefaultBlackjackConsumer(restTemplate)
+        return BlackjackConsumer.Default(restTemplate)
     }
 
     @Bean
     open fun uriTemplateHandler(gameUrl: GameUrl) = object : UriTemplateHandler {
         override fun expand(uriTemplate: String, uriVariables: MutableMap<String, *>): URI {
             if (uriVariables.isNotEmpty()) {
-                TODO(reason = "#1) Uri variables are not supported")
+                TODO(reason = "Uri variables are not supported as map")
             }
 
-            val baseUrl = gameUrl.removeSuffix("/")
-            val contextPath = uriTemplate.removePrefix("/")
-
-            return URI.create("$baseUrl/$contextPath")
+            return initUri(uriTemplate)
         }
 
         override fun expand(uriTemplate: String, vararg uriVariables: Any?): URI {
             if (uriVariables.isNotEmpty() && (uriVariables.size != 1 && uriVariables.first() != null)) {
-                TODO(reason = "#2) Uri variables are not supported")
+                TODO(reason = "Uri variables are not supported as varargs")
             }
 
+            return initUri(uriTemplate)
+        }
+
+        private fun initUri(uriTemplate: String): URI {
             val baseUrl = gameUrl.removeSuffix("/")
             val contextPath = uriTemplate.removePrefix("/")
 

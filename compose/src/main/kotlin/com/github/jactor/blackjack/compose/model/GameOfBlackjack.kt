@@ -42,10 +42,6 @@ data class GameOfBlackjack(
     }
 
     fun add(playerName: PlayerName): GameOfBlackjack {
-        if (playerName.nick != nickOfPlayer) {
-            throw IllegalStateException("The nick of added player do not match the game nick ($nickOfPlayer)!")
-        }
-
         this.name = playerName
         return this
     }

@@ -15,17 +15,18 @@ import org.springframework.web.client.RestTemplate
 interface BlackjackConsumer {
     fun play(nick: String, type: GameTypeInternal, gameAction: GameAction? = null): GameOfBlackjack
 
-    class DefaultBlackjackConsumer(private val restTemplate: RestTemplate) : BlackjackConsumer {
+    class Default(private val restTemplate: RestTemplate) : BlackjackConsumer {
 
         override fun play(nick: String, type: GameTypeInternal, gameAction: GameAction?): GameOfBlackjack {
+            val gameTypeDto = type.asDto()
             val response = restTemplate.exchange(
                 "/play/$nick",
                 HttpMethod.POST,
                 HttpEntity(
                     when (gameAction) {
-                        is TakeCard -> ActionDto(type = type.asDto(), value = gameAction.action.toDto(), gameId = gameAction.gameId)
-                        is Stay -> ActionDto(type = type.asDto(), value = gameAction.action.toDto(), gameId = gameAction.gameId)
-                        else -> ActionDto(type = type.asDto(), value = gameAction?.action?.toDto())
+                        is TakeCard -> ActionDto(type = gameTypeDto, value = gameAction.action.toDto(), gameId = gameAction.gameId)
+                        is Stay -> ActionDto(type = gameTypeDto, value = gameAction.action.toDto(), gameId = gameAction.gameId)
+                        else -> ActionDto(type = gameTypeDto, value = gameAction?.action?.toDto())
                     }
                 ),
                 GameOfBlackjackDto::class.java
