@@ -4,7 +4,7 @@ object BlackjackModules {
         // kotlin language version and kotlin-gradle plugin is an implementation defined in buildSrc/build.gradle.kts
 
         // Dependencies
-        const val fasterXmlJacksonModule = "2.13.1"
+        const val fasterXmlJacksonModule = "2.13.2"
         const val mockitoKotlin = "4.0.0"
         const val springBootStarterTest = "2.6.6"
         const val springDocOpenApi = "1.6.7"
