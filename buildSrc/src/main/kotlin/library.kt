@@ -1,4 +1,4 @@
-object Library {
+object BlackjackModules {
     object Version {
         // PS!
         // kotlin language version and kotlin-gradle plugin is an implementation defined in buildSrc/build.gradle.kts

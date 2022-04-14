@@ -1,5 +1,5 @@
 plugins {
-    id("com.github.ben-manes.versions") version Library.Version.benManesVersionsPlugin
+    id("com.github.ben-manes.versions") version BlackjackModules.Version.benManesVersionsPlugin
 }
 
 subprojects {

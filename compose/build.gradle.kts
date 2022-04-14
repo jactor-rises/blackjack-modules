@@ -3,7 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.compose") version Library.Version.kotlinCompose
+    id("org.jetbrains.compose") version BlackjackModules.Version.kotlinCompose
 }
 
 description = "blackjack:compose-application"
@@ -23,12 +23,12 @@ dependencies {
     // internal project dependency
     implementation(project(":dto"))
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Library.Version.fasterXmlJacksonModule}")
-    implementation("org.springframework:spring-context:${Library.Version.springFramework}")
-    implementation("org.springframework:spring-core:${Library.Version.springFramework}")
-    implementation("org.springframework:spring-web:${Library.Version.springFramework}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${BlackjackModules.Version.fasterXmlJacksonModule}")
+    implementation("org.springframework:spring-context:${BlackjackModules.Version.springFramework}")
+    implementation("org.springframework:spring-core:${BlackjackModules.Version.springFramework}")
+    implementation("org.springframework:spring-web:${BlackjackModules.Version.springFramework}")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:${Library.Version.springBoot}")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${BlackjackModules.Version.springBoot}")
     testImplementation(kotlin("test"))
 }
 
