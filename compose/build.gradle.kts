@@ -9,7 +9,6 @@ plugins {
 description = "blackjack:compose-application"
 group = "com.github.jactor.blackjack.compose"
 version = "0.0.x-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     google()
