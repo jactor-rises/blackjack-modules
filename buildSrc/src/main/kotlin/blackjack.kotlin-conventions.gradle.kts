@@ -14,9 +14,13 @@ tasks {
     compileKotlin {
         kotlinOptions {
             allWarningsAsErrors = true
+            jvmTarget = "17"
         }
     }
 }
+
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
 
 tasks.test {
     useJUnitPlatform()

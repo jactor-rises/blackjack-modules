@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version Library.Version.springBoot
-    id("io.spring.dependency-management") version Library.Version.springDependencyManagement
+    id("org.springframework.boot") version BlackjackModules.Version.springBoot
+    id("io.spring.dependency-management") version BlackjackModules.Version.springDependencyManagement
 
-    kotlin("plugin.spring") version Library.Version.springPlugin
+    kotlin("plugin.spring") version BlackjackModules.Version.springPlugin
 }
 
 description = "blackjack:backend"
@@ -27,11 +27,11 @@ dependencies {
 
     // dependencies
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation(Library.Dependencies.springDocOpenApi)
+    implementation(BlackjackModules.Dependencies.springDocOpenApi)
 
     // test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation(Library.Dependencies.mockitoKotlin)
+    testImplementation(BlackjackModules.Dependencies.mockitoKotlin)
 }
 
 tasks.withType<KotlinCompile> {
