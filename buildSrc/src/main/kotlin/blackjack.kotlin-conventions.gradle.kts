@@ -14,6 +14,7 @@ tasks {
     compileKotlin {
         kotlinOptions {
             allWarningsAsErrors = true
+            jvmTarget = "17"
         }
     }
 }
