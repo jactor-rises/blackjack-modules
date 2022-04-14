@@ -6,7 +6,7 @@ object BlackjackModules {
         // Dependencies
         const val fasterXmlJacksonModule = "2.13.1"
         const val mockitoKotlin = "4.0.0"
-        const val springDocOpenApi = "1.6.6"
+        const val springDocOpenApi = "1.6.7"
         const val springFramework = "5.3.16"
 
         // plugins
