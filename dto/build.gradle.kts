@@ -3,6 +3,6 @@ description = "blackjack:dto"
 
 dependencies {
     implementation(BlackjackModules.Dependencies.springDocOpenApi)
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.4")
+    testImplementation(BlackjackModules.Dependencies.springBootStarterTest)
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${BlackjackModules.Version.fasterXmlJacksonModule}")
 }
