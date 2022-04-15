@@ -1,21 +1,17 @@
 package com.github.jactor.blackjack.controller
 
 import com.github.jactor.blackjack.consumer.DeckOfCardsConsumer
-import com.github.jactor.blackjack.dto.Action
-import com.github.jactor.blackjack.dto.ActionDto
-import com.github.jactor.blackjack.dto.CardDto
-import com.github.jactor.blackjack.dto.GameOfBlackjackDto
-import com.github.jactor.blackjack.dto.GameType
+import com.github.jactor.blackjack.dto.*
 import com.github.jactor.blackjack.model.TestUtil.aDeckOfCardsStartingWith
 import com.github.jactor.blackjack.model.TestUtil.aFullDeckOfCards
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -26,15 +22,13 @@ import org.springframework.test.annotation.DirtiesContext
 @DisplayName("A com.github.jactor.blackjack.controller.GameController")
 internal class GameControllerWithMockedConsumerTest(@Autowired private val testRestTemplate: TestRestTemplate) {
 
-    @MockBean
+    @MockkBean
     private lateinit var deckOfCardsConsumerMock: DeckOfCardsConsumer
 
     @Test
     @DirtiesContext
     fun `should start a game of blackjack for player`() {
-        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(
-            aDeckOfCardsStartingWith("SA,DK".split(","))
-        )
+        every { deckOfCardsConsumerMock.fetch() } returns aDeckOfCardsStartingWith("SA,DK".split(","))
 
         val response = testRestTemplate.exchange(
             "/play/jactor",
@@ -60,9 +54,7 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
         // Spiller trekker kortene spar to og ruter 3
         // "Banken" får kortene spar 10 og ruter 4
         // Neste kort (spar konge) vil gå til spilleren...
-        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(
-            aDeckOfCardsStartingWith("S2,D3,S10,D4,SK".split(","))
-        )
+        every { deckOfCardsConsumerMock.fetch() } returns aDeckOfCardsStartingWith("S2,D3,S10,D4,SK".split(","))
 
         val jactor = "jactor"
         val startResponse = testRestTemplate.exchange(
@@ -77,7 +69,13 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
         val runResponse = testRestTemplate.exchange(
             "/play/$jactor",
             HttpMethod.POST,
-            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.HIT, gameId = startedGameOfBlackjackDto?.gameId)),
+            HttpEntity(
+                ActionDto(
+                    type = GameType.MANUAL,
+                    value = Action.HIT,
+                    gameId = startedGameOfBlackjackDto?.gameId
+                )
+            ),
             GameOfBlackjackDto::class.java
         )
 
@@ -86,14 +84,17 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
         assertAll(
             { assertThat(startResponse.statusCode).`as`("start status code").isEqualTo(HttpStatus.OK) },
             {
-                assertThat(startedGameOfBlackjackDto?.playerHand).`as`("started player hand").isEqualTo(
-                    listOf(CardDto(suit = "SPADES", value = "2"), CardDto(suit = "DIAMONDS", value = "3"))
-                )
+                assertThat(startedGameOfBlackjackDto?.playerHand).`as`("started player hand")
+                    .isEqualTo(listOf(CardDto(suit = "SPADES", value = "2"), CardDto(suit = "DIAMONDS", value = "3")))
             },
             { assertThat(runResponse.statusCode).`as`("running status code").isEqualTo(HttpStatus.OK) },
             {
                 assertThat(runningGameOfBlackjackDto?.playerHand).`as`("running player hand").isEqualTo(
-                    listOf(CardDto(suit = "SPADES", value = "2"), CardDto(suit = "DIAMONDS", value = "3"), CardDto(suit = "SPADES", value = "K"))
+                    listOf(
+                        CardDto(suit = "SPADES", value = "2"),
+                        CardDto(suit = "DIAMONDS", value = "3"),
+                        CardDto(suit = "SPADES", value = "K")
+                    )
                 )
             }
         )
@@ -101,9 +102,7 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
 
     @Test
     fun `should complete manual game when action == END`() {
-        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(
-            aDeckOfCardsStartingWith("S2,D3,S10,D4,S2".split(","))
-        )
+        every { deckOfCardsConsumerMock.fetch() } returns aDeckOfCardsStartingWith("S2,D3,S10,D4,S2".split(","))
 
         val jactor = "jactor"
         val startResponse = testRestTemplate.exchange(
@@ -117,7 +116,13 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
         val endResponse = testRestTemplate.exchange(
             "/play/$jactor",
             HttpMethod.POST,
-            HttpEntity(ActionDto(type = GameType.MANUAL, value = Action.END, gameId = startedGameOfBlackjackDto?.gameId)),
+            HttpEntity(
+                ActionDto(
+                    type = GameType.MANUAL,
+                    value = Action.END,
+                    gameId = startedGameOfBlackjackDto?.gameId
+                )
+            ),
             GameOfBlackjackDto::class.java
         )
 
@@ -147,7 +152,7 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
 
     @Test
     fun `should state game as automatic when an automatic game is played`() {
-        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(aFullDeckOfCards())
+        every { deckOfCardsConsumerMock.fetch() } returns aFullDeckOfCards()
 
         val response = testRestTemplate.exchange(
             "/play/jactor",
@@ -161,7 +166,7 @@ internal class GameControllerWithMockedConsumerTest(@Autowired private val testR
 
     @Test
     fun `should state game as manual when a manual game is played`() {
-        whenever(deckOfCardsConsumerMock.fetch()).thenReturn(aFullDeckOfCards())
+        every { deckOfCardsConsumerMock.fetch() } returns aFullDeckOfCards()
 
         val response = testRestTemplate.exchange(
             "/play/jactor",

@@ -31,7 +31,8 @@ dependencies {
 
     // test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation(BlackjackModules.Dependencies.mockitoKotlin)
+    testImplementation(BlackjackModules.Dependencies.mockk)
+    testImplementation(BlackjackModules.Dependencies.springMockk)
 }
 
 tasks.withType<KotlinCompile> {
