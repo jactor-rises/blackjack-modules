@@ -5,10 +5,11 @@ object BlackjackModules {
 
         // Dependencies
         const val fasterXmlJacksonModule = "2.13.2"
-        const val mockitoKotlin = "4.0.0"
+        const val mockk = "1.12.3"
         const val springBootStarterTest = "2.6.6"
         const val springDocOpenApi = "1.6.7"
         const val springFramework = "5.3.16"
+        const val springMockk = "3.1.1"
 
         // plugins
         const val benManesVersionsPlugin = "0.42.0"
@@ -19,11 +20,12 @@ object BlackjackModules {
     }
 
     object Dependencies {
-        const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:${Version.mockitoKotlin}"
+        const val mockk = "io.mockk:mockk:${Version.mockk}"
         const val springBootStarterTest = "org.springframework.boot:spring-boot-starter-test:${
             Version.springBootStarterTest
         }"
 
         const val springDocOpenApi = "org.springdoc:springdoc-openapi-ui:${Version.springDocOpenApi}"
+        const val springMockk = "com.ninja-squad:springmockk:${Version.springMockk}"
     }
 }
