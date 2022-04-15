@@ -1,5 +1,6 @@
 # Blackjack Compose Application for Desktop
 
-A desktop application for https://gitlab.com/jactor/blackjack
+The backend application: https://github.com/jactor-rises/blackjack-modules/blackjack <br>
+The desktop application: for https://github.com/jactor-rises/blackjack-modules/compose
 
-Run it as a standalone application for JVM (Java Virtual Environment) by running `BlackjackApplicationKt.main()`
+Run it as a standalone application for JVM (Java Virtual Machine) by running `BlackjackApplicationKt.main()`
